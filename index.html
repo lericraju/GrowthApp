@@ -2163,37 +2163,49 @@ CREATE TABLE cardio_logs (
             const key = localStorage.getItem('growthapp_supabase_key');
             if (!url || !key) return false;
 
-            let endpoint = `${url}/rest/v1/${table}`;
-            let method = 'POST';
-            let headers = {
+            const headers = {
                 'apikey': key,
                 'Authorization': `Bearer ${key}`,
                 'Content-Type': 'application/json'
             };
 
-            if (action === 'insert') {
-                method = 'POST';
-                headers['Prefer'] = 'resolution=merge-duplicates'; // Upsert behavior
-            } else if (action === 'update') {
-                method = 'PATCH';
-                endpoint += `?id=eq.${data.id}`;
-            } else if (action === 'delete') {
-                method = 'DELETE';
-                endpoint += `?id=eq.${data.id}`;
-            }
-
             try {
-                const options = { method, headers };
-                if (method !== 'DELETE') {
-                    options.body = JSON.stringify(data);
+                let endpoint = `${url}/rest/v1/${table}`;
+                let method = 'POST';
+                let body = undefined;
+
+                if (action === 'upsert') {
+                    // Use natural key upsert - avoids UUID issues entirely
+                    if (table === 'exercise_logs') {
+                        endpoint += '?on_conflict=day_id,exercise_id,week_number';
+                    } else if (table === 'cardio_logs') {
+                        endpoint += '?on_conflict=day_id,exercise_id,week_number';
+                    } else if (table === 'workout_sessions') {
+                        endpoint += '?on_conflict=week_number,day_id';
+                    }
+                    headers['Prefer'] = 'resolution=merge-duplicates,return=minimal';
+                    body = JSON.stringify(data);
+                } else if (action === 'delete') {
+                    method = 'DELETE';
+                    // Delete using natural key filters, not UUID
+                    if (data.day_id && data.exercise_id) {
+                        endpoint += `?day_id=eq.${data.day_id}&exercise_id=eq.${data.exercise_id}&week_number=eq.${data.week_number}`;
+                    } else if (data.id) {
+                        endpoint += `?id=eq.${data.id}`;
+                    }
                 }
+
+                const options = { method, headers };
+                if (body) options.body = body;
+
                 const res = await fetch(endpoint, options);
                 if (res.ok) {
-                    writeToTerminal(`[Supabase Sync] ${action.toUpperCase()} on ${table} success.`);
+                    writeToTerminal(`[Supabase] ✅ ${action} on ${table} OK.`);
+                    updateSyncUI();
                     return true;
                 } else {
                     const errText = await res.text();
-                    writeToTerminal(`[Supabase Error] ${action} on ${table} failed: ${errText}`, true);
+                    writeToTerminal(`[Supabase Error] ${table} ${action} failed: ${errText}`, true);
                     return false;
                 }
             } catch (err) {
@@ -2517,96 +2529,71 @@ CREATE TABLE cardio_logs (
             const isChecked = event.target.checked;
             const session = STATE.workouts[STATE.activeWeek].find(w => w.id === dayId);
             const exercise = session.details.find(d => d.id === exerciseId);
-            
             exercise.completed = isChecked;
-            const logKey = dayId + "_" + exerciseId;
+            const logKey = dayId + '_' + exerciseId;
 
             if (isChecked) {
-                // Auto seed a default log entry
                 if (exercise.type === 'lifting') {
-                    if (!STATE.exercise_logs[logKey]) {
-                        const numSets = getSetCount(exercise.target);
-                        STATE.exercise_logs[logKey] = {
-                            id: logKey,
-                            exercise_name: exercise.name,
-                            week: STATE.activeWeek,
-                            day: session.day,
-                            reps_completed: Array(numSets).fill(10),
-                            weight_kg: Array(numSets).fill(25),
-                            rpe_score: 8.0
-                        };
-                        executeMutation("insert", "exercise_logs", STATE.exercise_logs[logKey]);
-                    }
+                    const numSets = getSetCount(exercise.target);
+                    // Build payload matching Supabase schema EXACTLY
+                    const payload = {
+                        day_id: dayId,
+                        exercise_id: exerciseId,
+                        exercise_name: exercise.name,
+                        week_number: STATE.activeWeek,
+                        sets_data: Array.from({length: numSets}, () => ({ weight_kg: 25, reps: 10 })),
+                        rpe_score: 8.0,
+                        completed: true
+                    };
+                    STATE.exercise_logs[logKey] = payload;
+                    executeMutation('upsert', 'exercise_logs', payload);
+
                 } else if (exercise.type === 'cardio') {
-                    if (!STATE.cardio_logs[logKey]) {
-                        let defaultDist = 3.0;
-                        if (exercise.target.includes("km")) {
-                            const match = exercise.target.match(/([\d\.]+)\s*km/);
-                            if (match) defaultDist = parseFloat(match[1]);
-                        }
-                        STATE.cardio_logs[logKey] = {
-                            id: logKey,
-                            cardio_name: exercise.name,
-                            week: STATE.activeWeek,
-                            day: session.day,
-                            distance_km: defaultDist,
-                            duration_seconds: 1200,
-                            avg_heart_rate: 135,
-                            zone_2_compliant: true
-                        };
-                        executeMutation("insert", "cardio_logs", STATE.cardio_logs[logKey]);
-                    }
+                    let defaultDist = 3.0;
+                    const match = exercise.target.match(/([\d\.]+)\s*km/);
+                    if (match) defaultDist = parseFloat(match[1]);
+                    // Build payload matching Supabase schema EXACTLY
+                    const payload = {
+                        day_id: dayId,
+                        exercise_id: exerciseId,
+                        week_number: STATE.activeWeek,
+                        cardio_type: exercise.name.toUpperCase().includes('BIKE') ? 'BIKE' : 'RUN',
+                        distance_km: defaultDist,
+                        duration_minutes: 20,
+                        avg_heart_rate: 135,
+                        zone_2_compliant: true,
+                        completed: true
+                    };
+                    STATE.cardio_logs[logKey] = payload;
+                    executeMutation('upsert', 'cardio_logs', payload);
                 }
-                writeToTerminal(`[Local Checkbox] Completed exercise "${exercise.name}" on ${session.day}.`);
+                writeToTerminal(`[✅ Syncing] "${exercise.name}" marked complete → Supabase.`);
+
             } else {
-                // Delete log entry
-                if (exercise.type === 'lifting') {
-                    if (STATE.exercise_logs[logKey]) {
-                        delete STATE.exercise_logs[logKey];
-                        executeMutation("delete", "exercise_logs", { id: logKey });
-                    }
-                } else if (exercise.type === 'cardio') {
-                    if (STATE.cardio_logs[logKey]) {
-                        delete STATE.cardio_logs[logKey];
-                        executeMutation("delete", "cardio_logs", { id: logKey });
-                    }
+                // Uncheck: update completed = false in Supabase
+                if (exercise.type === 'lifting' && STATE.exercise_logs[logKey]) {
+                    const payload = { ...STATE.exercise_logs[logKey], completed: false };
+                    STATE.exercise_logs[logKey] = payload;
+                    executeMutation('upsert', 'exercise_logs', payload);
+                } else if (exercise.type === 'cardio' && STATE.cardio_logs[logKey]) {
+                    const payload = { ...STATE.cardio_logs[logKey], completed: false };
+                    STATE.cardio_logs[logKey] = payload;
+                    executeMutation('upsert', 'cardio_logs', payload);
                 }
-                writeToTerminal(`[Local Checkbox] Cleared completed state for "${exercise.name}" on ${session.day}.`);
+                writeToTerminal(`[❌ Syncing] "${exercise.name}" unchecked → Supabase.`);
             }
 
-            // Sync overall day status
+            // Sync day-level session status
             const allDone = session.details.every(d => d.completed);
             const noneDone = session.details.every(d => !d.completed);
-            if (allDone) {
-                session.status = "COMPLETED";
-            } else if (noneDone) {
-                session.status = "PENDING";
-            } else {
-                session.status = "MODIFIED";
-            }
-
-                // Update exercise completed state for Supabase — use correct field names
-                const logPayload = exercise.type === 'lifting'
-                    ? STATE.exercise_logs[logKey]
-                    : STATE.cardio_logs[logKey];
-
-                if (logPayload) {
-                    // Ensure completed flag is set with correct key names
-                    const syncPayload = { ...logPayload, completed: isChecked };
-                    if (exercise.type === 'lifting') {
-                        syncPayload.week_number = logPayload.week || STATE.activeWeek;
-                        syncPayload.day_id = dayId;
-                        syncPayload.exercise_id = exerciseId;
-                        STATE.exercise_logs[logKey] = syncPayload;
-                        executeMutation('insert', 'exercise_logs', syncPayload);
-                    } else if (exercise.type === 'cardio') {
-                        syncPayload.week_number = logPayload.week || STATE.activeWeek;
-                        syncPayload.day_id = dayId;
-                        syncPayload.exercise_id = exerciseId;
-                        STATE.cardio_logs[logKey] = syncPayload;
-                        executeMutation('insert', 'cardio_logs', syncPayload);
-                    }
-                }
+            session.status = allDone ? 'COMPLETED' : noneDone ? 'PENDING' : 'MODIFIED';
+            executeMutation('upsert', 'workout_sessions', {
+                week_number: STATE.activeWeek,
+                day_id: dayId,
+                day_name: session.day,
+                session_name: session.name,
+                status: session.status
+            });
 
             saveStateLocal();
             recalculateMetrics();
