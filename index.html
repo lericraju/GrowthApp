@@ -1,0 +1,3501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowthApp | Advanced Training Dashboard</title>
+    
+    <!-- PWA Configurations -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <meta name="theme-color" content="#c084fc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #030712;
+            --surface-color: rgba(17, 24, 39, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(31, 41, 55, 0.5);
+            
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+
+            --accent-blue: #38bdf8;       /* Ironman Run/Bike */
+            --accent-purple: #c084fc;     /* Bodybuilding */
+            --accent-green: #34d399;      /* Completed / Recovery */
+            --accent-amber: #fbbf24;      /* Warnings / Skip */
+            --accent-red: #f87171;        /* Warning / Delete */
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --font-outfit: 'Outfit', sans-serif;
+            --font-inter: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-inter);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 16px;
+            line-height: 1.5;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(192, 132, 252, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(3, 7, 18, 0.9) 100%);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .brand h1 {
+            font-family: var(--font-outfit);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, var(--accent-purple), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .brand p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .week-selector {
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .week-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-outfit);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .week-btn.active {
+            background: var(--accent-purple);
+            color: var(--bg-color);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-help-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .mobile-help-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .network-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #374151;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-green);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* METRICS BAR */
+        .metrics-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .metric-card.v-taper::before { background: var(--accent-purple); }
+        .metric-card.fatigue-upper::before { background: var(--accent-amber); }
+        .metric-card.fatigue-lower::before { background: var(--accent-blue); }
+        .metric-card.sync-status::before { background: var(--accent-green); }
+        .metric-card.sync-status.offline::before { background: var(--accent-red); }
+
+        .metric-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-family: var(--font-outfit);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .metric-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--surface-border);
+            margin-bottom: 24px;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-outfit);
+            font-size: 15px;
+            font-weight: 600;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 -2px 0 var(--accent-blue);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SCHEDULE TAB */
+        .schedule-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .btn-print-report {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .btn-print-report:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .schedule-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+
+        .day-card {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+        }
+
+        .day-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .day-header {
+            padding: 12px 16px;
+            font-family: var(--font-outfit);
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bg-monday { background: rgba(37, 99, 235, 0.15); border-bottom: 2px solid #2563eb; color: #60a5fa; }
+        .bg-tuesday { background: rgba(234, 88, 12, 0.15); border-bottom: 2px solid #ea580c; color: #fb923c; }
+        .bg-wednesday { background: rgba(22, 163, 74, 0.15); border-bottom: 2px solid #16a34a; color: #4ade80; }
+        .bg-thursday { background: rgba(147, 51, 234, 0.15); border-bottom: 2px solid #9333ea; color: #c084fc; }
+        .bg-friday { background: rgba(220, 38, 38, 0.15); border-bottom: 2px solid #dc2626; color: #f87171; }
+        .bg-saturday { background: rgba(202, 138, 4, 0.15); border-bottom: 2px solid #ca8a04; color: #facc15; }
+        .bg-sunday { background: rgba(71, 85, 105, 0.15); border-bottom: 2px solid #475569; color: #94a3b8; }
+
+        .day-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pending { background: rgba(156, 163, 175, 0.15); color: var(--text-secondary); }
+        .badge-completed { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); }
+        .badge-skipped { background: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+        .badge-modified { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); }
+
+        .day-content {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        /* GRANULAR EXERCISE ROW STYLES */
+        .exercise-item-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .exercise-item-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .exercise-item-row.completed {
+            border-color: rgba(52, 211, 153, 0.2);
+            background: rgba(52, 211, 153, 0.02);
+        }
+
+        .exercise-info {
+            flex-grow: 1;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .exercise-name-title {
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .exercise-name-title.cardio { color: var(--accent-blue); }
+        .exercise-name-title.lifting { color: var(--accent-purple); }
+        .exercise-name-title.rest { color: var(--accent-green); }
+
+        .exercise-target {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .exercise-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .exercise-logged-preview {
+            font-size: 10px;
+            color: var(--accent-green);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .exercise-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exercise-log-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .exercise-log-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* CUSTOM CHECKBOX STYLE */
+        .exercise-checkbox-container {
+            display: block;
+            position: relative;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .exercise-checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: rgba(31, 41, 55, 0.8);
+            border: 1.5px solid var(--surface-border);
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .exercise-checkbox-container:hover input ~ .checkmark {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .exercise-checkbox-container input:checked ~ .checkmark {
+            background-color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .exercise-checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .exercise-checkbox-container .checkmark:after {
+            left: 6.5px;
+            top: 3px;
+            width: 5px;
+            height: 9px;
+            border: solid var(--bg-color);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .btn-reset-week {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-outfit);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-reset-week:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* RECOVERY & REBALANCE TAB */
+        .recovery-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .recovery-grid {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .engine-control-card {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .engine-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .fatigue-explanation {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--surface-border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fatigue-badge-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .rebalance-simulation-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .simulation-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .simulation-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .simulation-btn span {
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .btn-rebalance {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, #a855f7 100%);
+            color: var(--bg-color);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: var(--font-outfit);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+        }
+
+        .btn-rebalance:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .diff-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (min-width: 992px) {
+            .diff-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .diff-column {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .diff-column h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--surface-border);
+            padding-bottom: 6px;
+        }
+
+        .diff-item {
+            font-size: 12px;
+            padding: 6px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .diff-item.changed {
+            background: rgba(251, 191, 36, 0.1);
+            border-left: 3px solid var(--accent-amber);
+        }
+
+        .diff-item.normal {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* PHYSIQUE RULES & SANDBOX TAB */
+        .physique-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .physique-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .vitals-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-group input {
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: var(--font-inter);
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .btn-save-vitals {
+            grid-column: span 2;
+            background: var(--accent-purple);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: var(--font-outfit);
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save-vitals:hover {
+            opacity: 0.9;
+        }
+
+        /* Chart SVG Box */
+        .chart-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 180px;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 10px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .sandbox-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .sandbox-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sandbox-input-row select, .sandbox-input-row input {
+            flex-grow: 1;
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-family: var(--font-inter);
+            font-size: 14px;
+        }
+
+        .sandbox-input-row select:focus, .sandbox-input-row input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .btn-validate {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-validate:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sandbox-results {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .rules-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .rules-badge.pass { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); }
+        .rules-badge.fail { background: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+
+        .sandbox-result-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* PACE CALCULATOR TAB */
+        .calculator-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .calculator-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .calc-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #374151;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent-blue);
+        }
+
+        .slider-val {
+            color: var(--accent-blue);
+            font-family: var(--font-outfit);
+            font-weight: bold;
+        }
+
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 16px;
+        }
+
+        .gauge-circle {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gauge-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: #1f2937;
+            stroke-width: 12;
+        }
+
+        .gauge-progress {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+        }
+
+        .gauge-text {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-family: var(--font-outfit);
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .gauge-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* DATABASE, SYNC & SETTINGS */
+        .db-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .db-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .terminal-panel {
+            background: #020617;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            font-family: monospace;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+
+        .terminal-line {
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--accent-green);
+        }
+
+        .terminal-line.error { color: var(--accent-red); }
+        .terminal-line.info { color: var(--accent-blue); }
+        .terminal-line.warning { color: var(--accent-amber); }
+
+        .schema-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .schema-selector {
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 100%;
+            margin-bottom: 16px;
+            font-family: var(--font-inter);
+        }
+
+        .schema-code {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: var(--accent-blue);
+            height: 200px;
+            overflow-y: auto;
+        }
+
+        /* SUPABASE CONFIG PANEL */
+        .supabase-config-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .supabase-btn-save {
+            background: var(--accent-green);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .supabase-btn-save:hover {
+            opacity: 0.9;
+        }
+
+        /* MODALS */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: modalSlide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalSlide {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--surface-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-family: var(--font-outfit);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--surface-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-save-log {
+            background: var(--accent-blue);
+            color: var(--bg-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .log-sets-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .log-sets-table th {
+            text-align: left;
+            padding: 6px 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .log-sets-table td {
+            padding: 6px 8px;
+        }
+
+        .log-sets-table input {
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 6px;
+            border-radius: 4px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .status-select {
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: var(--font-inter);
+            font-size: 13px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        /* PRINT ONLY HELPER CLASSES */
+        .print-only-header {
+            display: none;
+        }
+        .print-only-checkbox {
+            display: none;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+            body {
+                background: #ffffff !important;
+                background-image: none !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                font-size: 12px !important;
+            }
+            .header, .tabs, .metrics-bar, .btn-reset-week, .terminal-panel, .schema-panel, .recovery-grid, 
+            .physique-layout, .calculator-layout, .db-layout, .modal-overlay, #weekly-progression-banner, 
+            .rebalance-simulation-box, .schedule-header-actions, .exercise-actions, .mobile-help-btn {
+                display: none !important;
+            }
+            .tab-content {
+                display: none !important;
+            }
+            #schedule-tab {
+                display: block !important;
+            }
+            .print-only-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000000;
+                padding-bottom: 10px;
+            }
+            .print-only-header h1 {
+                font-family: var(--font-outfit);
+                font-size: 24px;
+                text-transform: uppercase;
+                margin-bottom: 4px;
+            }
+            .print-only-header p {
+                font-size: 12px;
+                color: #555555;
+            }
+            .schedule-grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 15px !important;
+            }
+            .day-card {
+                background: #ffffff !important;
+                border: 1px solid #000000 !important;
+                border-radius: 6px !important;
+                box-shadow: none !important;
+                transform: none !important;
+                page-break-inside: avoid;
+                color: #000000 !important;
+            }
+            .day-header {
+                background: #f3f4f6 !important;
+                color: #000000 !important;
+                border-bottom: 1.5px solid #000000 !important;
+                padding: 8px 12px !important;
+            }
+            .day-badge {
+                border: 1px solid #000000 !important;
+                background: transparent !important;
+                color: #000000 !important;
+            }
+            .day-content {
+                padding: 8px !important;
+                gap: 6px !important;
+            }
+            .exercise-item-row {
+                background: #ffffff !important;
+                border: 1px solid #e5e7eb !important;
+                border-radius: 4px !important;
+                padding: 6px 10px !important;
+                color: #000000 !important;
+            }
+            .exercise-name-title {
+                color: #000000 !important;
+                font-size: 12px !important;
+            }
+            .exercise-target, .exercise-desc {
+                color: #4b5563 !important;
+            }
+            .exercise-logged-preview {
+                color: #047857 !important;
+                font-weight: 700 !important;
+            }
+            .print-only-checkbox {
+                display: inline-block !important;
+                font-size: 15px !important;
+                font-weight: bold !important;
+                margin-right: 8px !important;
+                font-family: monospace !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PRINT HEADER -->
+    <div class="print-only-header">
+        <h1>GrowthApp Workout Report</h1>
+        <p>Week <span id="print-week-title">1</span> Training Progression | Printout Summary</p>
+    </div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="brand">
+                <h1>GrowthApp</h1>
+                <p>Granular Hybrid Training Engine | V-Taper & Ironman Buffer</p>
+            </div>
+            
+            <div class="header-controls">
+                <div class="week-selector">
+                    <button class="week-btn active" onclick="selectWeek(1)">Wk 1</button>
+                    <button class="week-btn" onclick="selectWeek(2)">Wk 2</button>
+                    <button class="week-btn" onclick="selectWeek(3)">Wk 3</button>
+                    <button class="week-btn" onclick="selectWeek(4)">Wk 4</button>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="mobile-help-btn" onclick="openMobileGuide()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Phone App Setup
+                    </button>
+                    <div class="network-status">
+                        <span id="network-text">Online</span>
+                        <label class="switch">
+                            <input type="checkbox" id="network-toggle" checked onchange="toggleNetwork()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- METRICS ROW -->
+        <div class="metrics-bar">
+            <div class="metric-card v-taper">
+                <div class="metric-title">V-Taper Aesthetic Ratio</div>
+                <div class="metric-value" id="metric-vtaper">0.00</div>
+                <div class="metric-desc" id="vtaper-progress-desc">Waist/Shoulders ratio</div>
+            </div>
+            <div class="metric-card fatigue-upper">
+                <div class="metric-title">Upper CNS Fatigue</div>
+                <div class="metric-value" id="metric-fatigue-upper">0.0</div>
+                <div class="metric-desc" id="fatigue-upper-desc">Lifting intensity load</div>
+            </div>
+            <div class="metric-card fatigue-lower">
+                <div class="metric-title">Lower CNS Fatigue</div>
+                <div class="metric-value" id="metric-fatigue-lower">0.0</div>
+                <div class="metric-desc" id="fatigue-lower-desc">Legs & Cardio load</div>
+            </div>
+            <div class="metric-card sync-status" id="sync-card">
+                <div class="metric-title">Supabase Sync Queue</div>
+                <div class="metric-value" id="metric-sync">Synced</div>
+                <div class="metric-desc" id="sync-desc">0 pending mutations</div>
+                <div style="margin-top: 6px; display: flex; gap: 6px;">
+                    <button onclick="processPendingQueue()" style="font-size: 10px; padding: 3px 8px; background: rgba(56,189,248,0.15); border: 1px solid var(--accent-blue); color: var(--accent-blue); border-radius: 4px; cursor: pointer;">↑ Retry Sync</button>
+                    <button onclick="clearPendingQueue()" style="font-size: 10px; padding: 3px 8px; background: rgba(248,113,113,0.1); border: 1px solid var(--accent-red); color: var(--accent-red); border-radius: 4px; cursor: pointer;">✕ Flush Queue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB NAVIGATION -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'schedule-tab')">📅 Weekly Schedule</button>
+            <button class="tab-btn" onclick="switchTab(event, 'charts-tab')">📈 Progress Charts</button>
+            <button class="tab-btn" onclick="switchTab(event, 'recovery-tab')">⚡ Recovery & Rebalance</button>
+            <button class="tab-btn" onclick="switchTab(event, 'physique-tab')">📐 V-Taper & Sandbox</button>
+            <button class="tab-btn" onclick="switchTab(event, 'ironman-tab')">⏱️ Pace Calculator</button>
+            <button class="tab-btn" onclick="switchTab(event, 'db-tab')">💾 Database & Sync</button>
+        </div>
+
+        <!-- SCHEDULE TAB -->
+        <div id="schedule-tab" class="tab-content active">
+            <div class="schedule-header-actions">
+                <div id="weekly-progression-banner" style="background: rgba(192, 132, 252, 0.1); border: 1px solid var(--surface-border); border-radius: 12px; padding: 12px 16px; font-size: 13px; flex-grow: 1; margin-right: 16px;">
+                    <!-- Week Targets Rendered Here -->
+                </div>
+                <button class="btn-print-report" onclick="printWeeklyReport()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Print Weekly Report
+                </button>
+            </div>
+
+            <div class="schedule-grid" id="schedule-days-container">
+                <!-- Day Cards Rendered via JS -->
+            </div>
+
+            <button class="btn-reset-week" onclick="resetAllData()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Clear Database & Reset All Weeks
+            </button>
+        </div>
+
+        <!-- PROGRESS CHARTS TAB -->
+        <div id="charts-tab" class="tab-content">
+            <div class="calc-panel" style="margin-bottom: 20px;">
+                <h3 style="font-family: var(--font-outfit); margin-bottom: 8px;">Granular Exercise Progression</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                    Select any exercise in your program to plot your strength, volume, or endurance pace performance across weeks.
+                </p>
+                
+                <div class="vitals-form" style="grid-template-columns: 1fr; margin-top: 0; max-width: 500px;">
+                    <div class="form-group">
+                        <label for="chart-exercise-select">Exercise to Visualize</label>
+                        <select id="chart-exercise-select" onchange="updateExerciseChart()" class="schema-selector" style="margin-bottom: 0;">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="exercise-chart-container" class="chart-box" style="width: 100%; min-height: 250px; justify-content: center; margin-top: 20px;">
+                    <!-- Rendered SVG Line Chart -->
+                </div>
+            </div>
+        </div>
+
+        <!-- RECOVERY TAB -->
+        <div id="recovery-tab" class="tab-content">
+            <div class="recovery-grid">
+                <div class="engine-control-card">
+                    <h3 style="font-family: var(--font-outfit);">CNS Fatigue Engine</h3>
+                    <div class="fatigue-explanation">
+                        <p><strong>CNS Scores:</strong> Track cumulative physical fatigue over a sliding 72-hour window.</p>
+                        <ul>
+                            <li>Lifting Session: +3.0</li>
+                            <li>Cardio Session: distance × 0.4 (bike) or 1.5 (run)</li>
+                            <li>Decay Rate: -2.0 units per 24 hours</li>
+                        </ul>
+                        <div class="fatigue-badge-row">
+                            <span class="day-badge" id="cns-status-upper" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-green);">Upper CNS: Normal</span>
+                            <span class="day-badge" id="cns-status-lower" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-green);">Lower CNS: Normal</span>
+                        </div>
+                    </div>
+
+                    <div class="rebalance-simulation-box">
+                        <h4 style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary);">Simulate Schedule Breaches</h4>
+                        
+                        <button class="simulation-btn" onclick="simulateSkippedWorkout()">
+                            Simulate Skipped Workout <span>Skip Legs</span>
+                        </button>
+                        
+                        <button class="simulation-btn" onclick="simulateDoubleUpWorkout()">
+                            Simulate High Fatigue Combo <span>Double Load</span>
+                        </button>
+
+                        <button class="btn-rebalance" onclick="triggerAutoRebalance()">
+                            Trigger Auto-Rebalance
+                        </button>
+                    </div>
+                </div>
+
+                <div class="engine-panel">
+                    <h3 style="font-family: var(--font-outfit); margin-bottom: 12px;">Engine Reschedule Logs</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                        The recovery rebalance engine shifts rest days, alternates lower-body exercises, and modifies pending schedules when fatigue thresholds are breached or workouts are missed.
+                    </p>
+
+                    <div id="rebalance-logs-box" style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--surface-border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; height: 120px; overflow-y: auto; color: var(--accent-green); margin-bottom: 16px;">
+                        [Engine Ready] - Standing by for rebalance trigger.
+                    </div>
+
+                    <div class="diff-container" id="rebalance-diff-view" style="display: none;">
+                        <div class="diff-column">
+                            <h4>Original Schedule</h4>
+                            <div id="diff-original-list"></div>
+                        </div>
+                        <div class="diff-column">
+                            <h4>Rebalanced Schedule</h4>
+                            <div id="diff-rebalanced-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHYSIQUE TAB -->
+        <div id="physique-tab" class="tab-content">
+            <div class="physique-layout">
+                <div class="calc-panel">
+                    <h3 style="font-family: var(--font-outfit);">V-Taper Progression Tracker</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                        Tracks the Waist-to-Shoulder Circumference Ratio over time. Physique goals target a ratio of <strong>1.61+</strong> (Golden Ratio V-Taper).
+                    </p>
+
+                    <div class="vitals-form">
+                        <div class="form-group">
+                            <label>Height (cm)</label>
+                            <input type="number" id="vital-height" value="166" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="vital-weight" value="70" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Shoulder Circumference (cm)</label>
+                            <input type="number" id="vital-shoulders" value="115" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Waist Circumference (cm)</label>
+                            <input type="number" id="vital-waist" value="72" step="0.1">
+                        </div>
+                        <button class="btn-save-vitals" onclick="saveVitals()">Save & Update V-Taper Ratio</button>
+                    </div>
+
+                    <div class="chart-box">
+                        <h4 style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px;">V-Taper Ratio Progression Trend</h4>
+                        <div id="svg-chart-container" style="width: 100%;">
+                            <!-- Rendered SVG Line Chart -->
+                        </div>
+                        <div class="chart-labels">
+                            <span>Week 1</span>
+                            <span>Week 2</span>
+                            <span>Week 3</span>
+                            <span>Week 4</span>
+                            <span>Current</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-panel">
+                    <h3 style="font-family: var(--font-outfit);">Anti-Glute & V-Taper Sandbox</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                        The rules engine monitors exercises for glute and neck trap hypertrophy markers. Test target exercises below.
+                    </p>
+
+                    <div class="sandbox-box">
+                        <div class="sandbox-input-row">
+                            <select id="sandbox-selector" onchange="fillSandboxInput()">
+                                <option value="">-- Select Exercise to Test --</option>
+                                <option value="Barbell Squat">Barbell Squats</option>
+                                <option value="Romanian Deadlift (RDL)">Romanian Deadlift (RDL)</option>
+                                <option value="Dumbbell Shrugs">Dumbbell Shrugs</option>
+                                <option value="Rack Pulls">Rack Pulls</option>
+                                <option value="Leg Press (Low Foot Placement)">Leg Press (Low Foot Placement)</option>
+                                <option value="Lat Pulldowns">Lat Pulldowns</option>
+                                <option value="Cable Lateral Raises">Cable Lateral Raises</option>
+                            </select>
+                        </div>
+                        <div class="sandbox-input-row">
+                            <input type="text" id="sandbox-input" placeholder="Or type a custom exercise name...">
+                            <button class="btn-validate" onclick="validateSandboxExercise()">Test Rules</button>
+                        </div>
+
+                        <div class="sandbox-results" id="sandbox-result-view">
+                            <div style="text-align: center; color: var(--text-muted);">
+                                Enter or select an exercise to run the validators.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PACE TAB -->
+        <div id="ironman-tab" class="tab-content">
+            <div class="calculator-layout">
+                <div class="calc-panel">
+                    <h3 style="font-family: var(--font-outfit); margin-bottom: 12px;">Pace Cutoff Buffer Calculator</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                        During endurance disciplines, compute real-time margins against official cutoff limits:
+                        <br>
+                        $$\text{Buffer Margin} = \text{Official Cutoff Time} - \left( \frac{\text{Remaining Distance}}{\text{User Avg Zone 2 Speed}} \right)$$
+                    </p>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Discipline Mode</span>
+                            <span class="slider-val" id="calc-discipline-val">Run</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-validate" id="btn-mode-run" onclick="setCalcMode('Run')" style="flex-grow: 1; border-color: var(--accent-blue);">🏃 Run</button>
+                            <button class="btn-validate" id="btn-mode-bike" onclick="setCalcMode('Bike')" style="flex-grow: 1;">🚴 Bike</button>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Distance Remaining</span>
+                            <span class="slider-val" id="calc-distance-val">21.1 km</span>
+                        </div>
+                        <input type="range" id="slider-distance" min="1" max="90" step="0.1" value="21.1" oninput="calculateBuffer()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Official Cutoff Limit</span>
+                            <span class="slider-val" id="calc-cutoff-val">180 mins (3h 0m)</span>
+                        </div>
+                        <input type="range" id="slider-cutoff" min="10" max="360" step="5" value="180" oninput="calculateBuffer()">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Zone 2 Heart Rate Pace</span>
+                            <span class="slider-val" id="calc-pace-val">8:00 min/km (7.5 km/h)</span>
+                        </div>
+                        <input type="range" id="slider-pace" min="3.0" max="15.0" step="0.1" value="8.0" oninput="calculateBuffer()">
+                    </div>
+                </div>
+
+                <div class="calc-panel" style="display: flex; flex-direction: column; justify-content: center;">
+                    <div class="gauge-container">
+                        <div class="gauge-circle">
+                            <svg class="gauge-svg">
+                                <circle class="gauge-bg" cx="80" cy="80" r="70"></circle>
+                                <circle class="gauge-progress" id="calc-gauge-path" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440" stroke="var(--accent-green)"></circle>
+                            </svg>
+                            <div class="gauge-text">
+                                <span class="gauge-value" id="calc-buffer-minutes">+11m</span>
+                                <span class="gauge-label">Buffer Margin</span>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center;">
+                            <h4 id="calc-status-title" style="font-family: var(--font-outfit); font-size: 16px; color: var(--accent-green);">Zone 2 Speed Compliant</h4>
+                            <p id="calc-status-desc" style="font-size: 12px; color: var(--text-secondary); max-width: 250px; margin-top: 4px;">
+                                You will complete the distance with a safe buffer of 11.2 minutes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATABASE & SYNC TAB -->
+        <div id="db-tab" class="tab-content">
+            <!-- SUPABASE CONFIGURATION -->
+            <div class="supabase-config-panel">
+                <h3 style="font-family: var(--font-outfit); margin-bottom: 8px;">Supabase Database Sync Connection</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                    Provide your Supabase credentials to enable actual cloud live sync across your devices. Leave blank to run locally.
+                </p>
+                <div class="vitals-form" style="margin-top: 0; margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label for="supabase-url-input">Supabase Project API URL</label>
+                        <input type="text" id="supabase-url-input" placeholder="https://xyz.supabase.co">
+                    </div>
+                    <div class="form-group">
+                        <label for="supabase-key-input">Supabase Project Anon Key</label>
+                        <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="supabase-btn-save" onclick="saveSupabaseSettings()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Save & Force Live Sync
+                    </button>
+                    <button class="btn-cancel" onclick="clearSupabaseSettings()" style="border-color: rgba(239, 68, 68, 0.4); color: var(--accent-red);">
+                        Clear Sync Credentials
+                    </button>
+                </div>
+            </div>
+
+            <div class="db-layout">
+                <div class="calc-panel">
+                    <h3 style="font-family: var(--font-outfit); margin-bottom: 8px;">Sync Operations Console</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                        Monitor database mutations and synchronization requests triggered by Local-First actions.
+                    </p>
+
+                    <div class="terminal-panel" id="db-terminal">
+                        <div class="terminal-header">
+                            <span>TRANSACTION TERMINAL</span>
+                            <span>STATUS: LIVE</span>
+                        </div>
+                        <div class="terminal-line info">[System] Offline-First engine listening on window.localStorage...</div>
+                    </div>
+                </div>
+
+                <div class="schema-panel">
+                    <h3 style="font-family: var(--font-outfit); margin-bottom: 8px;">PostgreSQL Table Schema</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                        Database schema configured via Supabase Row-Level Security.
+                    </p>
+
+                    <select class="schema-selector" id="schema-select-element" onchange="renderSchemaCode()">
+                        <option value="user_profiles">Table: user_profiles</option>
+                        <option value="workout_sessions">Table: workout_sessions</option>
+                        <option value="exercise_logs">Table: exercise_logs</option>
+                        <option value="cardio_logs">Table: cardio_logs</option>
+                    </select>
+
+                    <pre class="schema-code" id="schema-code-block"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOG MODAL -->
+    <div class="modal-overlay" id="log-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Log Session</h3>
+                <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- Inputs Rendered dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save-log" onclick="saveLoggedSession()">Save Log Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE PWA GUIDE MODAL -->
+    <div class="modal-overlay" id="mobile-guide-modal">
+        <div class="modal-card" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3>📱 Mobile PWA Access Guide</h3>
+                <button class="modal-close-btn" onclick="closeMobileGuide()">&times;</button>
+            </div>
+            <div class="modal-body" style="line-height: 1.6; font-size: 13px;">
+                <p style="margin-bottom: 12px; color: var(--text-secondary);">GrowthApp is a fully functional Progressive Web App (PWA) with background sync capabilities. Access and install it on your mobile device:</p>
+                
+                <h4 style="color: var(--accent-blue); margin-top: 14px; margin-bottom: 4px; font-weight: 700;">1. Deploy Your App</h4>
+                <ul style="margin-left: 20px; margin-bottom: 10px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                    <li>Push your repository files to GitHub.</li>
+                    <li>Connect the repo to a free hosting provider like <strong>Vercel</strong> or <strong>Netlify</strong>.</li>
+                    <li>Your dashboard will be instantly live over a secure HTTPS endpoint.</li>
+                </ul>
+
+                <h4 style="color: var(--accent-purple); margin-top: 14px; margin-bottom: 4px; font-weight: 700;">2. Install on Mobile Home Screen</h4>
+                <ul style="margin-left: 20px; margin-bottom: 10px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                    <li><strong>iOS Safari:</strong> Navigate to your URL, tap the <strong>Share</strong> button, and choose <strong>Add to Home Screen</strong>.</li>
+                    <li><strong>Android Chrome:</strong> Navigate to your URL, click the <strong>Menu (3 dots)</strong>, and click <strong>Install App</strong>.</li>
+                    <li>The app will run full-screen, bypassing Safari/Chrome browser frames.</li>
+                </ul>
+
+                <h4 style="color: var(--accent-green); margin-top: 14px; margin-bottom: 4px; font-weight: 700;">3. Enable Cross-Device Live Sync</h4>
+                <ul style="margin-left: 20px; margin-bottom: 10px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                    <li>Set up a free project on <strong>Supabase</strong>.</li>
+                    <li>Go to the <strong>Database & Sync</strong> tab inside this app, input your URL and Anon Key, and click save.</li>
+                    <li>Input the exact same credentials on both your phone and computer. Your logs, checkbox checkmarks, and physique charts will live sync in real-time across both screens!</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeMobileGuide()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DEFAULT SUPABASE CREDENTIALS (anon key — safe for frontend) ---
+        const DEFAULT_SUPABASE_URL = 'https://yooodsqvivviwraufkqi.supabase.co';
+        const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvb29kc3F2aXZ2aXdyYXVma3FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTk5ODksImV4cCI6MjEwMTM5NTk4OX0.ypgvL6oCKzZy2YOnGQW_jvsbUbMRluNoLOIL7GCl6NA';
+
+        // --- DATABASE SCHEMAS FOR VIEWER ---
+        const SCHEMAS = {
+            user_profiles: `-- USER VITALS & METRICS
+CREATE TABLE user_profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    height_cm NUMERIC(5,2) NOT NULL,
+    current_weight_kg NUMERIC(5,2) NOT NULL,
+    target_waist_cm NUMERIC(5,2),
+    target_shoulder_cm NUMERIC(5,2),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);`,
+            workout_sessions: `-- WORKOUT PROGRAM & DAYS
+CREATE TABLE workout_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES user_profiles(id),
+    session_date DATE NOT NULL,
+    type VARCHAR(50) NOT NULL, -- 'PUSH_A', 'PULL_A', 'LEGS', etc.
+    status VARCHAR(20) DEFAULT 'PENDING', -- 'PENDING', 'COMPLETED', 'SKIPPED', 'MODIFIED'
+    notes TEXT
+);`,
+            exercise_logs: `-- LIFTING LOGS (SETS, REPS, WEIGHT)
+CREATE TABLE exercise_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id UUID REFERENCES workout_sessions(id) ON DELETE CASCADE,
+    exercise_name VARCHAR(100) NOT NULL,
+    target_sets INT NOT NULL,
+    target_rep_range VARCHAR(20),
+    weight_kg NUMERIC(5,2)[], -- Array storing weight per set e.g. {25.0, 25.0}
+    reps_completed INT[],     -- Array storing reps e.g. {12, 11}
+    rpe_score NUMERIC(3,1)    -- Rate of Perceived Exertion
+);`,
+            cardio_logs: `-- CARDIO LOGS (PACE, DISTANCE, HEART RATE)
+CREATE TABLE cardio_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id UUID REFERENCES workout_sessions(id) ON DELETE CASCADE,
+    cardio_type VARCHAR(20) NOT NULL, -- 'RUN', 'BIKE'
+    distance_km NUMERIC(5,2) NOT NULL,
+    duration_seconds INT NOT NULL,
+    avg_pace_min_per_km NUMERIC(4,2),
+    avg_heart_rate INT,
+    zone_2_compliant BOOLEAN DEFAULT TRUE
+);`
+        };
+
+        // --- WEEK TARGETS & DETAILS ---
+        const WEEK_PROGRESSIONS = {
+            1: { run: 6.0, bike: 35.0, lifting_sets: 2, focus: "Focus on movement form and establishing daily habits." },
+            2: { run: 6.5, bike: 25.0, lifting_sets: 2, focus: "Introducing 2 min jog / 1 min walk intervals on run days." },
+            3: { run: 7.5, bike: 38.0, lifting_sets: 2.5, focus: "Increasing continuous running interval duration. 2-3 Working Sets." },
+            4: { run: 5.0, bike: 20.0, lifting_sets: 2, focus: "DELOAD WEEK: Cut cardio & weight volume by 30% to clear fatigue." }
+        };
+
+        // --- SEED/DEFAULT WORKOUT TEMPLATES FOR ALL 4 WEEKS ---
+        const WORKOUT_TEMPLATES = {
+            1: [
+                { id: "w1_d1", day: "Monday", name: "Monday Run + Pull A", status: "PENDING", details: [
+                    { id: "run", type: "cardio", name: "RUN (Interval Base Building)", target: "2.5 km – 3.0 km total (~20 mins)", desc: "Pace: 8:00 – 8:30 min/km | 1 min jog / 1 min walk. Zone 2 HR strictly.", completed: false },
+                    { id: "pull1", type: "lifting", name: "Neutral Grip Lat Pulldowns", target: "2 sets x 8–12 reps", desc: "Pull elbows down to hips", completed: false },
+                    { id: "pull2", type: "lifting", name: "Chest-Supported Wide Cable Rows", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pull3", type: "lifting", name: "Straight-Arm Cable Lat Pushdowns", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "pull4", type: "lifting", name: "Incline Dumbbell Bicep Curls", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pull5", type: "lifting", name: "Face Pulls", target: "2 sets x 15 reps", desc: "Hands high to isolate rear delts without traps", completed: false }
+                ]},
+                { id: "w1_d2", day: "Tuesday", name: "Tuesday Bike + Push A", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "10 km – 12 km (~30 mins continuous)", desc: "Speed: 20 km/h – 22 km/h. Light resistance.", completed: false },
+                    { id: "push1", type: "lifting", name: "Seated Dumbbell Shoulder Press", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "push2", type: "lifting", name: "Lean-Away Cable Lateral Raises", target: "3 sets x 12–15 reps", desc: "Side delt width builder", completed: false },
+                    { id: "push3", type: "lifting", name: "Incline Dumbbell Chest Press", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "push4", type: "lifting", name: "Cable Cross-over / Pec Deck Flyes", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "push5", type: "lifting", name: "Tricep Overhead Cable Extensions", target: "2 sets x 12–15 reps", desc: "", completed: false }
+                ]},
+                { id: "w1_d3", day: "Wednesday", name: "Wednesday Legs & Toji Core", status: "PENDING", details: [
+                    { id: "legs_rest", type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth", completed: true },
+                    { id: "legs1", type: "lifting", name: "Leg Press (Low Foot Placement)", target: "2 sets x 8–10 reps", desc: "Feet low on sled to isolate quads & bypass glutes", completed: false },
+                    { id: "legs2", type: "lifting", name: "Lying or Seated Leg Curls", target: "3 sets x 12–15 reps", desc: "Replaces RDLs to isolate hamstrings with zero glute engagement", completed: false },
+                    { id: "legs3", type: "lifting", name: "Standing Calf Raises", target: "2 sets x 15 reps", desc: "", completed: false },
+                    { id: "legs4", type: "lifting", name: "Hanging Leg Raises / Heavy Cable Crunches", target: "3 sets x 12–15 reps", desc: "Deep ab blocks", completed: false }
+                ]},
+                { id: "w1_d4", day: "Thursday", name: "Thursday Bike + Push B", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "10 km – 12 km (~30 mins continuous)", desc: "Speed: 20 km/h – 22 km/h", completed: false },
+                    { id: "pushb1", type: "lifting", name: "Standing Dumbbell Lateral Raises", target: "3 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pushb2", type: "lifting", name: "Machine Lateral Raises or Wide Upright Rows", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "pushb3", type: "lifting", name: "Low-to-High Cable Flyes", target: "2 sets x 10–12 reps", desc: "Upper chest focus", completed: false },
+                    { id: "pushb4", type: "lifting", name: "Tricep Rope Pushdowns", target: "2 sets x 12 reps", desc: "", completed: false }
+                ]},
+                { id: "w1_d5", day: "Friday", name: "Friday Pull B", status: "PENDING", details: [
+                    { id: "pull_rest", type: "rest", name: "No Cardio Today", target: "Recovery focus", completed: true },
+                    { id: "pullb1", type: "lifting", name: "Wide-Grip Lat Pulldowns", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "pullb2", type: "lifting", name: "Single-Arm Dumbbell Rows", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pullb3", type: "lifting", name: "Cable Rear Delt Flyes", target: "2 sets x 15 reps", desc: "", completed: false },
+                    { id: "pullb4", type: "lifting", name: "Hammer Curls", target: "2 sets x 10–12 reps", desc: "", completed: false }
+                ]},
+                { id: "w1_d6", day: "Saturday", name: "Saturday Long Cardio", status: "PENDING", details: [
+                    { id: "long_cardio", type: "cardio", name: "Long Bike (LONG CARDIO DAY)", target: "13 km – 15 km @ 21–23 km/h", desc: "~35–40 mins. Keep heart rate strictly in Zone 2.", completed: false },
+                    { id: "sat_rest", type: "rest", name: "No Lifting Today", target: "Central nervous system reset day", completed: true }
+                ]},
+                { id: "w1_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
+                    { id: "sun_rest", type: "rest", name: "Full Rest & Recovery", target: "Rest completely. Sleep, hydrate, and meal prep.", completed: true }
+                ]}
+            ],
+            2: [
+                { id: "w2_d1", day: "Monday", name: "Monday Run + Pull A", status: "PENDING", details: [
+                    { id: "run", type: "cardio", name: "RUN (Interval Base Building)", target: "2.5 km – 3.0 km total (~20 mins)", desc: "Pace: 8:00 – 8:30 min/km | 2 min slow jog / 1 min walk continuous. Zone 2 HR.", completed: false },
+                    { id: "pull1", type: "lifting", name: "Neutral Grip Lat Pulldowns", target: "2 sets x 8–12 reps", desc: "Pull elbows down to hips", completed: false },
+                    { id: "pull2", type: "lifting", name: "Chest-Supported Wide Cable Rows", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pull3", type: "lifting", name: "Straight-Arm Cable Lat Pushdowns", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "pull4", type: "lifting", name: "Incline Dumbbell Bicep Curls", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pull5", type: "lifting", name: "Face Pulls", target: "2 sets x 15 reps", desc: "Hands high to isolate rear delts without traps", completed: false }
+                ]},
+                { id: "w2_d2", day: "Tuesday", name: "Tuesday Bike + Push A", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "10 km – 12 km (~30 mins continuous)", desc: "Speed: 20 km/h – 22 km/h. Light resistance.", completed: false },
+                    { id: "push1", type: "lifting", name: "Seated Dumbbell Shoulder Press", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "push2", type: "lifting", name: "Lean-Away Cable Lateral Raises", target: "3 sets x 12–15 reps", desc: "Side delt width builder", completed: false },
+                    { id: "push3", type: "lifting", name: "Incline Dumbbell Chest Press", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "push4", type: "lifting", name: "Cable Cross-over / Pec Deck Flyes", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "push5", type: "lifting", name: "Tricep Overhead Cable Extensions", target: "2 sets x 12–15 reps", desc: "", completed: false }
+                ]},
+                { id: "w2_d3", day: "Wednesday", name: "Wednesday Legs & Toji Core", status: "PENDING", details: [
+                    { id: "legs_rest", type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth", completed: true },
+                    { id: "legs1", type: "lifting", name: "Leg Press (Low Foot Placement)", target: "2 sets x 8–10 reps", desc: "Feet low on sled to isolate quads & bypass glutes", completed: false },
+                    { id: "legs2", type: "lifting", name: "Lying or Seated Leg Curls", target: "3 sets x 12–15 reps", desc: "Replaces RDLs to isolate hamstrings with zero glute engagement", completed: false },
+                    { id: "legs3", type: "lifting", name: "Standing Calf Raises", target: "2 sets x 15 reps", desc: "", completed: false },
+                    { id: "legs4", type: "lifting", name: "Hanging Leg Raises / Heavy Cable Crunches", target: "3 sets x 12–15 reps", desc: "Deep ab blocks", completed: false }
+                ]},
+                { id: "w2_d4", day: "Thursday", name: "Thursday Bike + Push B", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "10 km – 12 km (~30 mins continuous)", desc: "Speed: 20 km/h – 22 km/h", completed: false },
+                    { id: "pushb1", type: "lifting", name: "Standing Dumbbell Lateral Raises", target: "3 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pushb2", type: "lifting", name: "Machine Lateral Raises or Wide Upright Rows", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "pushb3", type: "lifting", name: "Low-to-High Cable Flyes", target: "2 sets x 10–12 reps", desc: "Upper chest focus", completed: false },
+                    { id: "pushb4", type: "lifting", name: "Tricep Rope Pushdowns", target: "2 sets x 12 reps", desc: "", completed: false }
+                ]},
+                { id: "w2_d5", day: "Friday", name: "Friday Pull B", status: "PENDING", details: [
+                    { id: "pull_rest", type: "rest", name: "No Cardio Today", target: "Recovery focus", completed: true },
+                    { id: "pullb1", type: "lifting", name: "Wide-Grip Lat Pulldowns", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "pullb2", type: "lifting", name: "Single-Arm Dumbbell Rows", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pullb3", type: "lifting", name: "Cable Rear Delt Flyes", target: "2 sets x 15 reps", desc: "", completed: false },
+                    { id: "pullb4", type: "lifting", name: "Hammer Curls", target: "2 sets x 10–12 reps", desc: "", completed: false }
+                ]},
+                { id: "w2_d6", day: "Saturday", name: "Saturday Long Cardio", status: "PENDING", details: [
+                    { id: "long_cardio", type: "cardio", name: "Long Run/Walk (LONG CARDIO DAY)", target: "3.0 km – 3.5 km @ 8:00–8:30 min/km", desc: "~25 mins. Keep heart rate strictly in Zone 2.", completed: false },
+                    { id: "sat_rest", type: "rest", name: "No Lifting Today", target: "Central nervous system reset day", completed: true }
+                ]},
+                { id: "w2_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
+                    { id: "sun_rest", type: "rest", name: "Full Rest & Recovery", target: "Rest completely. Sleep, hydrate, and meal prep.", completed: true }
+                ]}
+            ],
+            3: [
+                { id: "w3_d1", day: "Monday", name: "Monday Run + Pull A", status: "PENDING", details: [
+                    { id: "run", type: "cardio", name: "RUN (Interval Base Building)", target: "2.5 km – 3.0 km total (~20 mins)", desc: "Pace: 8:00 – 8:30 min/km | Increased running interval duration. Zone 2 HR.", completed: false },
+                    { id: "pull1", type: "lifting", name: "Neutral Grip Lat Pulldowns", target: "2-3 sets x 8–12 reps", desc: "Pull elbows down to hips", completed: false },
+                    { id: "pull2", type: "lifting", name: "Chest-Supported Wide Cable Rows", target: "2-3 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pull3", type: "lifting", name: "Straight-Arm Cable Lat Pushdowns", target: "2-3 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "pull4", type: "lifting", name: "Incline Dumbbell Bicep Curls", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pull5", type: "lifting", name: "Face Pulls", target: "2 sets x 15 reps", desc: "Hands high to isolate rear delts without traps", completed: false }
+                ]},
+                { id: "w3_d2", day: "Tuesday", name: "Tuesday Bike + Push A", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "10 km – 12 km (~30 mins continuous)", desc: "Speed: 20 km/h – 22 km/h. Light resistance.", completed: false },
+                    { id: "push1", type: "lifting", name: "Seated Dumbbell Shoulder Press", target: "2-3 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "push2", type: "lifting", name: "Lean-Away Cable Lateral Raises", target: "3 sets x 12–15 reps", desc: "Side delt width builder", completed: false },
+                    { id: "push3", type: "lifting", name: "Incline Dumbbell Chest Press", target: "2-3 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "push4", type: "lifting", name: "Cable Cross-over / Pec Deck Flyes", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "push5", type: "lifting", name: "Tricep Overhead Cable Extensions", target: "2 sets x 12–15 reps", desc: "", completed: false }
+                ]},
+                { id: "w3_d3", day: "Wednesday", name: "Wednesday Legs & Toji Core", status: "PENDING", details: [
+                    { id: "legs_rest", type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth", completed: true },
+                    { id: "legs1", type: "lifting", name: "Leg Press (Low Foot Placement)", target: "2-3 sets x 8–10 reps", desc: "Feet low on sled to isolate quads & bypass glutes", completed: false },
+                    { id: "legs2", type: "lifting", name: "Lying or Seated Leg Curls", target: "3 sets x 12–15 reps", desc: "Replaces RDLs to isolate hamstrings with zero glute engagement", completed: false },
+                    { id: "legs3", type: "lifting", name: "Standing Calf Raises", target: "2 sets x 15 reps", desc: "", completed: false },
+                    { id: "legs4", type: "lifting", name: "Hanging Leg Raises / Heavy Cable Crunches", target: "3 sets x 12–15 reps", desc: "Deep ab blocks", completed: false }
+                ]},
+                { id: "w3_d4", day: "Thursday", name: "Thursday Bike + Push B", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "10 km – 12 km (~30 mins continuous)", desc: "Speed: 20 km/h – 22 km/h", completed: false },
+                    { id: "pushb1", type: "lifting", name: "Standing Dumbbell Lateral Raises", target: "3 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pushb2", type: "lifting", name: "Machine Lateral Raises or Wide Upright Rows", target: "2 sets x 12–15 reps", desc: "", completed: false },
+                    { id: "pushb3", type: "lifting", name: "Low-to-High Cable Flyes", target: "2 sets x 10–12 reps", desc: "Upper chest focus", completed: false },
+                    { id: "pushb4", type: "lifting", name: "Tricep Rope Pushdowns", target: "2 sets x 12 reps", desc: "", completed: false }
+                ]},
+                { id: "w3_d5", day: "Friday", name: "Friday Pull B", status: "PENDING", details: [
+                    { id: "pull_rest", type: "rest", name: "No Cardio Today", target: "Recovery focus", completed: true },
+                    { id: "pullb1", type: "lifting", name: "Wide-Grip Lat Pulldowns", target: "2 sets x 8–10 reps", desc: "", completed: false },
+                    { id: "pullb2", type: "lifting", name: "Single-Arm Dumbbell Rows", target: "2 sets x 10–12 reps", desc: "", completed: false },
+                    { id: "pullb3", type: "lifting", name: "Cable Rear Delt Flyes", target: "2 sets x 15 reps", desc: "", completed: false },
+                    { id: "pullb4", type: "lifting", name: "Hammer Curls", target: "2 sets x 10–12 reps", desc: "", completed: false }
+                ]},
+                { id: "w3_d6", day: "Saturday", name: "Saturday Long Cardio", status: "PENDING", details: [
+                    { id: "long_cardio", type: "cardio", name: "Long Bike (LONG CARDIO DAY)", target: "13 km – 15 km @ 21–23 km/h", desc: "~35–40 mins. Keep heart rate strictly in Zone 2.", completed: false },
+                    { id: "sat_rest", type: "rest", name: "No Lifting Today", target: "Central nervous system reset day", completed: true }
+                ]},
+                { id: "w3_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
+                    { id: "sun_rest", type: "rest", name: "Full Rest & Recovery", target: "Rest completely. Sleep, hydrate, and meal prep.", completed: true }
+                ]}
+            ],
+            4: [
+                { id: "w4_d1", day: "Monday", name: "Monday Run + Pull A (Deload)", status: "PENDING", details: [
+                    { id: "run", type: "cardio", name: "RUN (Interval Base Building)", target: "1.7 km – 2.1 km total (~15 mins)", desc: "30% volume cut deload. Keep HR strictly in Zone 2.", completed: false },
+                    { id: "pull1", type: "lifting", name: "Neutral Grip Lat Pulldowns", target: "1-2 sets x 8–12 reps", desc: "Pull elbows down to hips (Deload)", completed: false },
+                    { id: "pull2", type: "lifting", name: "Chest-Supported Wide Cable Rows", target: "1-2 sets x 10–12 reps", desc: "(Deload)", completed: false },
+                    { id: "pull3", type: "lifting", name: "Straight-Arm Cable Lat Pushdowns", target: "1-2 sets x 12–15 reps", desc: "(Deload)", completed: false },
+                    { id: "pull4", type: "lifting", name: "Incline Dumbbell Bicep Curls", target: "1-2 sets x 10–12 reps", desc: "(Deload)", completed: false },
+                    { id: "pull5", type: "lifting", name: "Face Pulls", target: "1 set x 15 reps", desc: "(Deload)", completed: false }
+                ]},
+                { id: "w4_d2", day: "Tuesday", name: "Tuesday Bike + Push A (Deload)", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "7 km – 8 km (~20 mins)", desc: "30% volume cut deload spin.", completed: false },
+                    { id: "push1", type: "lifting", name: "Seated Dumbbell Shoulder Press", target: "1-2 sets x 8–10 reps", desc: "(Deload)", completed: false },
+                    { id: "push2", type: "lifting", name: "Lean-Away Cable Lateral Raises", target: "2 sets x 12–15 reps", desc: "(Deload)", completed: false },
+                    { id: "push3", type: "lifting", name: "Incline Dumbbell Chest Press", target: "1-2 sets x 8–10 reps", desc: "(Deload)", completed: false },
+                    { id: "push4", type: "lifting", name: "Cable Cross-over / Pec Deck Flyes", target: "1-2 sets x 12–15 reps", desc: "(Deload)", completed: false },
+                    { id: "push5", type: "lifting", name: "Tricep Overhead Cable Extensions", target: "1-2 sets x 12–15 reps", desc: "(Deload)", completed: false }
+                ]},
+                { id: "w4_d3", day: "Wednesday", name: "Wednesday Legs & Toji Core (Deload)", status: "PENDING", details: [
+                    { id: "legs_rest", type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth", completed: true },
+                    { id: "legs1", type: "lifting", name: "Leg Press (Low Foot Placement)", target: "1-2 sets x 8–10 reps", desc: "(Deload)", completed: false },
+                    { id: "legs2", type: "lifting", name: "Lying or Seated Leg Curls", target: "2 sets x 12–15 reps", desc: "(Deload)", completed: false },
+                    { id: "legs3", type: "lifting", name: "Standing Calf Raises", target: "1 set x 15 reps", desc: "(Deload)", completed: false },
+                    { id: "legs4", type: "lifting", name: "Hanging Leg Raises / Heavy Cable Crunches", target: "2 sets x 12–15 reps", desc: "(Deload)", completed: false }
+                ]},
+                { id: "w4_d4", day: "Thursday", name: "Thursday Bike + Push B (Deload)", status: "PENDING", details: [
+                    { id: "bike", type: "cardio", name: "BIKE (Zone 2 Easy Spin)", target: "7 km – 8 km (~20 mins)", desc: "30% volume cut deload spin.", completed: false },
+                    { id: "pushb1", type: "lifting", name: "Standing Dumbbell Lateral Raises", target: "2 sets x 10–12 reps", desc: "(Deload)", completed: false },
+                    { id: "pushb2", type: "lifting", name: "Machine Lateral Raises or Wide Upright Rows", target: "1-2 sets x 12–15 reps", desc: "(Deload)", completed: false },
+                    { id: "pushb3", type: "lifting", name: "Low-to-High Cable Flyes", target: "1-2 sets x 10–12 reps", desc: "(Deload)", completed: false },
+                    { id: "pushb4", type: "lifting", name: "Tricep Rope Pushdowns", target: "1-2 sets x 12 reps", desc: "(Deload)", completed: false }
+                ]},
+                { id: "w4_d5", day: "Friday", name: "Friday Pull B (Deload)", status: "PENDING", details: [
+                    { id: "pull_rest", type: "rest", name: "No Cardio Today", target: "Recovery focus", completed: true },
+                    { id: "pullb1", type: "lifting", name: "Wide-Grip Lat Pulldowns", target: "1-2 sets x 8–10 reps", desc: "(Deload)", completed: false },
+                    { id: "pullb2", type: "lifting", name: "Single-Arm Dumbbell Rows", target: "1-2 sets x 10–12 reps", desc: "(Deload)", completed: false },
+                    { id: "pullb3", type: "lifting", name: "Cable Rear Delt Flyes", target: "1-2 sets x 15 reps", desc: "(Deload)", completed: false },
+                    { id: "pullb4", type: "lifting", name: "Hammer Curls", target: "1-2 sets x 10–12 reps", desc: "(Deload)", completed: false }
+                ]},
+                { id: "w4_d6", day: "Saturday", name: "Saturday Long Cardio (Deload)", status: "PENDING", details: [
+                    { id: "long_cardio", type: "cardio", name: "Long Run/Walk (LONG CARDIO DAY)", target: "2.1 km – 2.5 km @ 8:00–8:30 min/km", desc: "30% deload volume cut.", completed: false },
+                    { id: "sat_rest", type: "rest", name: "No Lifting Today", target: "Central nervous system reset day", completed: true }
+                ]},
+                { id: "w4_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
+                    { id: "sun_rest", type: "rest", name: "Full Rest & Recovery", target: "Rest completely. Sleep, hydrate, and meal prep.", completed: true }
+                ]}
+            ]
+        };
+
+        // --- CORE APPLICATION STATE ---
+        let STATE = {
+            activeWeek: 1,
+            isOnline: true,
+            userProfile: {
+                height_cm: 166,
+                current_weight_kg: 70,
+                target_waist_cm: 70,
+                target_shoulder_cm: 115,
+                waist_history: [74.0, 73.5, 72.8, 72.0, 71.5],
+                shoulder_history: [112.0, 112.5, 113.2, 114.0, 115.0],
+                dates: ["Week 1", "Week 2", "Week 3", "Week 4", "Current"]
+            },
+            workouts: JSON.parse(JSON.stringify(WORKOUT_TEMPLATES)), // Deep copy templates
+            exercise_logs: {}, // Format: { "dayId_exId": { ... } }
+            cardio_logs: {},   // Format: { "dayId_cardioId": { ... } }
+            pending_sync_queue: [],
+            calcMode: "Run"
+        };
+
+        // Initialize state from local storage if available
+        function loadState() {
+            const localDb = localStorage.getItem('gym_db_state');
+            if (localDb) {
+                try {
+                    const parsed = JSON.parse(localDb);
+                    // Verify structural upgrade (ensure detail rows have 'completed' flag and details is an array)
+                    const isUpgraded = parsed.workouts && 
+                                      parsed.workouts[1] && 
+                                      Array.isArray(parsed.workouts[1]) && 
+                                      parsed.workouts[1][0].details && 
+                                      Array.isArray(parsed.workouts[1][0].details) && 
+                                      typeof parsed.workouts[1][0].details[0] === 'object';
+                    
+                    if (isUpgraded) {
+                        STATE = parsed;
+                        // Ensure lists exist
+                        if (!STATE.exercise_logs) STATE.exercise_logs = {};
+                        if (!STATE.cardio_logs) STATE.cardio_logs = {};
+                        if (!STATE.pending_sync_queue) STATE.pending_sync_queue = [];
+                    } else {
+                        writeToTerminal("[System] Upgrading database schemas and resetting templates...");
+                        STATE.workouts = JSON.parse(JSON.stringify(WORKOUT_TEMPLATES));
+                        STATE.exercise_logs = {};
+                        STATE.cardio_logs = {};
+                        STATE.pending_sync_queue = [];
+                        saveStateLocal();
+                    }
+                } catch (e) {
+                    writeToTerminal("[Error] Database corruption detected, resetting to templates.", true);
+                    STATE.workouts = JSON.parse(JSON.stringify(WORKOUT_TEMPLATES));
+                    saveStateLocal();
+                }
+            } else {
+                saveStateLocal();
+            }
+
+            // Load Supabase credentials UI inputs
+            const savedUrl = localStorage.getItem('growthapp_supabase_url');
+            const savedKey = localStorage.getItem('growthapp_supabase_key');
+            if (savedUrl) document.getElementById('supabase-url-input').value = savedUrl;
+            if (savedKey) document.getElementById('supabase-key-input').value = savedKey;
+        }
+
+        function saveStateLocal() {
+            localStorage.setItem('gym_db_state', JSON.stringify(STATE));
+        }
+
+        // --- SUPABASE REST SYNC ENGINE ---
+        function saveSupabaseSettings() {
+            const url = document.getElementById('supabase-url-input').value.trim();
+            const key = document.getElementById('supabase-key-input').value.trim();
+
+            if (!url || !key) {
+                alert("Please enter both the Supabase URL and Anon Key.");
+                return;
+            }
+
+            localStorage.setItem('growthapp_supabase_url', url);
+            localStorage.setItem('growthapp_supabase_key', key);
+            writeToTerminal(`[Sync Engine] Saved Supabase credentials. Connecting to database...`);
+            
+            pullFromSupabase();
+        }
+
+        function clearSupabaseSettings() {
+            if (confirm("Are you sure you want to clear your Supabase sync credentials? Local data will be retained.")) {
+                localStorage.removeItem('growthapp_supabase_url');
+                localStorage.removeItem('growthapp_supabase_key');
+                document.getElementById('supabase-url-input').value = "";
+                document.getElementById('supabase-key-input').value = "";
+                writeToTerminal(`[Sync Engine] Credentials cleared. Operating in local-only mode.`);
+                recalculateMetrics();
+            }
+        }
+
+        async function syncToSupabase(action, table, data) {
+            const url = localStorage.getItem('growthapp_supabase_url');
+            const key = localStorage.getItem('growthapp_supabase_key');
+            if (!url || !key) return false;
+
+            let endpoint = `${url}/rest/v1/${table}`;
+            let method = 'POST';
+            let headers = {
+                'apikey': key,
+                'Authorization': `Bearer ${key}`,
+                'Content-Type': 'application/json'
+            };
+
+            if (action === 'insert') {
+                method = 'POST';
+                headers['Prefer'] = 'resolution=merge-duplicates'; // Upsert behavior
+            } else if (action === 'update') {
+                method = 'PATCH';
+                endpoint += `?id=eq.${data.id}`;
+            } else if (action === 'delete') {
+                method = 'DELETE';
+                endpoint += `?id=eq.${data.id}`;
+            }
+
+            try {
+                const options = { method, headers };
+                if (method !== 'DELETE') {
+                    options.body = JSON.stringify(data);
+                }
+                const res = await fetch(endpoint, options);
+                if (res.ok) {
+                    writeToTerminal(`[Supabase Sync] ${action.toUpperCase()} on ${table} success.`);
+                    return true;
+                } else {
+                    const errText = await res.text();
+                    writeToTerminal(`[Supabase Error] ${action} on ${table} failed: ${errText}`, true);
+                    return false;
+                }
+            } catch (err) {
+                writeToTerminal(`[Sync Error] Network failure: ${err.message}`, true);
+                return false;
+            }
+        }
+
+        async function pullFromSupabase() {
+            const url = localStorage.getItem('growthapp_supabase_url');
+            const key = localStorage.getItem('growthapp_supabase_key');
+            if (!url || !key) return;
+
+            writeToTerminal(`[Sync Worker] Establishing websocket handshake...`);
+            writeToTerminal(`[Sync Worker] Fetching latest tables from Supabase REST API...`);
+            
+            try {
+                const fetchTable = async (table) => {
+                    const res = await fetch(`${url}/rest/v1/${table}?select=*`, {
+                        headers: {
+                            'apikey': key,
+                            'Authorization': `Bearer ${key}`
+                        }
+                    });
+                    if (res.ok) return await res.json();
+                    throw new Error(await res.text());
+                };
+
+                const profiles = await fetchTable('user_profiles');
+                const sessions = await fetchTable('workout_sessions');
+                const exerciseLogs = await fetchTable('exercise_logs');
+                const cardioLogs = await fetchTable('cardio_logs');
+
+                // Merge Profile
+                if (profiles && profiles.length > 0) {
+                    const latest = profiles[profiles.length - 1];
+                    STATE.userProfile.height_cm = latest.height_cm;
+                    STATE.userProfile.current_weight_kg = latest.current_weight_kg;
+                    STATE.userProfile.target_waist_cm = latest.target_waist_cm;
+                    STATE.userProfile.target_shoulder_cm = latest.target_shoulder_cm;
+                }
+
+                // Merge Day completion states
+                if (sessions) {
+                    sessions.forEach(sess => {
+                        for (const wk in STATE.workouts) {
+                            const found = STATE.workouts[wk].find(d => d.id === sess.id);
+                            if (found) {
+                                found.status = sess.status;
+                            }
+                        }
+                    });
+                }
+
+                // Merge exercise logs
+                if (exerciseLogs) {
+                    exerciseLogs.forEach(log => {
+                        STATE.exercise_logs[log.id] = {
+                            id: log.id,
+                            exercise_name: log.exercise_name,
+                            reps_completed: log.reps_completed,
+                            weight_kg: log.weight_kg,
+                            rpe_score: log.rpe_score,
+                            week: log.week,
+                            day: log.day
+                        };
+                        checkOffExerciseInState(log.week, log.day, log.exercise_name, true);
+                    });
+                }
+
+                // Merge cardio logs
+                if (cardioLogs) {
+                    cardioLogs.forEach(log => {
+                        STATE.cardio_logs[log.id] = {
+                            id: log.id,
+                            cardio_name: log.cardio_name,
+                            distance_km: log.distance_km,
+                            duration_seconds: log.duration_seconds,
+                            avg_heart_rate: log.avg_heart_rate,
+                            zone_2_compliant: log.zone_2_compliant,
+                            week: log.week,
+                            day: log.day
+                        };
+                        checkOffExerciseInState(log.week, log.day, log.cardio_name, true);
+                    });
+                }
+
+                saveStateLocal();
+                recalculateMetrics();
+                renderSchedule();
+                populateExerciseDropdown();
+                writeToTerminal(`[Sync Worker] Complete database pull success! GrowthApp synced.`);
+            } catch (err) {
+                writeToTerminal(`[Sync Pull Error] ${err.message}`, true);
+            }
+        }
+
+        function checkOffExerciseInState(week, dayName, name, completed) {
+            const day = STATE.workouts[week]?.find(d => d.day === dayName);
+            if (day) {
+                const item = day.details.find(d => d.name === name);
+                if (item) item.completed = completed;
+            }
+        }
+
+        // --- LOCAL-FIRST MUTATION CORE ---
+        function executeMutation(actionType, tableName, data) {
+            const timestamp = new Date().toISOString();
+            const mutation = {
+                id: crypto.randomUUID(),
+                action: actionType,
+                table: tableName,
+                data: data,
+                timestamp: timestamp
+            };
+
+            saveStateLocal();
+            recalculateMetrics();
+
+            // Sync or Queue
+            const hasCreds = localStorage.getItem('growthapp_supabase_url') !== null;
+            if (!STATE.isOnline || !hasCreds) {
+                STATE.pending_sync_queue.push(mutation);
+                saveStateLocal();
+                writeToTerminal(`[Local-First Write] Queued ${actionType} on ${tableName} (ID: ${mutation.id.substring(0,8)})`);
+                updateSyncUI();
+            } else {
+                writeToTerminal(`[Sync Engine] Syncing to Supabase: ${actionType} on ${tableName}`);
+                syncToSupabase(actionType, tableName, data);
+            }
+        }
+
+        function updateSyncUI() {
+            const syncCard = document.getElementById('sync-card');
+            const syncVal = document.getElementById('metric-sync');
+            const syncDesc = document.getElementById('sync-desc');
+            const hasCreds = localStorage.getItem('growthapp_supabase_url') !== null;
+
+            if (!hasCreds) {
+                syncCard.classList.add('offline');
+                syncVal.innerText = "Offline Mode";
+                syncVal.style.color = "var(--accent-amber)";
+                syncDesc.innerText = "Enter keys below to sync";
+                return;
+            }
+
+            if (STATE.isOnline) {
+                syncCard.classList.remove('offline');
+                syncVal.innerText = "Synced";
+                syncVal.style.color = "var(--accent-green)";
+                syncDesc.innerText = `${STATE.pending_sync_queue.length} pending mutations`;
+            } else {
+                syncCard.classList.add('offline');
+                const len = STATE.pending_sync_queue.length;
+                syncVal.innerText = `${len} Pending`;
+                syncVal.style.color = "var(--accent-red)";
+                syncDesc.innerText = "Offline mutation queue active";
+            }
+        }
+
+        async function processPendingQueue() {
+            if (STATE.pending_sync_queue.length === 0) return;
+            writeToTerminal(`[Sync Worker] processing ${STATE.pending_sync_queue.length} pending offline mutations...`);
+            
+            const queue = [...STATE.pending_sync_queue];
+            STATE.pending_sync_queue = [];
+            saveStateLocal();
+            updateSyncUI();
+
+            for (const mut of queue) {
+                const ok = await syncToSupabase(mut.action, mut.table, mut.data);
+                if (!ok) {
+                    // Re-queue on failure
+                    STATE.pending_sync_queue.push(mut);
+                    saveStateLocal();
+                    updateSyncUI();
+                }
+            }
+        }
+
+        function clearPendingQueue() {
+            if (STATE.pending_sync_queue.length === 0) {
+                writeToTerminal('[Sync Engine] Queue already empty — nothing to flush.');
+                return;
+            }
+            const count = STATE.pending_sync_queue.length;
+            STATE.pending_sync_queue = [];
+            saveStateLocal();
+            updateSyncUI();
+            writeToTerminal(`[Sync Engine] Flushed ${count} stale mutations from the queue. Queue is now empty.`);
+        }
+
+        function toggleNetwork() {
+            const toggle = document.getElementById('network-toggle');
+            const text = document.getElementById('network-text');
+            STATE.isOnline = toggle.checked;
+            saveStateLocal();
+
+            if (STATE.isOnline) {
+                text.innerText = "Online";
+                text.style.color = "var(--accent-green)";
+                writeToTerminal("[System] Network connection re-established.");
+                updateSyncUI();
+                processPendingQueue();
+            } else {
+                text.innerText = "Offline";
+                text.style.color = "var(--accent-red)";
+                writeToTerminal("[System] Offline mode enabled. Mutations written locally.");
+                updateSyncUI();
+            }
+            recalculateMetrics();
+        }
+
+        function writeToTerminal(msg, isError = false) {
+            const term = document.getElementById('db-terminal');
+            if (!term) return;
+            const line = document.createElement('div');
+            line.className = `terminal-line ${isError ? 'error' : ''}`;
+            const time = new Date().toLocaleTimeString();
+            line.innerText = `[${time}] ${msg}`;
+            term.appendChild(line);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        // --- MOBILE GUIDE HANDLERS ---
+        function openMobileGuide() {
+            document.getElementById('mobile-guide-modal').classList.add('active');
+        }
+        function closeMobileGuide() {
+            document.getElementById('mobile-guide-modal').classList.remove('active');
+        }
+
+        // --- PRINTING HELPER ---
+        function printWeeklyReport() {
+            document.getElementById('print-week-title').innerText = STATE.activeWeek;
+            window.print();
+        }
+
+        // --- HELPER TO GET SET COUNT FROM STRING ---
+        function getSetCount(targetStr) {
+            const match = targetStr.match(/(\d+)\s*sets?/i);
+            if (match) return parseInt(match[1]);
+            if (targetStr.includes("2-3 sets") || targetStr.includes("2-3x")) return 3;
+            if (targetStr.includes("3x")) return 3;
+            return 2; // fallback
+        }
+
+        // --- DYNAMIC RENDERING OF WORKOUT EXERCISE LINES ---
+        function getLoggedValuesText(dayId, detId, type) {
+            const logKey = dayId + "_" + detId;
+            if (type === 'lifting') {
+                const log = STATE.exercise_logs[logKey];
+                if (log && log.weight_kg && log.weight_kg.length > 0) {
+                    return `<div class="exercise-logged-preview">✓ Logged: ${log.weight_kg.map((w, i) => `${log.reps_completed[i]}r @ ${w}kg`).join(', ')} (RPE: ${log.rpe_score})</div>`;
+                }
+            } else if (type === 'cardio') {
+                const log = STATE.cardio_logs[logKey];
+                if (log && log.distance_km) {
+                    return `<div class="exercise-logged-preview">✓ Logged: ${log.distance_km}km in ${Math.round(log.duration_seconds/60)}m (HR: ${log.avg_heart_rate})</div>`;
+                }
+            }
+            return '';
+        }
+
+        // --- INTERACTIVE CHECKBOX STATE CONTROLLER ---
+        function toggleExerciseCheck(event, dayId, exerciseId) {
+            event.stopPropagation();
+            const isChecked = event.target.checked;
+            const session = STATE.workouts[STATE.activeWeek].find(w => w.id === dayId);
+            const exercise = session.details.find(d => d.id === exerciseId);
+            
+            exercise.completed = isChecked;
+            const logKey = dayId + "_" + exerciseId;
+
+            if (isChecked) {
+                // Auto seed a default log entry
+                if (exercise.type === 'lifting') {
+                    if (!STATE.exercise_logs[logKey]) {
+                        const numSets = getSetCount(exercise.target);
+                        STATE.exercise_logs[logKey] = {
+                            id: logKey,
+                            exercise_name: exercise.name,
+                            week: STATE.activeWeek,
+                            day: session.day,
+                            reps_completed: Array(numSets).fill(10),
+                            weight_kg: Array(numSets).fill(25),
+                            rpe_score: 8.0
+                        };
+                        executeMutation("insert", "exercise_logs", STATE.exercise_logs[logKey]);
+                    }
+                } else if (exercise.type === 'cardio') {
+                    if (!STATE.cardio_logs[logKey]) {
+                        let defaultDist = 3.0;
+                        if (exercise.target.includes("km")) {
+                            const match = exercise.target.match(/([\d\.]+)\s*km/);
+                            if (match) defaultDist = parseFloat(match[1]);
+                        }
+                        STATE.cardio_logs[logKey] = {
+                            id: logKey,
+                            cardio_name: exercise.name,
+                            week: STATE.activeWeek,
+                            day: session.day,
+                            distance_km: defaultDist,
+                            duration_seconds: 1200,
+                            avg_heart_rate: 135,
+                            zone_2_compliant: true
+                        };
+                        executeMutation("insert", "cardio_logs", STATE.cardio_logs[logKey]);
+                    }
+                }
+                writeToTerminal(`[Local Checkbox] Completed exercise "${exercise.name}" on ${session.day}.`);
+            } else {
+                // Delete log entry
+                if (exercise.type === 'lifting') {
+                    if (STATE.exercise_logs[logKey]) {
+                        delete STATE.exercise_logs[logKey];
+                        executeMutation("delete", "exercise_logs", { id: logKey });
+                    }
+                } else if (exercise.type === 'cardio') {
+                    if (STATE.cardio_logs[logKey]) {
+                        delete STATE.cardio_logs[logKey];
+                        executeMutation("delete", "cardio_logs", { id: logKey });
+                    }
+                }
+                writeToTerminal(`[Local Checkbox] Cleared completed state for "${exercise.name}" on ${session.day}.`);
+            }
+
+            // Sync overall day status
+            const allDone = session.details.every(d => d.completed);
+            const noneDone = session.details.every(d => !d.completed);
+            if (allDone) {
+                session.status = "COMPLETED";
+            } else if (noneDone) {
+                session.status = "PENDING";
+            } else {
+                session.status = "MODIFIED";
+            }
+
+            executeMutation("update", "workout_sessions", { id: dayId, status: session.status });
+
+            saveStateLocal();
+            recalculateMetrics();
+            renderSchedule();
+            updateExerciseChart();
+        }
+
+        // --- GLOBAL METRICS SYSTEM ---
+        function recalculateMetrics() {
+            const shoulders = STATE.userProfile.target_shoulder_cm;
+            const waist = STATE.userProfile.target_waist_cm;
+            const ratio = parseFloat((shoulders / waist).toFixed(2));
+            
+            document.getElementById('metric-vtaper').innerText = ratio;
+            
+            const vtaperDesc = document.getElementById('vtaper-progress-desc');
+            const targetRatio = 1.61;
+            if (ratio >= targetRatio) {
+                vtaperDesc.innerHTML = `<span style="color: var(--accent-green);">V-Taper Ratio unlocked! (${ratio} >= ${targetRatio})</span>`;
+            } else {
+                const diff = (targetRatio - ratio).toFixed(2);
+                vtaperDesc.innerHTML = `Need <strong>${diff}</strong> more to hit target 1.61 Golden Ratio`;
+            }
+
+            const f = calculateFatigue();
+            const upperMetric = document.getElementById('metric-fatigue-upper');
+            const lowerMetric = document.getElementById('metric-fatigue-lower');
+            
+            upperMetric.innerText = f.upper;
+            lowerMetric.innerText = f.lower;
+
+            upperMetric.style.color = f.upper > 5.5 ? "var(--accent-red)" : (f.upper > 3.0 ? "var(--accent-amber)" : "var(--accent-green)");
+            lowerMetric.style.color = f.lower > 7.0 ? "var(--accent-red)" : (f.lower > 4.0 ? "var(--accent-amber)" : "var(--accent-green)");
+
+            const upperBadge = document.getElementById('cns-status-upper');
+            const lowerBadge = document.getElementById('cns-status-lower');
+            
+            if (upperBadge) {
+                if (f.upper > 5.5) {
+                    upperBadge.innerText = "Upper CNS: High Fatigue";
+                    upperBadge.style.background = "rgba(248, 113, 113, 0.15)";
+                    upperBadge.style.color = "var(--accent-red)";
+                } else {
+                    upperBadge.innerText = "Upper CNS: Normal";
+                    upperBadge.style.background = "rgba(52, 211, 153, 0.15)";
+                    upperBadge.style.color = "var(--accent-green)";
+                }
+            }
+
+            if (lowerBadge) {
+                if (f.lower > 7.0) {
+                    lowerBadge.innerText = "Lower CNS: High Fatigue";
+                    lowerBadge.style.background = "rgba(248, 113, 113, 0.15)";
+                    lowerBadge.style.color = "var(--accent-red)";
+                } else {
+                    lowerBadge.innerText = "Lower CNS: Normal";
+                    lowerBadge.style.background = "rgba(52, 211, 153, 0.15)";
+                    lowerBadge.style.color = "var(--accent-green)";
+                }
+            }
+
+            updateSyncUI();
+        }
+
+        function calculateFatigue() {
+            let upperFatigue = 0.0;
+            let lowerFatigue = 0.0;
+
+            const weekWorkouts = STATE.workouts[STATE.activeWeek];
+            
+            weekWorkouts.forEach((day) => {
+                if (day.status === "COMPLETED" || day.status === "MODIFIED") {
+                    day.details.forEach(det => {
+                        if (det.completed) {
+                            if (det.type === "lifting") {
+                                if (day.name.includes("Legs")) {
+                                    lowerFatigue += 1.0;
+                                } else {
+                                    upperFatigue += 0.8;
+                                }
+                            } else if (det.type === "cardio") {
+                                if (det.name.includes("RUN")) {
+                                    lowerFatigue += 2.0;
+                                } else if (det.name.includes("BIKE")) {
+                                    lowerFatigue += 1.0;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Decay based on rest
+            const daysDone = weekWorkouts.filter(d => d.status === "COMPLETED" || d.status === "MODIFIED").length;
+            const decay = daysDone * 0.5;
+            
+            upperFatigue = Math.max(0, upperFatigue - decay);
+            lowerFatigue = Math.max(0, lowerFatigue - decay);
+
+            return {
+                upper: parseFloat(upperFatigue.toFixed(1)),
+                lower: parseFloat(lowerFatigue.toFixed(1))
+            };
+        }
+
+        // --- PACE BUFFER CALCULATOR ---
+        function setCalcMode(mode) {
+            STATE.calcMode = mode;
+            document.getElementById('btn-mode-run').style.borderColor = mode === "Run" ? "var(--accent-blue)" : "var(--surface-border)";
+            document.getElementById('btn-mode-bike').style.borderColor = mode === "Bike" ? "var(--accent-blue)" : "var(--surface-border)";
+            
+            const distSlider = document.getElementById('slider-distance');
+            const cutoffSlider = document.getElementById('slider-cutoff');
+            const paceSlider = document.getElementById('slider-pace');
+
+            if (mode === "Run") {
+                distSlider.max = "21.1";
+                distSlider.value = "21.1";
+                cutoffSlider.max = "200";
+                cutoffSlider.value = "180";
+                paceSlider.min = "4.0";
+                paceSlider.max = "12.0";
+                paceSlider.value = "8.0";
+            } else {
+                distSlider.max = "90";
+                distSlider.value = "90";
+                cutoffSlider.max = "400";
+                cutoffSlider.value = "330";
+                paceSlider.min = "12.0";
+                paceSlider.max = "35.0";
+                paceSlider.value = "21.0";
+            }
+
+            calculateBuffer();
+        }
+
+        function calculateBuffer() {
+            const dist = parseFloat(document.getElementById('slider-distance').value);
+            const cutoff = parseInt(document.getElementById('slider-cutoff').value);
+            const paceVal = parseFloat(document.getElementById('slider-pace').value);
+
+            let speed = 0;
+            let label = "";
+
+            if (STATE.calcMode === "Run") {
+                speed = 60 / paceVal;
+                label = `${paceVal.toFixed(1)} min/km (${speed.toFixed(1)} km/h)`;
+            } else {
+                speed = paceVal;
+                const paceMinPerKm = 60 / speed;
+                const mins = Math.floor(paceMinPerKm);
+                const secs = Math.round((paceMinPerKm - mins) * 60);
+                label = `${mins}:${secs < 10 ? '0' : ''}${secs} min/km (${speed.toFixed(1)} km/h)`;
+            }
+
+            document.getElementById('calc-distance-val').innerText = `${dist} km`;
+            document.getElementById('calc-cutoff-val').innerText = `${cutoff} mins (${Math.floor(cutoff/60)}h ${cutoff%60}m)`;
+            document.getElementById('calc-pace-val').innerText = label;
+
+            const timeHours = dist / speed;
+            const timeMins = timeHours * 60;
+            const buffer = cutoff - timeMins;
+
+            const bufferLabel = document.getElementById('calc-buffer-minutes');
+            const gaugePath = document.getElementById('calc-gauge-path');
+            const statusTitle = document.getElementById('calc-status-title');
+            const statusDesc = document.getElementById('calc-status-desc');
+
+            const bufferValFormatted = buffer >= 0 ? `+${buffer.toFixed(1)}m` : `${buffer.toFixed(1)}m`;
+            bufferLabel.innerText = bufferValFormatted;
+
+            const maxVisualBuffer = 45;
+            const pct = Math.max(0, Math.min(100, (buffer / maxVisualBuffer) * 100));
+            const offset = 440 - (440 * pct / 100);
+            if (gaugePath) gaugePath.style.strokeDashoffset = offset;
+
+            if (buffer > 20) {
+                bufferLabel.style.color = "var(--accent-green)";
+                if (gaugePath) gaugePath.style.stroke = "var(--accent-green)";
+                statusTitle.innerText = "Safe Buffer Zone";
+                statusTitle.style.color = "var(--accent-green)";
+                statusDesc.innerText = `Compliant with Zone 2 heart rate constraints. You have a safe margin of ${buffer.toFixed(1)} minutes.`;
+            } else if (buffer >= 5) {
+                bufferLabel.style.color = "var(--accent-amber)";
+                if (gaugePath) gaugePath.style.stroke = "var(--accent-amber)";
+                statusTitle.innerText = "Warning: Tight Margin";
+                statusTitle.style.color = "var(--accent-amber)";
+                statusDesc.innerText = `Tight buffer of ${buffer.toFixed(1)} minutes. Consider increasing Zone 2 pace slightly if fatigue permits.`;
+            } else {
+                bufferLabel.style.color = "var(--accent-red)";
+                if (gaugePath) gaugePath.style.stroke = "var(--accent-red)";
+                statusTitle.innerText = "Cutoff Danger!";
+                statusTitle.style.color = "var(--accent-red)";
+                statusDesc.innerText = `You are projected to breach the cutoff margin by ${Math.abs(buffer).toFixed(1)} minutes! Increase speed immediately.`;
+            }
+        }
+
+        // --- WEEK SELECTION CONTROL ---
+        function selectWeek(wk) {
+            STATE.activeWeek = wk;
+            saveStateLocal();
+
+            const btns = document.querySelectorAll('.week-btn');
+            btns.forEach((btn, idx) => {
+                if (idx + 1 === wk) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            recalculateMetrics();
+            renderSchedule();
+        }
+
+        function switchTab(evt, tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+
+            if (tabId === 'physique-tab') {
+                renderVTaperChart();
+            } else if (tabId === 'charts-tab') {
+                populateExerciseDropdown();
+                updateExerciseChart();
+            }
+        }
+
+        // --- RENDER WEEK SCHEDULE GRID ---
+        function renderSchedule() {
+            const banner = document.getElementById('weekly-progression-banner');
+            const target = WEEK_PROGRESSIONS[STATE.activeWeek];
+            banner.innerHTML = `
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+                    <div>
+                        <strong style="color: var(--accent-purple);">Week ${STATE.activeWeek} Targets:</strong> 
+                        🏃 Run: ${target.run} km | 🚴 Bike: ${target.bike} km | 💪 Lifting Sets: ${target.lifting_sets}
+                    </div>
+                    <div style="color: var(--text-secondary); font-style: italic;">
+                        ${target.focus}
+                    </div>
+                </div>
+            `;
+
+            const container = document.getElementById('schedule-days-container');
+            container.innerHTML = '';
+
+            const wkData = STATE.workouts[STATE.activeWeek];
+
+            wkData.forEach(day => {
+                const card = document.createElement('div');
+                card.className = 'day-card';
+
+                const headerClass = `bg-${day.day.toLowerCase()}`;
+                
+                let badgeClass = "badge-pending";
+                if (day.status === "COMPLETED") badgeClass = "badge-completed";
+                else if (day.status === "SKIPPED") badgeClass = "badge-skipped";
+                else if (day.status === "MODIFIED") badgeClass = "badge-modified";
+
+                const completedDone = day.details.filter(d => d.completed).length;
+                const totalCount = day.details.length;
+                const progressIndicator = `${completedDone}/${totalCount}`;
+
+                card.innerHTML = `
+                    <div class="day-header ${headerClass}">
+                        <span>${day.day}</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <span style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.75);">${progressIndicator}</span>
+                            <span class="day-badge ${badgeClass}">${day.status}</span>
+                        </div>
+                    </div>
+                    <div class="day-content">
+                        ${day.details.map(det => {
+                            return `
+                                <div class="exercise-item-row ${det.completed ? 'completed' : ''}">
+                                    <span class="print-only-checkbox">${det.completed ? '☑' : '☐'}</span>
+                                    <div class="exercise-info" onclick="openExerciseLoggingModal('${day.id}', '${det.id}')">
+                                        <span class="exercise-name-title ${det.type}">${det.name}</span>
+                                        <span class="exercise-target">${det.target}</span>
+                                        ${det.desc ? `<span class="exercise-desc">${det.desc}</span>` : ''}
+                                        ${getLoggedValuesText(day.id, det.id, det.type)}
+                                    </div>
+                                    <div class="exercise-actions">
+                                        <button class="exercise-log-btn" onclick="openExerciseLoggingModal('${day.id}', '${det.id}')" title="Enter detailed logs">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                        </button>
+                                        <label class="exercise-checkbox-container">
+                                            <input type="checkbox" ${det.completed ? 'checked' : ''} onchange="toggleExerciseCheck(event, '${day.id}', '${det.id}')">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // --- GRANULAR LOGGING MODAL LOGIC ---
+        let activeLoggingDayId = null;
+        let activeLoggingExId = null;
+
+        function openExerciseLoggingModal(dayId, exId) {
+            activeLoggingDayId = dayId;
+            activeLoggingExId = exId;
+            
+            const weekWorkouts = STATE.workouts[STATE.activeWeek];
+            const session = weekWorkouts.find(w => w.id === dayId);
+            const exercise = session.details.find(d => d.id === exId);
+
+            if (!exercise) return;
+
+            document.getElementById('modal-title').innerText = `Log Exercise: ${exercise.name}`;
+            const body = document.getElementById('modal-body-content');
+            
+            const logKey = dayId + "_" + exId;
+            let html = "";
+
+            if (exercise.type === 'lifting') {
+                const saved = STATE.exercise_logs[logKey] || {};
+                const numSets = getSetCount(exercise.target);
+                
+                html += `
+                    <div style="margin-bottom: 16px;">
+                        <span style="font-size: 12px; color: var(--text-secondary);">Target: ${exercise.target}</span>
+                    </div>
+                    <table class="log-sets-table">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Reps Completed</th>
+                                <th>Weight (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                for (let i = 0; i < numSets; i++) {
+                    const repsVal = (saved.reps_completed && saved.reps_completed[i] !== undefined) ? saved.reps_completed[i] : 10;
+                    const weightVal = (saved.weight_kg && saved.weight_kg[i] !== undefined) ? saved.weight_kg[i] : 25;
+                    html += `
+                        <tr>
+                            <td>Set ${i + 1}</td>
+                            <td><input type="number" id="lift-reps-${i}" value="${repsVal}" style="width: 100%; max-width: 90px;"></td>
+                            <td><input type="number" id="lift-weight-${i}" value="${weightVal}" step="0.5" style="width: 100%; max-width: 90px;"></td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label>Target RPE Intensity Score (1-10)</label>
+                        <input type="number" id="lift-rpe" min="1" max="10" step="0.5" value="${saved.rpe_score || 8.0}" style="width: 100px;">
+                    </div>
+                `;
+            } else if (exercise.type === 'cardio') {
+                const saved = STATE.cardio_logs[logKey] || {};
+                let defaultDist = 3.0;
+                if (exercise.target.includes("km")) {
+                    const match = exercise.target.match(/([\d\.]+)\s*km/);
+                    if (match) defaultDist = parseFloat(match[1]);
+                }
+
+                html += `
+                    <div style="margin-bottom: 16px;">
+                        <span style="font-size: 12px; color: var(--text-secondary);">Target: ${exercise.target}</span>
+                    </div>
+                    <div class="vitals-form" style="grid-template-columns: 1fr 1fr;">
+                        <div class="form-group">
+                            <label>Distance (km)</label>
+                            <input type="number" id="cardio-dist" value="${saved.distance_km || defaultDist}" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (mins)</label>
+                            <input type="number" id="cardio-dur" value="${saved.duration_seconds ? Math.round(saved.duration_seconds/60) : 20}">
+                        </div>
+                        <div class="form-group">
+                            <label>Average Heart Rate (BPM)</label>
+                            <input type="number" id="cardio-hr" value="${saved.avg_heart_rate || 135}">
+                        </div>
+                        <div class="form-group" style="justify-content: center; align-items: flex-start; padding-top: 16px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px;">
+                                <input type="checkbox" id="cardio-zone2" ${saved.zone_2_compliant !== false ? 'checked' : ''} style="width: 16px; height: 16px;">
+                                Zone 2 Compliant
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else if (exercise.type === 'rest') {
+                html += `<p style="font-size:13px; color:var(--accent-green);">This is a rest target. Recovery is active today.</p>`;
+            }
+
+            body.innerHTML = html;
+            document.getElementById('log-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('log-modal').classList.remove('active');
+            activeLoggingDayId = null;
+            activeLoggingExId = null;
+        }
+
+        function saveLoggedSession() {
+            if (!activeLoggingDayId || !activeLoggingExId) return;
+
+            const session = STATE.workouts[STATE.activeWeek].find(w => w.id === activeLoggingDayId);
+            const exercise = session.details.find(d => d.id === activeLoggingExId);
+            const logKey = activeLoggingDayId + "_" + activeLoggingExId;
+
+            if (exercise.type === 'lifting') {
+                const numSets = getSetCount(exercise.target);
+                const reps = [];
+                const weights = [];
+                for (let i = 0; i < numSets; i++) {
+                    reps.push(parseInt(document.getElementById(`lift-reps-${i}`).value) || 10);
+                    weights.push(parseFloat(document.getElementById(`lift-weight-${i}`).value) || 25);
+                }
+                const rpe = parseFloat(document.getElementById('lift-rpe').value) || 8.0;
+
+                STATE.exercise_logs[logKey] = {
+                    id: logKey,
+                    exercise_name: exercise.name,
+                    week: STATE.activeWeek,
+                    day: session.day,
+                    reps_completed: reps,
+                    weight_kg: weights,
+                    rpe_score: rpe
+                };
+
+                executeMutation("insert", "exercise_logs", STATE.exercise_logs[logKey]);
+                writeToTerminal(`[Lifting Logged] "${exercise.name}" | Sets: ${numSets} | Weights: ${weights.join(', ')}kg`);
+            } else if (exercise.type === 'cardio') {
+                const dist = parseFloat(document.getElementById('cardio-dist').value) || 3.0;
+                const dur = parseInt(document.getElementById('cardio-dur').value) || 20;
+                const hr = parseInt(document.getElementById('cardio-hr').value) || 135;
+                const zone2 = document.getElementById('cardio-zone2').checked;
+
+                STATE.cardio_logs[logKey] = {
+                    id: logKey,
+                    cardio_name: exercise.name,
+                    week: STATE.activeWeek,
+                    day: session.day,
+                    distance_km: dist,
+                    duration_seconds: dur * 60,
+                    avg_heart_rate: hr,
+                    zone_2_compliant: zone2
+                };
+
+                executeMutation("insert", "cardio_logs", STATE.cardio_logs[logKey]);
+                writeToTerminal(`[Cardio Logged] "${exercise.name}" | Distance: ${dist}km | Duration: ${dur}m`);
+            }
+
+            // Toggle item state to completed
+            exercise.completed = true;
+
+            // Recalculate Day status
+            const allDone = session.details.every(d => d.completed);
+            const noneDone = session.details.every(d => !d.completed);
+            if (allDone) {
+                session.status = "COMPLETED";
+            } else if (noneDone) {
+                session.status = "PENDING";
+            } else {
+                session.status = "MODIFIED";
+            }
+
+            executeMutation("update", "workout_sessions", { id: activeLoggingDayId, status: session.status });
+
+            closeModal();
+            saveStateLocal();
+            recalculateMetrics();
+            renderSchedule();
+            updateExerciseChart();
+        }
+
+        // --- PROGRESS CHARTS TAB DATA LOADER ---
+        function populateExerciseDropdown() {
+            const select = document.getElementById('chart-exercise-select');
+            const prevVal = select.value;
+            select.innerHTML = "";
+
+            const uniqueExercises = new Set();
+            
+            // Collect all unique exercise/cardio names across all weeks
+            for (const wk in WORKOUT_TEMPLATES) {
+                WORKOUT_TEMPLATES[wk].forEach(day => {
+                    day.details.forEach(det => {
+                        if (det.type !== 'rest') {
+                            uniqueExercises.add(det.name);
+                        }
+                    });
+                });
+            }
+
+            const arr = Array.from(uniqueExercises).sort();
+            arr.forEach(ex => {
+                const opt = document.createElement('option');
+                opt.value = ex;
+                opt.innerText = ex;
+                select.appendChild(opt);
+            });
+
+            if (prevVal && uniqueExercises.has(prevVal)) {
+                select.value = prevVal;
+            }
+        }
+
+        function updateExerciseChart() {
+            const select = document.getElementById('chart-exercise-select');
+            const exerciseName = select.value;
+            const container = document.getElementById('exercise-chart-container');
+
+            if (!exerciseName) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted);">Please select an exercise to plot progress.</div>`;
+                return;
+            }
+
+            // Gather logs for this exercise across all weeks
+            const liftingLogs = Object.values(STATE.exercise_logs).filter(log => log.exercise_name === exerciseName);
+            const cardioLogs = Object.values(STATE.cardio_logs).filter(log => log.cardio_name === exerciseName);
+            
+            let dataset = [];
+            let isLifting = true;
+
+            if (liftingLogs.length > 0) {
+                isLifting = true;
+                liftingLogs.forEach(log => {
+                    const maxWeight = Math.max(...log.weight_kg);
+                    const totalVol = log.weight_kg.reduce((sum, w, idx) => sum + (w * log.reps_completed[idx]), 0);
+                    dataset.push({
+                        week: log.week,
+                        value: maxWeight,
+                        secondary: totalVol,
+                        detailsText: `${maxWeight}kg Max | Vol: ${totalVol}kg`
+                    });
+                });
+            } else if (cardioLogs.length > 0) {
+                isLifting = false;
+                cardioLogs.forEach(log => {
+                    dataset.push({
+                        week: log.week,
+                        value: log.distance_km,
+                        secondary: Math.round(log.duration_seconds/60),
+                        detailsText: `${log.distance_km}km in ${Math.round(log.duration_seconds/60)}m (HR: ${log.avg_heart_rate})`
+                    });
+                });
+            }
+
+            if (dataset.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p>No logged metrics found for <strong>"${exerciseName}"</strong>.</p>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top:4px;">Log sets/reps or distances in the Weekly Schedule to build progression curves.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort dataset by week
+            dataset.sort((a, b) => a.week - b.week);
+
+            // Deduplicate if multiple logs exist for same week
+            const deduplicated = [];
+            const weeksSet = new Set();
+            dataset.forEach(item => {
+                if (!weeksSet.has(item.week)) {
+                    weeksSet.add(item.week);
+                    deduplicated.push(item);
+                }
+            });
+
+            dataset = deduplicated;
+
+            const width = 480;
+            const height = 180;
+            const padding = 25;
+
+            const values = dataset.map(d => d.value);
+            const maxVal = Math.max(...values, isLifting ? 20 : 5) * 1.15;
+            const minVal = Math.max(0, Math.min(...values) * 0.8);
+            const range = maxVal - minVal;
+
+            const getX = (wk) => padding + ((wk - 1) * (width - padding * 2) / 3);
+            const getY = (val) => height - padding - ((val - minVal) / (range || 1) * (height - padding * 2));
+
+            let points = "";
+            dataset.forEach(d => {
+                points += `${getX(d.week)},${getY(d.value)} `;
+            });
+
+            const strokeColor = isLifting ? "var(--accent-purple)" : "var(--accent-blue)";
+            const valUnit = isLifting ? "kg" : "km";
+
+            // Grid lines
+            const gridY = [25, 50, 75].map(p => padding + (p / 100 * (height - padding * 2)));
+
+            const svg = `
+                <svg viewBox="0 0 ${width} ${height}" class="chart-svg" style="width: 100%; height: 180px;">
+                    <!-- Grid Lines -->
+                    ${gridY.map(y => `<line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2" stroke-width="1" />`).join('')}
+                    
+                    <!-- Line Path -->
+                    ${dataset.length > 1 ? `<polyline fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" points="${points.trim()}" />` : ''}
+                    
+                    <!-- Data Points and Tooltips -->
+                    ${dataset.map(d => {
+                        const x = getX(d.week);
+                        const y = getY(d.value);
+                        return `
+                            <circle cx="${x}" cy="${y}" r="5" fill="var(--bg-color)" stroke="${strokeColor}" stroke-width="2.5" />
+                            <text x="${x}" y="${y - 12}" fill="var(--text-primary)" font-size="9" font-family="monospace" font-weight="bold" text-anchor="middle">${d.value}${valUnit}</text>
+                            <text x="${x}" y="${y + 20}" fill="var(--text-muted)" font-size="8" text-anchor="middle">${d.detailsText}</text>
+                        `;
+                    }).join('')}
+                    
+                    <!-- X Axis Labels -->
+                    <text x="${getX(1)}" y="${height - 5}" fill="var(--text-muted)" font-size="9" text-anchor="middle">Week 1</text>
+                    <text x="${getX(2)}" y="${height - 5}" fill="var(--text-muted)" font-size="9" text-anchor="middle">Week 2</text>
+                    <text x="${getX(3)}" y="${height - 5}" fill="var(--text-muted)" font-size="9" text-anchor="middle">Week 3</text>
+                    <text x="${getX(4)}" y="${height - 5}" fill="var(--text-muted)" font-size="9" text-anchor="middle">Week 4</text>
+                </svg>
+            `;
+
+            container.innerHTML = svg;
+        }
+
+        // --- V-TAPER LINE CHART RENDERING ---
+        function renderVTaperChart() {
+            const container = document.getElementById('svg-chart-container');
+            const wHist = STATE.userProfile.waist_history;
+            const sHist = STATE.userProfile.shoulder_history;
+            
+            const ratios = wHist.map((waist, idx) => parseFloat((sHist[idx] / waist).toFixed(2)));
+
+            const width = 450;
+            const height = 150;
+            const padding = 20;
+
+            const maxVal = Math.max(...ratios, 1.65);
+            const minVal = Math.min(...ratios, 1.40);
+            const range = maxVal - minVal;
+
+            let points = "";
+            ratios.forEach((val, index) => {
+                const x = padding + (index * (width - padding * 2) / (ratios.length - 1));
+                const y = height - padding - ((val - minVal) / range * (height - padding * 2));
+                points += `${x},${y} `;
+            });
+
+            const targetY = height - padding - ((1.61 - minVal) / range * (height - padding * 2));
+
+            const svg = `
+                <svg viewBox="0 0 ${width} ${height}" class="chart-svg">
+                    <line x1="${padding}" y1="${targetY}" x2="${width - padding}" y2="${targetY}" stroke="rgba(52, 211, 153, 0.4)" stroke-width="1.5" stroke-dasharray="4" />
+                    <text x="${width - 70}" y="${targetY - 5}" fill="var(--accent-green)" font-size="9" font-family="monospace">Target: 1.61</text>
+                    <polyline fill="none" stroke="var(--accent-purple)" stroke-width="3" points="${points.trim()}" />
+                    ${ratios.map((val, index) => {
+                        const x = padding + (index * (width - padding * 2) / (ratios.length - 1));
+                        const y = height - padding - ((val - minVal) / range * (height - padding * 2));
+                        return `
+                            <circle cx="${x}" cy="${y}" r="4" fill="var(--bg-color)" stroke="var(--accent-purple)" stroke-width="2" />
+                            <text x="${x - 10}" y="${y - 8}" fill="var(--text-primary)" font-size="9" font-family="monospace">${val}</text>
+                        `;
+                    }).join('')}
+                </svg>
+            `;
+            container.innerHTML = svg;
+        }
+
+        function saveVitals() {
+            const h = parseFloat(document.getElementById('vital-height').value);
+            const w = parseFloat(document.getElementById('vital-weight').value);
+            const s = parseFloat(document.getElementById('vital-shoulders').value);
+            const waist = parseFloat(document.getElementById('vital-waist').value);
+
+            if (isNaN(h) || isNaN(w) || isNaN(s) || isNaN(waist)) {
+                alert("Please fill in valid numeric vitals.");
+                return;
+            }
+
+            STATE.userProfile.waist_history.push(waist);
+            STATE.userProfile.shoulder_history.push(s);
+            STATE.userProfile.waist_history.shift();
+            STATE.userProfile.shoulder_history.shift();
+
+            executeMutation("update", "user_profiles", {
+                id: crypto.randomUUID(),
+                height_cm: h,
+                current_weight_kg: w,
+                target_shoulder_cm: s,
+                target_waist_cm: waist
+            });
+
+            writeToTerminal("[Vitals] Profile updated. V-Taper Ratio re-calculated.");
+            renderVTaperChart();
+        }
+
+        // --- RECOVERY ENGINE REBALANCE LOGIC ---
+        function triggerAutoRebalance() {
+            writeToTerminal("[Recovery Engine] Analyzing fatigue levels and weekly compliance...");
+            const f = calculateFatigue();
+            const logBox = document.getElementById('rebalance-logs-box');
+            logBox.innerHTML = '';
+
+            const logs = [];
+            const originalWorkouts = JSON.parse(JSON.stringify(STATE.workouts[STATE.activeWeek]));
+            let updatedWorkouts = JSON.parse(JSON.stringify(STATE.workouts[STATE.activeWeek]));
+
+            logs.push(`[Fatigue Check] Upper CNS: ${f.upper} | Lower CNS: ${f.lower}`);
+
+            let rebalanced = false;
+
+            if (f.upper > 5.5) {
+                logs.push(`[Warning] High Upper CNS Fatigue detected (${f.upper}). Shifting next upper lifting session to protect shoulder joints.`);
+                const pushB = updatedWorkouts.find(d => d.day === "Thursday");
+                if (pushB && pushB.status === "PENDING") {
+                    pushB.name = "Thursday Rest & Leg Mobility";
+                    pushB.status = "MODIFIED";
+                    pushB.details = [
+                        { id: "rest_sh", type: "rest", name: "CNS Reset Focus", target: "Replaced Push B with Active Recovery / Upper body rest.", completed: true }
+                    ];
+                    rebalanced = true;
+                    logs.push(`[Action] Thursday Push B rescheduled to Rest/Mobility.`);
+                }
+            }
+
+            const missedDays = updatedWorkouts.filter(d => d.status === "SKIPPED");
+            if (missedDays.length > 0) {
+                rebalanced = true;
+                missedDays.forEach(missed => {
+                    logs.push(`[Rule Trigger] Found skipped session on ${missed.day}. Restructuring remaining week.`);
+                    
+                    if (missed.day === "Wednesday") {
+                        const fri = updatedWorkouts.find(d => d.day === "Friday");
+                        if (fri && fri.status === "PENDING") {
+                            fri.name = "Friday Pull B + Leg Combo";
+                            fri.status = "MODIFIED";
+                            
+                            // Prevent duplicating if already added
+                            if (!fri.details.some(d => d.id === "legs1_shifted")) {
+                                fri.details.push({
+                                    id: "legs1_shifted",
+                                    type: "lifting",
+                                    name: "Leg Press (Anti-Glute)",
+                                    target: "Low-foot leg press: 2 sets x 8-10 reps (Moved from Wednesday)",
+                                    completed: false
+                                });
+                                logs.push(`[Action] Leg volume added to Friday Pull B.`);
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (f.lower < 3.0) {
+                logs.push(`[Info] Lower CNS fatigue is low. Cardio capacity optimal.`);
+            }
+
+            if (rebalanced) {
+                STATE.workouts[STATE.activeWeek] = updatedWorkouts;
+                saveStateLocal();
+                recalculateMetrics();
+                renderSchedule();
+                
+                logs.push(`[Success] Rebalance complete. Workout sessions updated.`);
+                
+                document.getElementById('rebalance-diff-view').style.display = "grid";
+                renderDiff(originalWorkouts, updatedWorkouts);
+            } else {
+                logs.push(`[Info] Fatigue within bounds. No structural changes needed.`);
+                document.getElementById('rebalance-diff-view').style.display = "none";
+            }
+
+            logs.forEach(l => {
+                const line = document.createElement('div');
+                line.innerText = l;
+                logBox.appendChild(line);
+            });
+        }
+
+        // Simulators
+        function simulateSkippedWorkout() {
+            const legDay = STATE.workouts[STATE.activeWeek].find(d => d.day === "Wednesday");
+            if (legDay) {
+                executeMutation("update", "workout_sessions", { id: legDay.id, status: "SKIPPED" });
+                renderSchedule();
+                writeToTerminal("[Simulator] Wednesday Legs marked as SKIPPED. Trigger Rebalance to resolve.");
+            }
+        }
+
+        function simulateDoubleUpWorkout() {
+            const mon = STATE.workouts[STATE.activeWeek].find(d => d.day === "Monday");
+            if (mon) {
+                mon.status = "COMPLETED";
+                mon.details.forEach(d => d.completed = true);
+                
+                // Add a dummy log representing very high weights
+                const key = mon.id + "_pull1";
+                STATE.exercise_logs[key] = {
+                    id: key,
+                    exercise_name: "Neutral Grip Lat Pulldowns",
+                    week: STATE.activeWeek,
+                    day: "Monday",
+                    reps_completed: [12, 12],
+                    weight_kg: [65, 65], // High weights
+                    rpe_score: 10.0      // High RPE
+                };
+
+                const tue = STATE.workouts[STATE.activeWeek].find(d => d.day === "Tuesday");
+                if (tue) {
+                    tue.status = "COMPLETED";
+                    tue.details.forEach(d => d.completed = true);
+                }
+
+                saveStateLocal();
+                recalculateMetrics();
+                renderSchedule();
+                writeToTerminal("[Simulator] High upper body fatigue simulated. Run Rebalance to adjust.");
+            }
+        }
+
+        function renderDiff(orig, updated) {
+            const origList = document.getElementById('diff-original-list');
+            const repList = document.getElementById('diff-rebalanced-list');
+            
+            origList.innerHTML = '';
+            repList.innerHTML = '';
+
+            orig.forEach((day, idx) => {
+                const upDay = updated[idx];
+                
+                const origDiv = document.createElement('div');
+                origDiv.className = 'diff-item normal';
+                origDiv.innerHTML = `<span>${day.day}</span><span>${day.name} (${day.status})</span>`;
+                origList.appendChild(origDiv);
+
+                const upDiv = document.createElement('div');
+                const isChanged = day.name !== upDay.name || day.status !== upDay.status;
+                upDiv.className = `diff-item ${isChanged ? 'changed' : 'normal'}`;
+                upDiv.innerHTML = `<span>${upDay.day}</span><span>${upDay.name} (${upDay.status})</span>`;
+                repList.appendChild(upDiv);
+            });
+        }
+
+        // --- PHYSIQUE RULES ENGINE ---
+        function validateSandboxExercise() {
+            const input = document.getElementById('sandbox-input').value.trim();
+            const resView = document.getElementById('sandbox-result-view');
+            
+            if (!input) {
+                resView.innerHTML = `<div style="text-align: center; color: var(--text-muted);">Please select or type an exercise name.</div>`;
+                return;
+            }
+
+            const lower = input.toLowerCase();
+            let pass = true;
+            let ruleType = "V-Taper Approved";
+            let desc = "";
+
+            if (lower.includes("rdl") || lower.includes("deadlift") || lower.includes("squat") || lower.includes("lunge") || lower.includes("hip thrust") || (lower.includes("leg press") && !lower.includes("low foot"))) {
+                pass = false;
+                ruleType = "Glute warning Triggered";
+                desc = `<strong>Warning:</strong> "${input}" causes significant gluteus maximus activation. Your physique routine enforces an <em>Anti-Glute Strategy</em> to focus mass entirely on the quads, hamstrings, and upper back width.
+                        <br><br>
+                        <strong>Suggested Replacement:</strong> Use <strong>Low-Foot Leg Press</strong> (for quad isolation) or <strong>Seated Leg Curls</strong> (for hamstring isolation).`;
+            } 
+            else if (lower.includes("shrug") || lower.includes("rack pull") || (lower.includes("upright row") && !lower.includes("wide"))) {
+                pass = false;
+                ruleType = "Neck Trap Warning";
+                desc = `<strong>Warning:</strong> "${input}" over-hypertrophies the upper trapezius. Thick traps block the neck line and make shoulders appear narrower, degrading the shoulder-to-waist V-taper aesthetic ratio.
+                        <br><br>
+                        <strong>Suggested Replacement:</strong> Use <strong>Lean-Away Cable Lateral Raises</strong> or <strong>Face Pulls (hands high)</strong> to build lateral delt caps without trap engagement.`;
+            }
+            else {
+                desc = `<strong>Approved:</strong> "${input}" complies with V-Taper building targets. It expands lateral width or isolates lower body elements safely without glute expansion.`;
+            }
+
+            resView.innerHTML = `
+                <span class="rules-badge ${pass ? 'pass' : 'fail'}">${ruleType}</span>
+                <div class="sandbox-result-text">${desc}</div>
+            `;
+            writeToTerminal(`[Rules Engine] Validated exercise "${input}": ${pass ? 'PASSED' : 'FLAGGED'}`);
+        }
+
+        function fillSandboxInput() {
+            const sel = document.getElementById('sandbox-selector');
+            const inp = document.getElementById('sandbox-input');
+            if (sel.value) {
+                inp.value = sel.value;
+            }
+        }
+
+        function resetAllData() {
+            if (confirm("This will erase all local modifications and restore original week templates. Are you sure?")) {
+                localStorage.removeItem('gym_db_state');
+                STATE.workouts = JSON.parse(JSON.stringify(WORKOUT_TEMPLATES));
+                STATE.exercise_logs = {};
+                STATE.cardio_logs = {};
+                STATE.pending_sync_queue = [];
+                saveStateLocal();
+                recalculateMetrics();
+                renderSchedule();
+                populateExerciseDropdown();
+                writeToTerminal("[System] Local state successfully wiped. Schemas re-seeded.");
+            }
+        }
+
+        function renderSchemaCode() {
+            const table = document.getElementById('schema-select-element').value;
+            document.getElementById('schema-code-block').innerText = SCHEMAS[table];
+        }
+
+        // --- BOOTSTRAP INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            recalculateMetrics();
+            renderSchedule();
+            calculateBuffer();
+            renderSchemaCode();
+            populateExerciseDropdown();
+            writeToTerminal("[Database System] Successfully initialized. Loaded local SQL tables.");
+
+            // Auto-seed default Supabase credentials if not already saved
+            if (!localStorage.getItem('growthapp_supabase_url')) {
+                localStorage.setItem('growthapp_supabase_url', DEFAULT_SUPABASE_URL);
+                localStorage.setItem('growthapp_supabase_key', DEFAULT_SUPABASE_KEY);
+                writeToTerminal('[Sync Engine] Auto-connected to Supabase with default credentials.');
+            }
+
+            // Pre-fill the settings inputs with saved/default values
+            const savedUrl = localStorage.getItem('growthapp_supabase_url') || DEFAULT_SUPABASE_URL;
+            const savedKey = localStorage.getItem('growthapp_supabase_key') || DEFAULT_SUPABASE_KEY;
+            const urlInput = document.getElementById('supabase-url-input');
+            const keyInput = document.getElementById('supabase-key-input');
+            if (urlInput) urlInput.value = savedUrl;
+            if (keyInput) keyInput.value = savedKey;
+
+            // Register PWA Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => {
+                        writeToTerminal(`[PWA Engine] Service Worker registered successfully! Scope: ${reg.scope}`);
+                    })
+                    .catch(err => {
+                        writeToTerminal(`[PWA Warning] Service Worker registration failed: ${err}`, true);
+                    });
+            } else {
+                writeToTerminal(`[PWA Info] Service Worker not supported in this browser. Installability disabled.`, true);
+            }
+
+            // Always pull from Supabase on load (credentials guaranteed above)
+            pullFromSupabase();
+        });
+    </script>
+</body>
+</html>
