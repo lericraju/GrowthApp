@@ -2207,9 +2207,6 @@ CREATE TABLE cardio_logs (
             const key = localStorage.getItem('growthapp_supabase_key');
             if (!url || !key) return;
 
-            writeToTerminal(`[Sync Worker] Establishing websocket handshake...`);
-            writeToTerminal(`[Sync Worker] Fetching latest tables from Supabase REST API...`);
-            
             try {
                 const fetchTable = async (table) => {
                     const res = await fetch(`${url}/rest/v1/${table}?select=*`, {
@@ -2219,76 +2216,132 @@ CREATE TABLE cardio_logs (
                         }
                     });
                     if (res.ok) return await res.json();
-                    throw new Error(await res.text());
+                    throw new Error(`${table}: ${await res.text()}`);
                 };
 
-                const profiles = await fetchTable('user_profiles');
-                const sessions = await fetchTable('workout_sessions');
-                const exerciseLogs = await fetchTable('exercise_logs');
-                const cardioLogs = await fetchTable('cardio_logs');
+                const [profiles, sessions, exerciseLogs, cardioLogs] = await Promise.all([
+                    fetchTable('user_profiles'),
+                    fetchTable('workout_sessions'),
+                    fetchTable('exercise_logs'),
+                    fetchTable('cardio_logs')
+                ]);
+
+                let changed = false;
 
                 // Merge Profile
                 if (profiles && profiles.length > 0) {
                     const latest = profiles[profiles.length - 1];
-                    STATE.userProfile.height_cm = latest.height_cm;
-                    STATE.userProfile.current_weight_kg = latest.current_weight_kg;
-                    STATE.userProfile.target_waist_cm = latest.target_waist_cm;
-                    STATE.userProfile.target_shoulder_cm = latest.target_shoulder_cm;
+                    if (STATE.userProfile.height_cm !== latest.height_cm ||
+                        STATE.userProfile.current_weight_kg !== latest.current_weight_kg) {
+                        STATE.userProfile.height_cm = latest.height_cm;
+                        STATE.userProfile.current_weight_kg = latest.current_weight_kg;
+                        STATE.userProfile.target_waist_cm = latest.target_waist_cm;
+                        STATE.userProfile.target_shoulder_cm = latest.target_shoulder_cm;
+                        changed = true;
+                    }
                 }
 
-                // Merge Day completion states
-                if (sessions) {
-                    sessions.forEach(sess => {
-                        for (const wk in STATE.workouts) {
-                            const found = STATE.workouts[wk].find(d => d.id === sess.id);
-                            if (found) {
-                                found.status = sess.status;
+                // Merge exercise logs — key field fix: week_number, day_id, exercise_id
+                if (exerciseLogs) {
+                    exerciseLogs.forEach(log => {
+                        const logKey = log.day_id + '_' + log.exercise_id;
+                        const existing = STATE.exercise_logs[logKey];
+                        // Only update if new or changed
+                        if (!existing || JSON.stringify(existing) !== JSON.stringify(log)) {
+                            STATE.exercise_logs[logKey] = log;
+                            // Update checkbox state in workout templates
+                            if (log.completed !== undefined) {
+                                const wkData = STATE.workouts[log.week_number];
+                                if (wkData) {
+                                    const day = wkData.find(d => d.id === log.day_id);
+                                    if (day) {
+                                        const item = day.details.find(d => d.id === log.exercise_id);
+                                        if (item && item.completed !== log.completed) {
+                                            item.completed = log.completed;
+                                            changed = true;
+                                        }
+                                    }
+                                }
                             }
                         }
                     });
                 }
 
-                // Merge exercise logs
-                if (exerciseLogs) {
-                    exerciseLogs.forEach(log => {
-                        STATE.exercise_logs[log.id] = {
-                            id: log.id,
-                            exercise_name: log.exercise_name,
-                            reps_completed: log.reps_completed,
-                            weight_kg: log.weight_kg,
-                            rpe_score: log.rpe_score,
-                            week: log.week,
-                            day: log.day
-                        };
-                        checkOffExerciseInState(log.week, log.day, log.exercise_name, true);
-                    });
-                }
-
-                // Merge cardio logs
+                // Merge cardio logs — key field fix: week_number, day_id, exercise_id
                 if (cardioLogs) {
                     cardioLogs.forEach(log => {
-                        STATE.cardio_logs[log.id] = {
-                            id: log.id,
-                            cardio_name: log.cardio_name,
-                            distance_km: log.distance_km,
-                            duration_seconds: log.duration_seconds,
-                            avg_heart_rate: log.avg_heart_rate,
-                            zone_2_compliant: log.zone_2_compliant,
-                            week: log.week,
-                            day: log.day
-                        };
-                        checkOffExerciseInState(log.week, log.day, log.cardio_name, true);
+                        const logKey = log.day_id + '_' + log.exercise_id;
+                        const existing = STATE.cardio_logs[logKey];
+                        if (!existing || JSON.stringify(existing) !== JSON.stringify(log)) {
+                            STATE.cardio_logs[logKey] = log;
+                            if (log.completed !== undefined) {
+                                const wkData = STATE.workouts[log.week_number];
+                                if (wkData) {
+                                    const day = wkData.find(d => d.id === log.day_id);
+                                    if (day) {
+                                        const item = day.details.find(d => d.id === log.exercise_id);
+                                        if (item && item.completed !== log.completed) {
+                                            item.completed = log.completed;
+                                            changed = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
 
-                saveStateLocal();
-                recalculateMetrics();
-                renderSchedule();
-                populateExerciseDropdown();
-                writeToTerminal(`[Sync Worker] Complete database pull success! GrowthApp synced.`);
+                // Merge session day statuses
+                if (sessions) {
+                    sessions.forEach(sess => {
+                        const wkData = STATE.workouts[sess.week_number];
+                        if (wkData) {
+                            const found = wkData.find(d => d.id === sess.day_id);
+                            if (found && found.status !== sess.status) {
+                                found.status = sess.status;
+                                changed = true;
+                            }
+                        }
+                    });
+                }
+
+                if (changed) {
+                    saveStateLocal();
+                    recalculateMetrics();
+                    renderSchedule();
+                    populateExerciseDropdown();
+                    writeToTerminal(`[Live Sync] ✅ Remote changes detected — UI updated.`);
+                }
+
+                // Flash the sync indicator green
+                const syncVal = document.getElementById('metric-sync');
+                if (syncVal) {
+                    syncVal.style.color = 'var(--accent-green)';
+                    syncVal.innerText = changed ? 'Updated!' : 'Synced';
+                    setTimeout(() => { updateSyncUI(); }, 1500);
+                }
+
             } catch (err) {
-                writeToTerminal(`[Sync Pull Error] ${err.message}`, true);
+                // Silently fail during polling — only log on manual pull
+                const syncVal = document.getElementById('metric-sync');
+                if (syncVal) {
+                    syncVal.innerText = 'Sync Error';
+                    syncVal.style.color = 'var(--accent-red)';
+                    setTimeout(() => { updateSyncUI(); }, 3000);
+                }
             }
+        }
+
+        // --- REAL-TIME POLLING ENGINE (15s interval) ---
+        let _syncPollInterval = null;
+        function startSyncPolling() {
+            if (_syncPollInterval) clearInterval(_syncPollInterval);
+            _syncPollInterval = setInterval(async () => {
+                const url = localStorage.getItem('growthapp_supabase_url');
+                if (!url || !STATE.isOnline) return;
+                await pullFromSupabase();
+            }, 15000); // Poll every 15 seconds
+            writeToTerminal('[Live Sync Engine] 🔄 Polling started. Syncing every 15s across all devices.');
         }
 
         function checkOffExerciseInState(week, dayName, name, completed) {
@@ -2532,7 +2585,28 @@ CREATE TABLE cardio_logs (
                 session.status = "MODIFIED";
             }
 
-            executeMutation("update", "workout_sessions", { id: dayId, status: session.status });
+                // Update exercise completed state for Supabase — use correct field names
+                const logPayload = exercise.type === 'lifting'
+                    ? STATE.exercise_logs[logKey]
+                    : STATE.cardio_logs[logKey];
+
+                if (logPayload) {
+                    // Ensure completed flag is set with correct key names
+                    const syncPayload = { ...logPayload, completed: isChecked };
+                    if (exercise.type === 'lifting') {
+                        syncPayload.week_number = logPayload.week || STATE.activeWeek;
+                        syncPayload.day_id = dayId;
+                        syncPayload.exercise_id = exerciseId;
+                        STATE.exercise_logs[logKey] = syncPayload;
+                        executeMutation('insert', 'exercise_logs', syncPayload);
+                    } else if (exercise.type === 'cardio') {
+                        syncPayload.week_number = logPayload.week || STATE.activeWeek;
+                        syncPayload.day_id = dayId;
+                        syncPayload.exercise_id = exerciseId;
+                        STATE.cardio_logs[logKey] = syncPayload;
+                        executeMutation('insert', 'cardio_logs', syncPayload);
+                    }
+                }
 
             saveStateLocal();
             recalculateMetrics();
@@ -3494,7 +3568,10 @@ CREATE TABLE cardio_logs (
             }
 
             // Always pull from Supabase on load (credentials guaranteed above)
-            pullFromSupabase();
+            pullFromSupabase().then(() => {
+                // Start 15-second polling for real-time cross-device sync
+                startSyncPolling();
+            });
         });
     </script>
 </body>
