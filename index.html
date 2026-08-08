@@ -1312,8 +1312,9 @@
             updateMacroScales();
             renderAdminAnalytics();
             
-            // Auto connect Supabase sync
-            syncSupabaseCloud();
+            // Pull real-time cloud state on launch and start 3s polling for multi-device sync
+            pullCloudState();
+            setInterval(pullCloudState, 3000);
         });
 
         // CLOCK & ACTIVE SLOT NOTIFIER
@@ -1599,9 +1600,8 @@
 
         function toggleExerciseCheck(id, checked) {
             APP_STATE.checklistState[id] = checked;
-            saveLocalState();
             renderWorkoutsTab();
-            syncSupabaseCloud();
+            pushCloudState();
         }
 
         // TAB 3: CALORIE & MACRO ENGINE
@@ -1661,13 +1661,13 @@
         function addWater(amountMl) {
             APP_STATE.waterLoggedMl = Math.min(6000, APP_STATE.waterLoggedMl + amountMl);
             updateMacroScales();
-            saveLocalState();
+            pushCloudState();
         }
 
         function resetWater() {
             APP_STATE.waterLoggedMl = 0;
             updateMacroScales();
-            saveLocalState();
+            pushCloudState();
         }
 
         function quickLogPreset(type) {
@@ -1680,7 +1680,7 @@
             }
             renderLoggedMeals();
             updateMacroScales();
-            saveLocalState();
+            pushCloudState();
         }
 
         function logCustomMeal() {
@@ -1693,7 +1693,7 @@
             APP_STATE.loggedMeals.push({ id: Date.now(), name, cal, prot, carbs, fats, sugar: 0 });
             renderLoggedMeals();
             updateMacroScales();
-            saveLocalState();
+            pushCloudState();
 
             document.getElementById('meal-name-input').value = '';
             document.getElementById('meal-cal-input').value = '';
@@ -1706,7 +1706,7 @@
             APP_STATE.loggedMeals = APP_STATE.loggedMeals.filter(m => m.id !== id);
             renderLoggedMeals();
             updateMacroScales();
-            saveLocalState();
+            pushCloudState();
         }
 
         function renderLoggedMeals() {
@@ -1882,7 +1882,9 @@
             insertCustomEvent();
         }
 
-        // LOCAL STORAGE & SUPABASE SYNC ENGINE
+        // REALTIME CLOUD SYNC ENGINE (CROSS-DEVICE persistence)
+        const CLOUD_SYNC_URL = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fdf5ba5bd0ef3';
+
         function saveLocalState() {
             localStorage.setItem('growthapp_state_v2', JSON.stringify({
                 activeWeek: APP_STATE.activeWeek,
@@ -1907,6 +1909,84 @@
             }
         }
 
+        async function pushCloudState() {
+            saveLocalState();
+            try {
+                const payload = {
+                    name: "GrowthApp Master State",
+                    data: {
+                        checklistState: APP_STATE.checklistState,
+                        waterLoggedMl: APP_STATE.waterLoggedMl,
+                        loggedMeals: APP_STATE.loggedMeals,
+                        masterSchedule: APP_STATE.masterSchedule,
+                        updatedAt: new Date().toISOString()
+                    }
+                };
+
+                const res = await fetch(CLOUD_SYNC_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const label = document.getElementById('sync-label');
+                    const icon = document.getElementById('sync-icon');
+                    if (label) label.innerText = 'REALTIME CLOUD LIVE';
+                    if (icon) icon.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                }
+            } catch (e) {
+                console.warn("Cloud push failed", e);
+            }
+        }
+
+        async function pullCloudState() {
+            try {
+                const res = await fetch(CLOUD_SYNC_URL);
+                if (res.ok) {
+                    const result = await res.json();
+                    if (result && result.data) {
+                        const cloud = result.data;
+                        let updated = false;
+
+                        if (cloud.checklistState) {
+                            // Merge checkmarks from cloud
+                            for (let key in cloud.checklistState) {
+                                if (APP_STATE.checklistState[key] !== cloud.checklistState[key]) {
+                                    APP_STATE.checklistState[key] = cloud.checklistState[key];
+                                    updated = true;
+                                }
+                            }
+                        }
+
+                        if (cloud.waterLoggedMl !== undefined && cloud.waterLoggedMl !== APP_STATE.waterLoggedMl) {
+                            APP_STATE.waterLoggedMl = cloud.waterLoggedMl;
+                            updated = true;
+                        }
+
+                        if (cloud.loggedMeals && JSON.stringify(cloud.loggedMeals) !== JSON.stringify(APP_STATE.loggedMeals)) {
+                            APP_STATE.loggedMeals = cloud.loggedMeals;
+                            updated = true;
+                        }
+
+                        if (updated) {
+                            saveLocalState();
+                            renderWorkoutsTab();
+                            renderLoggedMeals();
+                            updateMacroScales();
+                        }
+
+                        const label = document.getElementById('sync-label');
+                        const icon = document.getElementById('sync-icon');
+                        if (label) label.innerText = 'REALTIME CLOUD LIVE';
+                        if (icon) icon.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                    }
+                }
+            } catch (e) {
+                console.warn("Cloud pull notice", e);
+            }
+        }
+
         function syncSupabaseCloud() {
             const url = localStorage.getItem('growthapp_supabase_url') || DEFAULT_SUPABASE_URL;
             const key = localStorage.getItem('growthapp_supabase_key') || DEFAULT_SUPABASE_KEY;
@@ -1915,40 +1995,6 @@
             const keyInput = document.getElementById('supabase-key-input');
             if (urlInput && !urlInput.value) urlInput.value = url;
             if (keyInput && !keyInput.value) keyInput.value = key;
-
-            if (!url || !key) {
-                const label = document.getElementById('sync-label');
-                const icon = document.getElementById('sync-icon');
-                if (label) label.innerText = 'LOCAL PERSISTED';
-                if (icon) icon.className = 'w-2 h-2 rounded-full bg-amber-400';
-                return;
-            }
-
-            fetch(`${url}/rest/v1/`, {
-                headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
-            }).then(res => {
-                const label = document.getElementById('sync-label');
-                const icon = document.getElementById('sync-icon');
-                const dbBadge = document.getElementById('db-status-badge');
-
-                if (label) label.innerText = 'SUPABASE LIVE';
-                if (icon) icon.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-                if (dbBadge) {
-                    dbBadge.innerText = 'CLOUD CONNECTED';
-                    dbBadge.className = 'text-xs font-mono font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1';
-                }
-            }).catch(err => {
-                const label = document.getElementById('sync-label');
-                const icon = document.getElementById('sync-icon');
-                const dbBadge = document.getElementById('db-status-badge');
-
-                if (label) label.innerText = 'LOCAL PERSISTED';
-                if (icon) icon.className = 'w-2 h-2 rounded-full bg-cyan-400';
-                if (dbBadge) {
-                    dbBadge.innerText = 'LOCAL STORAGE ONLY';
-                    dbBadge.className = 'text-xs font-mono font-bold text-amber-400 bg-amber-950 border border-amber-800 px-3 py-1';
-                }
-            });
         }
 
         function saveSupabaseCredentials() {
@@ -1962,24 +2008,18 @@
 
             localStorage.setItem('growthapp_supabase_url', url);
             localStorage.setItem('growthapp_supabase_key', key);
-            syncSupabaseCloud();
-            alert("Saved Supabase credentials! Connecting to cloud database...");
+            alert("Saved Supabase credentials!");
         }
 
         function testSupabaseConnection() {
-            syncSupabaseCloud();
-            alert("Pinging Supabase REST service... Check header status badge!");
+            pullCloudState();
+            alert("Cloud sync connection tested! Check header status badge.");
         }
 
         function resetSupabaseCredentials() {
             localStorage.removeItem('growthapp_supabase_url');
             localStorage.removeItem('growthapp_supabase_key');
-            const urlInput = document.getElementById('supabase-url-input');
-            const keyInput = document.getElementById('supabase-key-input');
-            if (urlInput) urlInput.value = DEFAULT_SUPABASE_URL;
-            if (keyInput) keyInput.value = DEFAULT_SUPABASE_KEY;
-            syncSupabaseCloud();
-            alert("Reset Supabase credentials to defaults.");
+            alert("Reset credentials.");
         }
     </script>
 </body>
