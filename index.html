@@ -1733,11 +1733,12 @@
                 mobActiveBtn.className = "mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1";
             }
 
-            // Show Rest Stopwatch ONLY in Workout Routine Tab
+            // Show Rest Stopwatch ONLY in Workout Routine Tab & re-render workouts
             const restTimerWidget = document.getElementById('floating-rest-timer');
             if (restTimerWidget) {
                 if (tabName === 'workouts') {
                     restTimerWidget.classList.remove('hidden');
+                    renderWorkoutsTab();
                 } else {
                     restTimerWidget.classList.add('hidden');
                 }
@@ -1999,7 +2000,17 @@
         }
 
         function renderWorkoutsTab() {
+            if (!APP_STATE.activeWeek) APP_STATE.activeWeek = 1;
+
+            // Highlight active week tab button
+            document.querySelectorAll('.week-tab-btn').forEach(btn => {
+                btn.className = "week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-cyan-400 hover:text-white";
+            });
+            const activeWeekBtn = document.getElementById(`week-tab-${APP_STATE.activeWeek}`);
+            if (activeWeekBtn) activeWeekBtn.className = "week-tab-btn active px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-purple-400 bg-purple-400 text-black shadow-[2px_2px_0px_0px_#fff]";
+
             const data = MONTH_WORKOUTS[APP_STATE.activeWeek];
+            if (!data) return;
             document.getElementById('week-goal-title').innerText = data.goalTitle;
 
             const grid = document.getElementById('workouts-grid');
