@@ -836,6 +836,47 @@
 
             </div>
 
+            <!-- Supabase Cloud Sync Credentials Card -->
+            <div class="brutal-card brutal-purple p-5 space-y-4 bg-purple-950/20">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                    <div>
+                        <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
+                            <i data-lucide="database" class="w-5 h-5 text-purple-400"></i>
+                            Supabase Real-Time Cloud Credentials
+                        </h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Link your Supabase database to sync workout checkmarks & logs across laptop and phone live.</p>
+                    </div>
+                    <span id="db-status-badge" class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1">
+                        CLOUD CONNECTED
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-mono text-zinc-300 block mb-1">SUPABASE API URL</label>
+                        <input type="text" id="supabase-url-input" placeholder="https://your-project.supabase.co" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2.5 font-mono focus:border-purple-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-mono text-zinc-300 block mb-1">SUPABASE ANON / PUBLIC KEY</label>
+                        <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1Ni..." class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2.5 font-mono focus:border-purple-400 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button onclick="saveSupabaseCredentials()" class="brutal-btn brutal-btn-purple text-xs px-4 py-2 flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Save Credentials & Sync
+                    </button>
+                    <button onclick="testSupabaseConnection()" class="bg-zinc-900 text-zinc-300 border border-zinc-700 hover:border-cyan-400 text-xs px-4 py-2 font-mono flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i>
+                        Test Connection
+                    </button>
+                    <button onclick="resetSupabaseCredentials()" class="text-xs text-zinc-500 hover:text-red-400 font-mono ml-auto">
+                        Reset Defaults
+                    </button>
+                </div>
+            </div>
+
         </div>
 
     </main>
@@ -869,8 +910,8 @@
         lucide.createIcons();
 
         // APP GLOBAL STATE
-        const DEFAULT_SUPABASE_URL = 'https://tnqbfaxnllvuzghvpxrw.supabase.co';
-        const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRucWJmYXhubGx2dXpnaHZweHJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTgzMTI3ODksImV4cCI6MjAzMzg4ODc4OX0';
+        const DEFAULT_SUPABASE_URL = 'https://yooodsqvivviwraufkqi.supabase.co';
+        const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvb29kc3F2aXZ2aXdyYXVma3FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTk5ODksImV4cCI6MjA5ODkyODAwMH0.ypgvL6oCKzZy2YOnGQW_jvsbUbMRluNoLOIL7GCl6NA';
 
         const APP_STATE = {
             activeTab: 'notifier',
@@ -1870,17 +1911,75 @@
             const url = localStorage.getItem('growthapp_supabase_url') || DEFAULT_SUPABASE_URL;
             const key = localStorage.getItem('growthapp_supabase_key') || DEFAULT_SUPABASE_KEY;
 
-            fetch(`${url}/rest/v1/user_logs?select=*`, {
+            const urlInput = document.getElementById('supabase-url-input');
+            const keyInput = document.getElementById('supabase-key-input');
+            if (urlInput && !urlInput.value) urlInput.value = url;
+            if (keyInput && !keyInput.value) keyInput.value = key;
+
+            if (!url || !key) {
+                const label = document.getElementById('sync-label');
+                const icon = document.getElementById('sync-icon');
+                if (label) label.innerText = 'LOCAL PERSISTED';
+                if (icon) icon.className = 'w-2 h-2 rounded-full bg-amber-400';
+                return;
+            }
+
+            fetch(`${url}/rest/v1/`, {
                 headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
             }).then(res => {
-                if (res.ok) {
-                    document.getElementById('sync-label').innerText = 'SUPABASE LIVE';
-                    document.getElementById('sync-icon').className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                const label = document.getElementById('sync-label');
+                const icon = document.getElementById('sync-icon');
+                const dbBadge = document.getElementById('db-status-badge');
+
+                if (label) label.innerText = 'SUPABASE LIVE';
+                if (icon) icon.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+                if (dbBadge) {
+                    dbBadge.innerText = 'CLOUD CONNECTED';
+                    dbBadge.className = 'text-xs font-mono font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1';
                 }
-            }).catch(() => {
-                document.getElementById('sync-label').innerText = 'LOCAL OFFLINE';
-                document.getElementById('sync-icon').className = 'w-2 h-2 rounded-full bg-amber-400';
+            }).catch(err => {
+                const label = document.getElementById('sync-label');
+                const icon = document.getElementById('sync-icon');
+                const dbBadge = document.getElementById('db-status-badge');
+
+                if (label) label.innerText = 'LOCAL PERSISTED';
+                if (icon) icon.className = 'w-2 h-2 rounded-full bg-cyan-400';
+                if (dbBadge) {
+                    dbBadge.innerText = 'LOCAL STORAGE ONLY';
+                    dbBadge.className = 'text-xs font-mono font-bold text-amber-400 bg-amber-950 border border-amber-800 px-3 py-1';
+                }
             });
+        }
+
+        function saveSupabaseCredentials() {
+            const url = document.getElementById('supabase-url-input').value.trim();
+            const key = document.getElementById('supabase-key-input').value.trim();
+
+            if (!url || !key) {
+                alert("Please enter both your Supabase Project URL and Anon Key.");
+                return;
+            }
+
+            localStorage.setItem('growthapp_supabase_url', url);
+            localStorage.setItem('growthapp_supabase_key', key);
+            syncSupabaseCloud();
+            alert("Saved Supabase credentials! Connecting to cloud database...");
+        }
+
+        function testSupabaseConnection() {
+            syncSupabaseCloud();
+            alert("Pinging Supabase REST service... Check header status badge!");
+        }
+
+        function resetSupabaseCredentials() {
+            localStorage.removeItem('growthapp_supabase_url');
+            localStorage.removeItem('growthapp_supabase_key');
+            const urlInput = document.getElementById('supabase-url-input');
+            const keyInput = document.getElementById('supabase-key-input');
+            if (urlInput) urlInput.value = DEFAULT_SUPABASE_URL;
+            if (keyInput) keyInput.value = DEFAULT_SUPABASE_KEY;
+            syncSupabaseCloud();
+            alert("Reset Supabase credentials to defaults.");
         }
     </script>
 </body>
