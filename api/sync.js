@@ -3,6 +3,7 @@
 
 let serverState = {
   checklistState: {},
+  customExerciseDetails: {},
   waterLoggedMl: 0,
   loggedMeals: [],
   updatedAt: new Date().toISOString()
@@ -48,6 +49,9 @@ export default async function handler(req, res) {
 
       if (data.checklistState) {
         serverState.checklistState = { ...serverState.checklistState, ...data.checklistState };
+      }
+      if (data.customExerciseDetails) {
+        serverState.customExerciseDetails = { ...serverState.customExerciseDetails, ...data.customExerciseDetails };
       }
       if (data.waterLoggedMl !== undefined) serverState.waterLoggedMl = data.waterLoggedMl;
       if (data.loggedMeals) serverState.loggedMeals = data.loggedMeals;

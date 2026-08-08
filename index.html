@@ -205,6 +205,44 @@
             background: linear-gradient(180deg, rgba(0, 240, 255, 0.4) 0%, rgba(0, 240, 255, 0.9) 100%);
             transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
+        /* Active Time Plan Pure White Glint & Blur Styling */
+        @keyframes glintSweep {
+            0% { transform: translateX(-130%) rotate(25deg); }
+            45%, 100% { transform: translateX(230%) rotate(25deg); }
+        }
+
+        .active-time-plan-white {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 3px solid #ffffff !important;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.85), 5px 5px 0px 0px #000000 !important;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .active-time-plan-white * {
+            color: #000000 !important;
+        }
+
+        .active-time-plan-white::after {
+            content: '';
+            position: absolute;
+            top: -120%;
+            left: -120%;
+            width: 320%;
+            height: 320%;
+            background: linear-gradient(
+                75deg,
+                transparent 35%,
+                rgba(255, 255, 255, 0.95) 50%,
+                transparent 65%
+            );
+            animation: glintSweep 3.2s infinite ease-in-out;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-16">
@@ -228,10 +266,15 @@
                     </div>
                 </div>
 
-                <!-- Sync Status Pill (Automatic Push & Pull) -->
-                <div class="flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-700 text-xs font-mono">
-                    <span id="sync-icon" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="sync-label" class="text-zinc-300 font-bold">SERVER LIVE</span>
+                <!-- Sync Status Pill & Daily Plan Pop-up Notification trigger -->
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-700 text-xs font-mono">
+                        <span id="sync-icon" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="sync-label" class="text-zinc-300 font-bold">SERVER LIVE</span>
+                    </div>
+                    <button onclick="showDailyPlanNotificationModal()" id="btn-daily-notif-pop" class="px-2.5 py-1 bg-amber-400 text-black border border-white font-outfit font-bold text-xs shadow-[2px_2px_0px_0px_#fff] flex items-center gap-1.5 hover:bg-amber-300 transition-all uppercase">
+                        🔔 Daily Plan
+                    </button>
                 </div>
             </div>
 
@@ -541,7 +584,7 @@
                     </p>
                 </div>
 
-                <!-- Week Tabs -->
+                <!-- Week Tabs & Export Button -->
                 <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
                     <button onclick="switchWeek(1)" id="week-tab-1" class="week-tab-btn active px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-purple-400 bg-purple-400 text-black shadow-[2px_2px_0px_0px_#fff]">
                         W1: Onboarding
@@ -554,6 +597,9 @@
                     </button>
                     <button onclick="switchWeek(4)" id="week-tab-4" class="week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-amber-400 hover:text-white">
                         W4: Deload 30%
+                    </button>
+                    <button onclick="exportWeeklyStatsCSV('active')" title="Export current week stats to CSV" class="brutal-btn brutal-btn-cyan text-xs px-3 py-2 flex items-center gap-1.5 whitespace-nowrap ml-1">
+                        📥 Export Stats
                     </button>
                 </div>
             </div>
@@ -818,6 +864,50 @@
 
         <!-- ================= TAB 4: ADMIN ANALYTICS DASHBOARD ================= -->
         <div id="tab-analytics" class="tab-content hidden space-y-6">
+
+            <!-- WEEKLY STATS EXPORT CENTER BENTO CARD -->
+            <div class="brutal-card brutal-cyan p-5 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 space-y-4">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-800 pb-3">
+                    <div>
+                        <h3 class="font-outfit font-black text-xl text-white uppercase flex items-center gap-2">
+                            <i data-lucide="download" class="w-6 h-6 text-cyan-400"></i>
+                            WEEKLY STATS EXPORT CENTER
+                        </h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Export week-by-week workout logs, custom sets/reps, completion status, water intake & macros.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono font-bold text-black bg-cyan-400 px-2.5 py-1 uppercase">CSV / JSON / SUMMARY</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <label class="text-xs font-mono text-zinc-300 whitespace-nowrap">SELECT TARGET WEEK:</label>
+                        <select id="export-week-select" class="bg-zinc-900 border-2 border-zinc-700 text-cyan-300 font-mono font-bold text-xs p-2 focus:border-cyan-400 focus:outline-none">
+                            <option value="1">Week 1: Onboarding</option>
+                            <option value="2">Week 2: Overload</option>
+                            <option value="3">Week 3: Peak Volume</option>
+                            <option value="4">Week 4: Deload 30%</option>
+                            <option value="all">ALL 4 WEEKS (COMPLETE MONTH)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button onclick="exportWeeklyStatsCSV(document.getElementById('export-week-select').value)" class="brutal-btn brutal-btn-cyan text-xs px-4 py-2.5 flex items-center gap-2">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                            Export CSV Sheet
+                        </button>
+                        <button onclick="exportWeeklyStatsJSON(document.getElementById('export-week-select').value)" class="brutal-btn brutal-btn-purple text-xs px-4 py-2.5 flex items-center gap-2">
+                            <i data-lucide="file-code" class="w-4 h-4"></i>
+                            Export JSON Backup
+                        </button>
+                        <button onclick="copyWeeklySummaryText(document.getElementById('export-week-select').value)" class="bg-zinc-900 text-zinc-300 border border-zinc-700 hover:border-amber-400 hover:text-white text-xs px-4 py-2.5 font-mono flex items-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4 text-amber-400"></i>
+                            Copy Summary
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Stats Banner Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1104,6 +1194,38 @@
         </div>
     </div>
 
+    <!-- DAILY PLAN POP-UP NOTIFICATION MODAL -->
+    <div id="daily-plan-notif-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="brutal-card brutal-amber p-6 max-w-lg w-full space-y-4 bg-zinc-950 border-2 border-amber-400 shadow-[6px_6px_0px_0px_#facc15]">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-amber-400 animate-ping"></span>
+                    <h3 class="font-outfit font-black text-xl text-white uppercase">⚡ DAILY PLAN NOTIFIER</h3>
+                </div>
+                <button onclick="closeDailyPlanModal()" class="text-zinc-400 hover:text-white font-mono font-bold text-lg">✕</button>
+            </div>
+            
+            <p class="text-xs text-zinc-300 font-mono">
+                Pop-up notifications keep you aligned with your daily schedule blocks, hydration target (3.75L), and 6.0hr locked sleep window.
+            </p>
+
+            <div id="daily-plan-modal-body" class="space-y-3 p-3 bg-zinc-900 border border-zinc-800">
+                <!-- Dynamically populated by JS -->
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center gap-3 pt-2">
+                <button onclick="requestNotificationPermission()" class="w-full brutal-btn brutal-btn-purple text-xs py-2.5 flex items-center justify-center gap-2">
+                    <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                    Enable System Push Pop-Ups
+                </button>
+                <button onclick="checkAndSendNotification(true)" class="w-full bg-zinc-900 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-950 text-xs py-2.5 font-mono font-bold flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    Test Instant Pop-Up
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT APPLICATION ENGINE -->
     <script>
         // Lucide Icons Render
@@ -1120,6 +1242,9 @@
             waterLoggedMl: 0,
             waterTargetMl: 3750,
             loggedMeals: [],
+            notificationsEnabled: false,
+            lastNotifiedSlotId: null,
+            customExerciseDetails: {},
             masterSchedule: [
                 { id: "s1", start: "06:30", end: "07:10", title: "Morning Prep & Hydration", desc: "Black coffee/water, light meal assembly, commute to college.", category: "prep", locked: false },
                 { id: "s2", start: "07:30", end: "14:00", title: "College Classes", desc: "Stay hydrated; eat packed mid-day protein meal (e.g. oats/egg whites).", category: "college", locked: true },
@@ -1519,6 +1644,8 @@
             setInterval(updateClock, 1000);
         }
 
+        let currentActiveSlotId = null;
+
         function updateClock() {
             const now = new Date();
             APP_STATE.currentTime = now;
@@ -1552,6 +1679,13 @@
             }
 
             if (activeSlot) {
+                // If active slot changed, refresh schedule timeline so white glint shifts to new active card
+                if (currentActiveSlotId !== activeSlot.id) {
+                    currentActiveSlotId = activeSlot.id;
+                    renderScheduleTimeline();
+                    checkAndSendNotification(false);
+                }
+
                 document.getElementById('active-slot-title').innerText = activeSlot.title;
                 document.getElementById('active-slot-desc').innerText = activeSlot.desc;
                 document.getElementById('active-slot-time').innerText = `${activeSlot.start} – ${activeSlot.end}`;
@@ -1593,13 +1727,25 @@
             }
         }
 
-        // TAB 1: RENDER MASTER SCHEDULE TIMELINE
+        // TAB 1: RENDER MASTER SCHEDULE TIMELINE (COLOR GRADED WITH WHITE + GLINT FOR ACTIVE TIME)
         function renderScheduleTimeline() {
             const container = document.getElementById('master-schedule-timeline');
+            if (!container) return;
             container.innerHTML = '';
+
+            const now = APP_STATE.currentTime || new Date();
+            const currentMins = now.getHours() * 60 + now.getMinutes();
 
             APP_STATE.masterSchedule.forEach((item) => {
                 const div = document.createElement('div');
+                const [sH, sM] = item.start.split(':').map(Number);
+                const [eH, eM] = item.end.split(':').map(Number);
+                let startVal = sH * 60 + sM;
+                let endVal = eH * 60 + eM;
+                if (endVal < startVal) endVal += 1440;
+
+                const isActiveNow = (currentMins >= startVal && currentMins < endVal);
+
                 const isSleep = item.category === 'sleep';
                 const isWork = item.category === 'work';
                 const isGym = item.category === 'gym';
@@ -1622,21 +1768,43 @@
                     badgeClass = "bg-emerald-400 text-black font-bold";
                 }
 
-                div.className = `p-3.5 border-2 ${borderClass} flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition-all`;
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="font-mono text-xs font-bold px-2.5 py-1 ${badgeClass}">
-                            ${item.start} – ${item.end}
-                        </span>
-                        <div>
-                            <h4 class="font-outfit font-bold text-sm text-white uppercase flex items-center gap-2">
-                                ${item.title}
-                                ${item.locked ? '<span class="text-[9px] bg-red-950 text-red-300 border border-red-800 px-1.5 py-0.2">LOCKED</span>' : ''}
-                            </h4>
-                            <p class="text-xs text-zinc-400 mt-0.5">${item.desc}</p>
+                if (isActiveNow) {
+                    // PURE WHITE COLOR GRADE + GLINT SHIMMER + BLUR TO STAND OUT
+                    div.className = `p-4 border-2 active-time-plan-white flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition-all rounded-sm`;
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-xs font-black px-2.5 py-1 bg-black text-white flex items-center gap-1.5 shadow-sm">
+                                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                                ${item.start} – ${item.end}
+                            </span>
+                            <div>
+                                <h4 class="font-outfit font-black text-base text-black uppercase flex items-center gap-2">
+                                    <span>${item.title}</span>
+                                    <span class="text-[9px] bg-black text-white px-2 py-0.5 font-mono uppercase tracking-wider font-bold">⚡ ACTIVE TIME PLAN</span>
+                                    ${item.locked ? '<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.2 font-mono">LOCKED</span>' : ''}
+                                </h4>
+                                <p class="text-xs text-zinc-900 font-semibold mt-0.5">${item.desc}</p>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    div.className = `p-3.5 border-2 ${borderClass} flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition-all`;
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-xs font-bold px-2.5 py-1 ${badgeClass}">
+                                ${item.start} – ${item.end}
+                            </span>
+                            <div>
+                                <h4 class="font-outfit font-bold text-sm text-white uppercase flex items-center gap-2">
+                                    ${item.title}
+                                    ${item.locked ? '<span class="text-[9px] bg-red-950 text-red-300 border border-red-800 px-1.5 py-0.2">LOCKED</span>' : ''}
+                                </h4>
+                                <p class="text-xs text-zinc-400 mt-0.5">${item.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 container.appendChild(div);
             });
         }
@@ -1711,6 +1879,112 @@
             renderWorkoutsTab();
         }
 
+        function getExerciseDetails(ex) {
+            const custom = APP_STATE.customExerciseDetails && APP_STATE.customExerciseDetails[ex.id];
+            if (custom) {
+                return {
+                    setsCount: custom.setsCount !== undefined ? custom.setsCount : extractSetsNum(ex.sets),
+                    reps: custom.reps || extractRepsStr(ex.sets),
+                    weight: custom.weight || extractWeightStr(ex.sets),
+                    hasCustom: true
+                };
+            }
+            return {
+                setsCount: extractSetsNum(ex.sets),
+                reps: extractRepsStr(ex.sets),
+                weight: extractWeightStr(ex.sets),
+                hasCustom: false
+            };
+        }
+
+        function extractSetsNum(setsStr) {
+            const m = setsStr.match(/(\d+)\s*sets?/i);
+            return m ? parseInt(m[1]) : 2;
+        }
+
+        function extractRepsStr(setsStr) {
+            const m = setsStr.match(/×\s*([^()]+)/i);
+            if (m) return m[1].trim();
+            const m2 = setsStr.match(/(\d+[–\-]\d+\s*reps?|\d+\s*reps?)/i);
+            return m2 ? m2[1].trim() : "8–12 reps";
+        }
+
+        function extractWeightStr(setsStr) {
+            const m = setsStr.match(/\(([^)]+)\)/);
+            return m ? m[1].trim() : "";
+        }
+
+        function adjustExerciseSet(exId, delta) {
+            if (!APP_STATE.customExerciseDetails) APP_STATE.customExerciseDetails = {};
+            const ex = findExerciseById(exId);
+            if (!ex) return;
+            const current = getExerciseDetails(ex);
+            const newSetsCount = Math.max(1, current.setsCount + delta);
+            
+            APP_STATE.customExerciseDetails[exId] = {
+                setsCount: newSetsCount,
+                reps: current.reps,
+                weight: current.weight
+            };
+
+            renderWorkoutsTab();
+            pushCloudState();
+        }
+
+        function adjustExerciseWeight(exId, deltaKg) {
+            if (!APP_STATE.customExerciseDetails) APP_STATE.customExerciseDetails = {};
+            const ex = findExerciseById(exId);
+            if (!ex) return;
+            const current = getExerciseDetails(ex);
+            
+            let numWeight = parseFloat(current.weight.replace(/[^0-9.]/g, '')) || 20;
+            numWeight = Math.max(0, Math.round((numWeight + deltaKg) * 10) / 10);
+            
+            APP_STATE.customExerciseDetails[exId] = {
+                setsCount: current.setsCount,
+                reps: current.reps,
+                weight: `${numWeight} kg`
+            };
+
+            renderWorkoutsTab();
+            pushCloudState();
+        }
+
+        function adjustExerciseReps(exId, deltaReps) {
+            if (!APP_STATE.customExerciseDetails) APP_STATE.customExerciseDetails = {};
+            const ex = findExerciseById(exId);
+            if (!ex) return;
+            const current = getExerciseDetails(ex);
+            
+            APP_STATE.customExerciseDetails[exId] = {
+                setsCount: current.setsCount,
+                reps: `${current.reps} (+${deltaReps})`,
+                weight: current.weight
+            };
+
+            renderWorkoutsTab();
+            pushCloudState();
+        }
+
+        function resetExerciseDetail(exId) {
+            if (APP_STATE.customExerciseDetails && APP_STATE.customExerciseDetails[exId]) {
+                delete APP_STATE.customExerciseDetails[exId];
+                renderWorkoutsTab();
+                pushCloudState();
+            }
+        }
+
+        function findExerciseById(exId) {
+            for (let w in MONTH_WORKOUTS) {
+                for (let day of MONTH_WORKOUTS[w].days) {
+                    for (let ex of day.exercises) {
+                        if (ex.id === exId) return ex;
+                    }
+                }
+            }
+            return null;
+        }
+
         function renderWorkoutsTab() {
             const data = MONTH_WORKOUTS[APP_STATE.activeWeek];
             document.getElementById('week-goal-title').innerText = data.goalTitle;
@@ -1731,13 +2005,42 @@
                     const isChecked = APP_STATE.checklistState[ex.id] || false;
                     if (isChecked) checkedExercises++;
 
+                    const details = getExerciseDetails(ex);
+
                     exercisesHtml += `
-                        <div class="p-2 bg-zinc-900/80 border border-zinc-800 flex items-start justify-between gap-2">
-                            <div>
-                                <span class="font-outfit font-bold text-xs text-white block ${isChecked ? 'line-through text-zinc-500' : ''}">${ex.name}</span>
-                                <span class="text-[10px] font-mono text-purple-300 block">${ex.sets}</span>
+                        <div class="p-2.5 bg-zinc-900/90 border border-zinc-800 space-y-1.5 rounded-sm">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="space-y-0.5 flex-1">
+                                    <span class="font-outfit font-bold text-xs text-white block ${isChecked ? 'line-through text-zinc-500' : ''}">${ex.name}</span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="text-[11px] font-mono font-bold text-purple-300">
+                                            ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
+                                        </span>
+                                        ${details.hasCustom ? '<span class="text-[9px] font-mono text-amber-400 bg-amber-950 border border-amber-800 px-1 font-bold">+CUSTOM</span>' : ''}
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <!-- UP / DOWN STEPPER CLICK CONTROL -->
+                                    <div class="flex flex-col bg-zinc-950 border border-zinc-700 overflow-hidden shadow-sm select-none">
+                                        <button title="Click upper half to add a set (+1)" onclick="adjustExerciseSet('${ex.id}', 1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors leading-none border-b border-zinc-800">
+                                            ▲
+                                        </button>
+                                        <button title="Click lower half to decrease a set (-1)" onclick="adjustExerciseSet('${ex.id}', -1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-pink-400 hover:bg-pink-400 hover:text-black transition-colors leading-none">
+                                            ▼
+                                        </button>
+                                    </div>
+                                    <input type="checkbox" class="check-box-brutal" ${isChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${ex.id}', this.checked)">
+                                </div>
                             </div>
-                            <input type="checkbox" class="check-box-brutal mt-1" ${isChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${ex.id}', this.checked)">
+
+                            <!-- Micro Quick Adjusters -->
+                            <div class="flex items-center gap-1 text-[10px] font-mono text-zinc-400 pt-1 border-t border-zinc-800/60">
+                                <span class="text-zinc-500">Adjust:</span>
+                                <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded-sm">+2.5kg</button>
+                                <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded-sm">-2.5kg</button>
+                                <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-cyan-900 hover:text-cyan-300 text-zinc-300 border border-zinc-700 rounded-sm">+1 Rep</button>
+                                ${details.hasCustom ? `<button onclick="resetExerciseDetail('${ex.id}')" title="Reset to preset" class="px-1.5 py-0.5 text-zinc-500 hover:text-red-400 ml-auto">Reset</button>` : ''}
+                            </div>
                         </div>
                     `;
                 });
@@ -1801,6 +2104,197 @@
             // Update Progress Badge
             const percentage = Math.round((checkedExercises / (totalExercises || 1)) * 100);
             document.getElementById('week-progress-badge').innerText = `${checkedExercises} / ${totalExercises} EXERCISES DONE (${percentage}%)`;
+        }
+
+        // EXPORT WEEKLY STATS ENGINE (CSV, JSON, CLIPBOARD SUMMARY)
+        function exportWeeklyStatsCSV(weekNum = 'active') {
+            const targetW = weekNum === 'active' ? APP_STATE.activeWeek : weekNum;
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Week,Day,Lifting Title,Exercise ID,Exercise Name,Default Target,Custom Details,Status\n";
+
+            const weeksToProcess = targetW === 'all' ? [1, 2, 3, 4] : [parseInt(targetW)];
+
+            weeksToProcess.forEach(w => {
+                const wData = MONTH_WORKOUTS[w];
+                if (!wData) return;
+                wData.days.forEach(dayObj => {
+                    dayObj.exercises.forEach(ex => {
+                        const isChecked = APP_STATE.checklistState[ex.id] ? "COMPLETED" : "PENDING";
+                        const custom = APP_STATE.customExerciseDetails && APP_STATE.customExerciseDetails[ex.id];
+                        const customStr = custom ? `${custom.setsCount} sets x ${custom.reps} (${custom.weight})` : "Standard Preset";
+                        
+                        const row = [
+                            `Week ${w}`,
+                            `"${dayObj.day}"`,
+                            `"${dayObj.liftingTitle}"`,
+                            `"${ex.id}"`,
+                            `"${ex.name}"`,
+                            `"${ex.sets}"`,
+                            `"${customStr}"`,
+                            `"${isChecked}"`
+                        ].join(",");
+                        csvContent += row + "\n";
+                    });
+                });
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `GrowthApp_Weekly_Stats_${targetW === 'all' ? 'All_Weeks' : 'Week_' + targetW}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportWeeklyStatsJSON(weekNum = 'active') {
+            const targetW = weekNum === 'active' ? APP_STATE.activeWeek : weekNum;
+            const exportData = {
+                appName: "GROWTH",
+                exportedAt: new Date().toISOString(),
+                week: targetW,
+                checklistState: APP_STATE.checklistState,
+                customExerciseDetails: APP_STATE.customExerciseDetails || {},
+                loggedMeals: APP_STATE.loggedMeals,
+                waterLoggedMl: APP_STATE.waterLoggedMl,
+                masterSchedule: APP_STATE.masterSchedule
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const link = document.createElement("a");
+            link.setAttribute("href", dataStr);
+            link.setAttribute("download", `GrowthApp_Stats_Export_${targetW === 'all' ? 'All_Weeks' : 'Week_' + targetW}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function copyWeeklySummaryText(weekNum = 'active') {
+            const targetW = weekNum === 'active' ? APP_STATE.activeWeek : weekNum;
+            const wData = MONTH_WORKOUTS[targetW === 'all' ? 1 : parseInt(targetW)];
+            let doneCount = 0;
+            let totalCount = 0;
+
+            if (wData) {
+                for (let dayObj of wData.days) {
+                    for (let ex of dayObj.exercises) {
+                        totalCount++;
+                        if (APP_STATE.checklistState[ex.id]) doneCount++;
+                    }
+                }
+            }
+
+            const percentage = Math.round((doneCount / (totalCount || 1)) * 100);
+            const text = `📊 GROWTH APP WEEKLY STATS SUMMARY (${targetW === 'all' ? 'ALL WEEKS' : 'WEEK ' + targetW})
+-----------------------------------------
+Goal: ${wData ? wData.goalTitle : 'Month 1 Plan'}
+Exercise Completion: ${doneCount} / ${totalCount} (${percentage}%)
+Water Intake Logged: ${(APP_STATE.waterLoggedMl/1000).toFixed(2)} L
+Logged Meals Today: ${APP_STATE.loggedMeals.length} meals
+Export Date: ${new Date().toLocaleDateString()}
+-----------------------------------------
+Keep crushing the daily plan! 💪⚡`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert("📋 Weekly Stats Summary copied to clipboard!");
+            }).catch(err => {
+                alert("Summary:\n" + text);
+            });
+        }
+
+        // DAILY PLAN NOTIFICATIONS & POP-UP MODAL ENGINE
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop pop-up notifications.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    APP_STATE.notificationsEnabled = true;
+                    alert("🔔 Daily Plan Pop-Up Notifications ENABLED! You will receive pop-up alerts as schedule slots switch.");
+                    checkAndSendNotification(true);
+                } else {
+                    alert("Notification permission was not granted.");
+                }
+            });
+        }
+
+        function checkAndSendNotification(forceAlert = false) {
+            const now = new Date();
+            const currentMins = now.getHours() * 60 + now.getMinutes();
+            let activeSlot = null;
+
+            for (let s of APP_STATE.masterSchedule) {
+                const [sH, sM] = s.start.split(':').map(Number);
+                const [eH, eM] = s.end.split(':').map(Number);
+                let startVal = sH * 60 + sM;
+                let endVal = eH * 60 + eM;
+                if (endVal < startVal) endVal += 1440;
+
+                if (currentMins >= startVal && currentMins < endVal) {
+                    activeSlot = s;
+                    break;
+                }
+            }
+
+            if (activeSlot && (forceAlert || APP_STATE.lastNotifiedSlotId !== activeSlot.id)) {
+                APP_STATE.lastNotifiedSlotId = activeSlot.id;
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification(`⚡ GROWTH Daily Plan: ${activeSlot.title}`, {
+                        body: `${activeSlot.start} – ${activeSlot.end}\n${activeSlot.desc}`,
+                        icon: '/logo.png'
+                    });
+                } else if (forceAlert) {
+                    alert(`⚡ Instant Daily Plan Pop-Up:\n\nActive Slot: ${activeSlot.title}\nTime: ${activeSlot.start} – ${activeSlot.end}\nGuidance: ${activeSlot.desc}`);
+                }
+            }
+        }
+
+        function showDailyPlanNotificationModal() {
+            renderDailyPlanModalContent();
+            document.getElementById('daily-plan-notif-modal').classList.remove('hidden');
+        }
+
+        function closeDailyPlanModal() {
+            document.getElementById('daily-plan-notif-modal').classList.add('hidden');
+        }
+
+        function renderDailyPlanModalContent() {
+            const container = document.getElementById('daily-plan-modal-body');
+            if (!container) return;
+
+            const now = new Date();
+            const currentMins = now.getHours() * 60 + now.getMinutes();
+            let activeSlot = APP_STATE.masterSchedule[0];
+            let nextSlot = APP_STATE.masterSchedule[1];
+
+            for (let i = 0; i < APP_STATE.masterSchedule.length; i++) {
+                const s = APP_STATE.masterSchedule[i];
+                const [sH, sM] = s.start.split(':').map(Number);
+                const [eH, eM] = s.end.split(':').map(Number);
+                let startVal = sH * 60 + sM;
+                let endVal = eH * 60 + eM;
+                if (endVal < startVal) endVal += 1440;
+
+                if (currentMins >= startVal && currentMins < endVal) {
+                    activeSlot = s;
+                    nextSlot = APP_STATE.masterSchedule[(i + 1) % APP_STATE.masterSchedule.length];
+                    break;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="p-3 bg-white text-black border-2 border-white rounded-sm space-y-1">
+                    <span class="text-[10px] font-mono bg-black text-white px-2 py-0.5 font-bold uppercase">⚡ CURRENT ACTIVE TIME PLAN</span>
+                    <h4 class="font-outfit font-black text-lg text-black uppercase">${activeSlot.title} (${activeSlot.start} – ${activeSlot.end})</h4>
+                    <p class="text-xs text-zinc-900 font-semibold">${activeSlot.desc}</p>
+                </div>
+                <div class="p-3 bg-zinc-950 border border-zinc-800 space-y-1">
+                    <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase">UPCOMING NEXT SLOT</span>
+                    <h5 class="font-outfit font-bold text-sm text-white uppercase">${nextSlot.title} (${nextSlot.start} – ${nextSlot.end})</h5>
+                    <p class="text-xs text-zinc-400 font-mono">${nextSlot.desc}</p>
+                </div>
+            `;
         }
 
         function toggleExerciseCheck(id, checked) {
@@ -2156,6 +2650,7 @@
 
             const payload = {
                 checklistState: APP_STATE.checklistState,
+                customExerciseDetails: APP_STATE.customExerciseDetails || {},
                 waterLoggedMl: APP_STATE.waterLoggedMl,
                 loggedMeals: APP_STATE.loggedMeals,
                 masterSchedule: APP_STATE.masterSchedule,
@@ -2227,6 +2722,11 @@
                     }
                 }
 
+                if (cloudData.customExerciseDetails && JSON.stringify(cloudData.customExerciseDetails) !== JSON.stringify(APP_STATE.customExerciseDetails)) {
+                    APP_STATE.customExerciseDetails = cloudData.customExerciseDetails;
+                    updated = true;
+                }
+
                 if (cloudData.waterLoggedMl !== undefined && cloudData.waterLoggedMl !== APP_STATE.waterLoggedMl) {
                     APP_STATE.waterLoggedMl = cloudData.waterLoggedMl;
                     updated = true;
@@ -2275,8 +2775,28 @@
             await forcePullFromServer();
         }
 
-        function saveLocalState() {}
-        function loadLocalState() {}
+        function saveLocalState() {
+            try {
+                localStorage.setItem('growth_app_state', JSON.stringify({
+                    checklistState: APP_STATE.checklistState,
+                    customExerciseDetails: APP_STATE.customExerciseDetails || {},
+                    waterLoggedMl: APP_STATE.waterLoggedMl,
+                    loggedMeals: APP_STATE.loggedMeals
+                }));
+            } catch(e) {}
+        }
+        function loadLocalState() {
+            try {
+                const saved = localStorage.getItem('growth_app_state');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.checklistState) APP_STATE.checklistState = parsed.checklistState;
+                    if (parsed.customExerciseDetails) APP_STATE.customExerciseDetails = parsed.customExerciseDetails;
+                    if (parsed.waterLoggedMl !== undefined) APP_STATE.waterLoggedMl = parsed.waterLoggedMl;
+                    if (parsed.loggedMeals) APP_STATE.loggedMeals = parsed.loggedMeals;
+                }
+            } catch(e) {}
+        }
 
         function syncSupabaseCloud() {}
         function saveSupabaseCredentials() {}
