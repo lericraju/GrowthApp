@@ -234,14 +234,17 @@
                     </div>
                 </div>
 
-                <!-- Sync Status Pill & Force Sync Button -->
+                <!-- Sync Status Pill & Push/Pull Control Buttons -->
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-2 px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-xs font-mono">
                         <span id="sync-icon" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="sync-label" class="text-zinc-300 font-bold hidden sm:inline">REALTIME LIVE</span>
+                        <span id="sync-label" class="text-zinc-300 font-bold hidden sm:inline">SERVER LIVE</span>
                     </div>
-                    <button onclick="forceSyncNow()" class="brutal-btn brutal-btn-cyan text-[10px] px-2 py-1 flex items-center gap-1 font-mono font-bold">
-                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> SYNC NOW
+                    <button onclick="forcePushFromPC()" class="brutal-btn brutal-btn-cyan text-[10px] px-2 py-1 flex items-center gap-1 font-mono font-bold" title="Push current screen state to Vercel Server">
+                        <i data-lucide="upload-cloud" class="w-3 h-3"></i> PUSH
+                    </button>
+                    <button onclick="forcePullFromServer()" class="brutal-btn brutal-btn-purple text-[10px] px-2 py-1 flex items-center gap-1 font-mono font-bold" title="Pull latest Vercel Server state to screen">
+                        <i data-lucide="download-cloud" class="w-3 h-3"></i> PULL
                     </button>
                 </div>
             </div>
@@ -1926,7 +1929,13 @@
         const SERVER_SYNC_ENDPOINT = '/api/sync';
         const FALLBACK_CLOUD_URL = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fdf5ba5bd0ef3';
 
+        let isPushingInFlight = false;
+        let lastPushTimestamp = 0;
+
         async function pushCloudState() {
+            isPushingInFlight = true;
+            lastPushTimestamp = Date.now();
+
             const payload = {
                 checklistState: APP_STATE.checklistState,
                 waterLoggedMl: APP_STATE.waterLoggedMl,
@@ -1958,9 +1967,14 @@
                 });
                 updateSyncUIStatus(true, "SERVER LIVE");
             } catch(e) {}
+
+            setTimeout(() => { isPushingInFlight = false; }, 2000);
         }
 
         async function pullCloudState() {
+            // Protect local interaction on PC or phone from being overwritten during push
+            if (isPushingInFlight || (Date.now() - lastPushTimestamp < 2000)) return;
+
             let cloudData = null;
 
             // 1. Try Vercel Serverless API first
@@ -2022,13 +2036,25 @@
             if (icon) icon.className = isLive ? 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse' : 'w-2 h-2 rounded-full bg-amber-400';
         }
 
-        async function forceSyncNow() {
+        async function forcePushFromPC() {
+            lastPushTimestamp = Date.now();
             await pushCloudState();
+            alert("⬆️ Pushed state to Vercel Server! The server is now updated with your screen checkmarks.");
+        }
+
+        async function forcePullFromServer() {
+            isPushingInFlight = false;
+            lastPushTimestamp = 0;
             await pullCloudState();
             renderWorkoutsTab();
             renderLoggedMeals();
             updateMacroScales();
-            alert("Server Sync Complete! Phone and PC are 100% matched to Vercel Server state.");
+            alert("⬇️ Pulled latest Vercel Server state to screen.");
+        }
+
+        async function forceSyncNow() {
+            await forcePushFromPC();
+            await forcePullFromServer();
         }
 
         function saveLocalState() {}
@@ -2036,7 +2062,7 @@
 
         function syncSupabaseCloud() {}
         function saveSupabaseCredentials() {}
-        function testSupabaseConnection() { forceSyncNow(); }
+        function testSupabaseConnection() { forcePushFromPC(); }
         function resetSupabaseCredentials() {}
     </script>
 </body>
