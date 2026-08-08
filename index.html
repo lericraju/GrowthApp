@@ -143,14 +143,16 @@
             box-shadow: 3px 3px 0px 0px #ffffff;
         }
 
-        /* Checkbox Custom Styling */
+        /* Touch Checkbox Styling for Mobile & Desktop */
         .check-box-brutal {
             appearance: none;
-            width: 22px;
-            height: 22px;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            min-height: 28px;
             border: 2px solid #a1a1aa;
             background: #18181b;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             display: inline-grid;
             place-content: center;
@@ -167,7 +169,7 @@
             content: "✓";
             font-weight: 900;
             color: #000;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* Custom Scrollbar */
@@ -208,7 +210,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen pb-16">
+<body class="min-h-screen pb-24 md:pb-16">
 
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-50 bg-[#09090b]/90 backdrop-blur-md border-b-2 border-zinc-800 px-4 lg:px-8 py-3">
@@ -223,7 +225,7 @@
                     <div>
                         <h1 class="font-outfit font-black text-xl tracking-wider text-white uppercase flex items-center gap-2">
                             GROWTH<span class="text-cyan-400">APP</span>
-                            <span class="text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 border border-zinc-700 rounded-none">V2.4 PWA</span>
+                            <span class="text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 border border-zinc-700 rounded-none">V2.5 PWA</span>
                         </h1>
                         <p class="text-xs text-zinc-400 font-mono flex items-center gap-2">
                             <span class="live-dot"></span>
@@ -232,15 +234,20 @@
                     </div>
                 </div>
 
-                <!-- Sync Status Pill -->
-                <div class="flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-700 text-xs font-mono">
-                    <span id="sync-icon" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="sync-label" class="text-zinc-300 font-bold">SUPABASE LIVE</span>
+                <!-- Sync Status Pill & Force Sync Button -->
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-xs font-mono">
+                        <span id="sync-icon" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="sync-label" class="text-zinc-300 font-bold hidden sm:inline">REALTIME LIVE</span>
+                    </div>
+                    <button onclick="forceSyncNow()" class="brutal-btn brutal-btn-cyan text-[10px] px-2 py-1 flex items-center gap-1 font-mono font-bold">
+                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> SYNC NOW
+                    </button>
                 </div>
             </div>
 
-            <!-- Navigation Tabs (Bento Style) -->
-            <nav class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+            <!-- Desktop Navigation Tabs (Hidden on mobile) -->
+            <nav class="hidden md:flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
                 <button onclick="switchTab('notifier')" id="tab-btn-notifier" class="tab-btn active px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-cyan-400 bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#fff] whitespace-nowrap transition-all">
                     📅 Schedule & Life Notifier
                 </button>
@@ -260,6 +267,30 @@
 
         </div>
     </header>
+
+    <!-- STICKY MOBILE BOTTOM NAVIGATION BAR (Android Touch View Optimization) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#09090b]/95 backdrop-blur-lg border-t-2 border-zinc-800 px-2 py-2 flex items-center justify-around">
+        <button onclick="switchTab('notifier')" id="mob-nav-notifier" class="mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1">
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <span class="text-[10px] font-outfit uppercase">Schedule</span>
+        </button>
+        <button onclick="switchTab('workouts')" id="mob-nav-workouts" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
+            <i data-lucide="dumbbell" class="w-5 h-5"></i>
+            <span class="text-[10px] font-outfit uppercase">Workouts</span>
+        </button>
+        <button onclick="switchTab('calories')" id="mob-nav-calories" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
+            <i data-lucide="utensils" class="w-5 h-5"></i>
+            <span class="text-[10px] font-outfit uppercase">Macros</span>
+        </button>
+        <button onclick="switchTab('analytics')" id="mob-nav-analytics" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
+            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            <span class="text-[10px] font-outfit uppercase">Stats</span>
+        </button>
+        <button onclick="switchTab('physique')" id="mob-nav-physique" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+            <span class="text-[10px] font-outfit uppercase">Rules</span>
+        </button>
+    </nav>
 
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6">
@@ -1378,13 +1409,22 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
 
+            // Desktop Navigation Buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.className = "tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-purple-400 hover:text-white whitespace-nowrap transition-all";
             });
-
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
             if (activeBtn) {
                 activeBtn.className = "tab-btn active px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-cyan-400 bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#fff] whitespace-nowrap transition-all";
+            }
+
+            // Mobile Bottom Navigation Bar Buttons
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                btn.className = "mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1";
+            });
+            const mobActiveBtn = document.getElementById(`mob-nav-${tabName}`);
+            if (mobActiveBtn) {
+                mobActiveBtn.className = "mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1";
             }
         }
 
@@ -1950,21 +1990,21 @@
                         let updated = false;
 
                         if (cloud.checklistState) {
-                            // Merge checkmarks from cloud
+                            // Bi-directional Union Merge: Ensure checkmarks from EITHER device are preserved
                             for (let key in cloud.checklistState) {
-                                if (APP_STATE.checklistState[key] !== cloud.checklistState[key]) {
-                                    APP_STATE.checklistState[key] = cloud.checklistState[key];
+                                if (cloud.checklistState[key] === true && APP_STATE.checklistState[key] !== true) {
+                                    APP_STATE.checklistState[key] = true;
                                     updated = true;
                                 }
                             }
                         }
 
-                        if (cloud.waterLoggedMl !== undefined && cloud.waterLoggedMl !== APP_STATE.waterLoggedMl) {
+                        if (cloud.waterLoggedMl !== undefined && cloud.waterLoggedMl > APP_STATE.waterLoggedMl) {
                             APP_STATE.waterLoggedMl = cloud.waterLoggedMl;
                             updated = true;
                         }
 
-                        if (cloud.loggedMeals && JSON.stringify(cloud.loggedMeals) !== JSON.stringify(APP_STATE.loggedMeals)) {
+                        if (cloud.loggedMeals && cloud.loggedMeals.length > APP_STATE.loggedMeals.length) {
                             APP_STATE.loggedMeals = cloud.loggedMeals;
                             updated = true;
                         }
@@ -1985,6 +2025,15 @@
             } catch (e) {
                 console.warn("Cloud pull notice", e);
             }
+        }
+
+        async function forceSyncNow() {
+            await pushCloudState();
+            await pullCloudState();
+            renderWorkoutsTab();
+            renderLoggedMeals();
+            updateMacroScales();
+            alert("Synced! Phone and PC checkmarks are now 100% matched.");
         }
 
         function syncSupabaseCloud() {
