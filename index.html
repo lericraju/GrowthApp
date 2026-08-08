@@ -253,9 +253,83 @@
             animation: glintSweep 3.2s infinite ease-in-out;
             pointer-events: none;
         }
+
+        /* REACTBITS ANIMATION STYLES & BACKGROUND CANVAS */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -10;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* ReactBits Aurora Glow Orbs */
+        .aurora-orb-1 {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -9;
+            animation: orbFloat1 18s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        .aurora-orb-2 {
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(192, 132, 252, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -9;
+            animation: orbFloat2 22s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes orbFloat1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, 12vh) scale(1.15); }
+        }
+
+        @keyframes orbFloat2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-10vw, -8vh) scale(1.2); }
+        }
+
+        /* ReactBits Micro Entrance Animations */
+        .tab-content {
+            animation: reactBitsFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes reactBitsFadeIn {
+            0% { opacity: 0; transform: translateY(12px) scale(0.99); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Hover Lift Micro-Animation */
+        .brutal-card {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease-out;
+        }
+        .brutal-card:hover {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-<body class="min-h-screen pb-24 md:pb-16">
+<body class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
+
+    <!-- REACTBITS CANVAS BACKGROUND & AURORA ORBS -->
+    <canvas id="bg-canvas"></canvas>
+    <div class="aurora-orb-1"></div>
+    <div class="aurora-orb-2"></div>
 
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-50 bg-[#09090b]/90 backdrop-blur-md border-b-2 border-zinc-800 px-4 lg:px-8 py-3">
@@ -2906,6 +2980,95 @@ Keep crushing the daily plan! 💪⚡`;
                 alert("✨ Checklist reset for the new week!");
             }
         }
+
+        // REACTBITS INTERACTIVE PARTICLE CANVAS BACKGROUND ENGINE
+        (function initReactBitsBackground() {
+            const canvas = document.getElementById('bg-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            const particleCount = Math.min(60, Math.floor(width / 25));
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    radius: Math.random() * 1.8 + 0.8,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+
+            let mouseX = width / 2;
+            let mouseY = height / 2;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+
+                // Constellation connection lines
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(0, 240, 255, ${0.15 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // Update particles with mouse repulsion
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+
+                    const mdx = p.x - mouseX;
+                    const mdy = p.y - mouseY;
+                    const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+                    if (mdist < 100) {
+                        p.x += (mdx / mdist) * 0.8;
+                        p.y += (mdy / mdist) * 0.8;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(192, 132, 252, ${p.alpha})`;
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = "#00f0ff";
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(render);
+            }
+
+            render();
+        })();
     </script>
 </body>
 </html>
