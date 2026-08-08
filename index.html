@@ -1644,6 +1644,19 @@
             setInterval(updateClock, 1000);
         }
 
+        function parseTimeToMinutes(timeStr) {
+            if (!timeStr) return 0;
+            const isPM = /pm/i.test(timeStr);
+            const isAM = /am/i.test(timeStr);
+            const cleaned = timeStr.replace(/(am|pm)/i, '').trim();
+            const parts = cleaned.split(':').map(p => parseInt(p, 10) || 0);
+            let hours = parts[0] || 0;
+            const mins = parts[1] || 0;
+            if (isPM && hours < 12) hours += 12;
+            if (isAM && hours === 12) hours = 0;
+            return hours * 60 + mins;
+        }
+
         let currentActiveSlotId = null;
 
         function updateClock() {
@@ -1653,7 +1666,6 @@
             const hours = String(now.getHours()).padStart(2, '0');
             const mins = String(now.getMinutes()).padStart(2, '0');
             const secs = String(now.getSeconds()).padStart(2, '0');
-            const timeStr = `${hours}:${mins}:${secs}`;
             
             const clockEl = document.getElementById('header-clock');
             if (clockEl) clockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1665,21 +1677,23 @@
 
             for (let i = 0; i < APP_STATE.masterSchedule.length; i++) {
                 const s = APP_STATE.masterSchedule[i];
-                const [sH, sM] = s.start.split(':').map(Number);
-                const [eH, eM] = s.end.split(':').map(Number);
-                let startVal = sH * 60 + sM;
-                let endVal = eH * 60 + eM;
-                if (endVal < startVal) endVal += 1440; // Over Midnight
+                const startVal = parseTimeToMinutes(s.start);
+                let endVal = parseTimeToMinutes(s.end);
+                if (endVal <= startVal) endVal += 1440; // Over Midnight
 
-                if (currentMins >= startVal && currentMins < endVal) {
+                let checkMins = currentMins;
+                if (checkMins < startVal && startVal > 1200) checkMins += 1440;
+
+                if (checkMins >= startVal && checkMins < endVal) {
                     activeSlot = s;
                     nextSlot = APP_STATE.masterSchedule[(i + 1) % APP_STATE.masterSchedule.length];
                     break;
                 }
             }
 
+            APP_STATE.currentActiveSlot = activeSlot;
+
             if (activeSlot) {
-                // If active slot changed, refresh schedule timeline so white glint shifts to new active card
                 if (currentActiveSlotId !== activeSlot.id) {
                     currentActiveSlotId = activeSlot.id;
                     renderScheduleTimeline();
@@ -1691,10 +1705,9 @@
                 document.getElementById('active-slot-time').innerText = `${activeSlot.start} – ${activeSlot.end}`;
 
                 // Calculate countdown to next slot
-                const [nextH, nextM] = nextSlot.start.split(':').map(Number);
-                let nextMinsVal = nextH * 60 + nextM;
-                if (nextMinsVal <= currentMins) nextMinsVal += 1440;
-                const diffMins = nextMinsVal - currentMins;
+                const nextStartVal = parseTimeToMinutes(nextSlot.start);
+                let diffMins = nextStartVal - currentMins;
+                if (diffMins <= 0) diffMins += 1440;
                 const remHours = Math.floor(diffMins / 60);
                 const remMins = diffMins % 60;
                 document.getElementById('next-slot-countdown').innerText = `${String(remHours).padStart(2, '0')}h ${String(remMins).padStart(2, '0')}m`;
@@ -1733,18 +1746,11 @@
             if (!container) return;
             container.innerHTML = '';
 
-            const now = APP_STATE.currentTime || new Date();
-            const currentMins = now.getHours() * 60 + now.getMinutes();
+            const activeSlot = APP_STATE.currentActiveSlot;
 
             APP_STATE.masterSchedule.forEach((item) => {
                 const div = document.createElement('div');
-                const [sH, sM] = item.start.split(':').map(Number);
-                const [eH, eM] = item.end.split(':').map(Number);
-                let startVal = sH * 60 + sM;
-                let endVal = eH * 60 + eM;
-                if (endVal < startVal) endVal += 1440;
-
-                const isActiveNow = (currentMins >= startVal && currentMins < endVal);
+                const isActiveNow = (activeSlot ? activeSlot.id === item.id : false);
 
                 const isSleep = item.category === 'sleep';
                 const isWork = item.category === 'work';
