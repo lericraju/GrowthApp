@@ -883,32 +883,52 @@
                 </div>
             </div>
 
-            <!-- Stats Banner Cards -->
+            <!-- Stats Banner Cards (STARTS AT CLEAN 0 BASELINE - INCREMENTS DYNAMICALLY ON LOGGED WORKOUTS) -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="brutal-card brutal-purple p-4">
                     <span class="text-[10px] font-mono text-purple-300 uppercase block font-bold">MONTHLY VOLUME LIFTED</span>
-                    <span id="stat-total-volume" class="font-outfit font-black text-2xl text-white">48,250 kg</span>
-                    <span class="text-[10px] text-emerald-400 block mt-1">↑ 12% vs last month</span>
+                    <span id="stat-total-volume" class="font-outfit font-black text-2xl text-white">0 kg</span>
+                    <span class="text-[10px] text-zinc-400 block mt-1">Real-time progressive total</span>
                 </div>
                 <div class="brutal-card brutal-cyan p-4">
                     <span class="text-[10px] font-mono text-cyan-300 uppercase block font-bold">TOTAL CARDIO DISTANCE</span>
-                    <span id="stat-total-cardio" class="font-outfit font-black text-2xl text-white">128.5 km</span>
-                    <span class="text-[10px] text-cyan-400 block mt-1">Run: 32km | Bike: 96.5km</span>
+                    <span id="stat-total-cardio" class="font-outfit font-black text-2xl text-white">0.0 km</span>
+                    <span class="text-[10px] text-cyan-400 block mt-1">Run: 0.0km | Bike: 0.0km</span>
                 </div>
                 <div class="brutal-card brutal-green p-4">
                     <span class="text-[10px] font-mono text-emerald-300 uppercase block font-bold">WORKOUT COMPLETION RATE</span>
-                    <span id="stat-completion-rate" class="font-outfit font-black text-2xl text-white">92.8%</span>
-                    <span class="text-[10px] text-emerald-400 block mt-1">26 / 28 sessions logged</span>
+                    <span id="stat-completion-rate" class="font-outfit font-black text-2xl text-white">0.0%</span>
+                    <span class="text-[10px] text-emerald-400 block mt-1">0 / 28 sessions logged</span>
                 </div>
                 <div class="brutal-card brutal-amber p-4">
                     <span class="text-[10px] font-mono text-amber-300 uppercase block font-bold">ACTIVE CONSISTENCY STREAK</span>
-                    <span id="stat-streak-days" class="font-outfit font-black text-2xl text-white">14 DAYS</span>
-                    <span class="text-[10px] text-amber-400 block mt-1">🔥 High Energy State</span>
+                    <span id="stat-streak-days" class="font-outfit font-black text-2xl text-white">0 DAYS</span>
+                    <span class="text-[10px] text-amber-400 block mt-1">Check off workouts to build streak</span>
                 </div>
             </div>
 
             <!-- Bento Charts Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- PERMANENT HISTORICAL LOGS ARCHIVE BENTO CARD -->
+                <div class="brutal-card brutal-purple p-5 space-y-4 lg:col-span-2">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                        <div>
+                            <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
+                                <i data-lucide="archive" class="w-5 h-5 text-purple-400"></i>
+                                Permanent Historical Logs Archive (Weekly & Monthly Saved Records)
+                            </h3>
+                            <p class="text-xs text-zinc-400">Your completed weekly & monthly achievements are permanently preserved here so stats never get wiped out after a cycle.</p>
+                        </div>
+                        <span class="text-xs font-mono text-purple-300 bg-purple-950 border border-purple-800 px-3 py-1 font-bold">
+                            PERMANENT HISTORY
+                        </span>
+                    </div>
+
+                    <div id="historical-archive-container" class="space-y-2 max-h-60 overflow-y-auto">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
 
                 <!-- 1. Volume Progression Line Chart -->
                 <div class="brutal-card p-5 space-y-4">
@@ -2696,6 +2716,34 @@ Keep crushing the daily plan! 💪⚡`;
                     heatContainer.appendChild(cell);
                 }
             }
+
+            // 6. Render Permanent Historical Archive Records
+            const archiveContainer = document.getElementById('historical-archive-container');
+            if (archiveContainer) {
+                archiveContainer.innerHTML = '';
+                const keys = Object.keys(APP_STATE.historicalArchive || {});
+                if (keys.length === 0) {
+                    archiveContainer.innerHTML = `<span class="text-xs font-mono text-zinc-500 block text-center py-4">No completed cycles archived yet. Check off your workouts and tap "Start New Week" to save completed records!</span>`;
+                } else {
+                    keys.reverse().forEach(key => {
+                        const item = APP_STATE.historicalArchive[key];
+                        const div = document.createElement('div');
+                        div.className = "p-3 bg-zinc-900 border border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-xs font-mono rounded-sm";
+                        div.innerHTML = `
+                            <div>
+                                <span class="font-bold text-white block uppercase text-sm">${key}</span>
+                                <span class="text-[10px] text-zinc-400">Archived on ${item.timestamp || 'Recent'}</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs">
+                                <span class="text-purple-400 font-bold">${(item.volumeKg || 0).toLocaleString()} kg</span>
+                                <span class="text-cyan-400 font-bold">${item.cardioKm || 0} km</span>
+                                <span class="text-emerald-400 font-bold">${item.completionPct || 0}% Done</span>
+                            </div>
+                        `;
+                        archiveContainer.appendChild(div);
+                    });
+                }
+            }
         }
 
         // TAB 5: PHYSIQUE RULES & V-TAPER SCORE
@@ -2960,7 +3008,8 @@ Keep crushing the daily plan! 💪⚡`;
                     checklistState: APP_STATE.checklistState,
                     customExerciseDetails: APP_STATE.customExerciseDetails || {},
                     waterLoggedMl: APP_STATE.waterLoggedMl,
-                    loggedMeals: APP_STATE.loggedMeals
+                    loggedMeals: APP_STATE.loggedMeals,
+                    historicalArchive: APP_STATE.historicalArchive || {}
                 }));
             } catch(e) {}
         }
@@ -2973,6 +3022,7 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.customExerciseDetails) APP_STATE.customExerciseDetails = parsed.customExerciseDetails;
                     if (parsed.waterLoggedMl !== undefined) APP_STATE.waterLoggedMl = parsed.waterLoggedMl;
                     if (parsed.loggedMeals) APP_STATE.loggedMeals = parsed.loggedMeals;
+                    if (parsed.historicalArchive) APP_STATE.historicalArchive = parsed.historicalArchive;
                 }
             } catch(e) {}
         }
@@ -3049,14 +3099,46 @@ Keep crushing the daily plan! 💪⚡`;
             if (btn) btn.innerText = "START";
         }
 
+        function archiveCurrentWeekOrMonth(label) {
+            if (!APP_STATE.historicalArchive) APP_STATE.historicalArchive = {};
+            
+            let vol = 0, cardio = 0, checked = 0, total = 0;
+            const wData = MONTH_WORKOUTS[APP_STATE.activeWeek];
+            if (wData) {
+                wData.days.forEach(dayObj => {
+                    dayObj.exercises.forEach(ex => {
+                        total++;
+                        if (APP_STATE.checklistState[ex.id]) {
+                            checked++;
+                            const details = getExerciseDetails(ex);
+                            vol += (details.setsCount || 2) * parseAvgReps(details.reps) * parseWeightKg(details.weight);
+                        }
+                    });
+                    if (dayObj.cardioDesc) {
+                        const m = dayObj.cardioDesc.match(/(\d+(\.\d+)?)\s*km/i);
+                        if (m && dayObj.exercises.some(e => APP_STATE.checklistState[e.id])) cardio += parseFloat(m[1]);
+                    }
+                });
+            }
+
+            APP_STATE.historicalArchive[label] = {
+                timestamp: new Date().toLocaleDateString(),
+                volumeKg: Math.round(vol),
+                cardioKm: parseFloat(cardio.toFixed(1)),
+                completionPct: total > 0 ? ((checked / total) * 100).toFixed(1) : "0.0"
+            };
+            saveLocalState();
+        }
+
         function resetChecklistForNewWeek() {
-            if (confirm("Reset completed checkmarks to start a fresh week? (Your custom exercise set & weight history will stay intact)")) {
+            if (confirm("Archive current week logs & start a fresh week? (Your custom set & weight history will stay intact, and finished week stats will be saved to your permanent archive!)")) {
+                archiveCurrentWeekOrMonth(`Month 1 - Week ${APP_STATE.activeWeek}`);
                 APP_STATE.checklistState = {};
                 saveLocalState();
                 pushCloudState();
                 renderWorkoutsTab();
                 renderAdminAnalytics();
-                alert("✨ Checklist reset for the new week!");
+                alert(`✨ Week ${APP_STATE.activeWeek} stats archived to permanent history, and checklist reset for your next cycle!`);
             }
         }
 
