@@ -1,4 +1,4 @@
-const CACHE_NAME = 'growthapp-cache-v4';
+const CACHE_NAME = 'growthapp-cache-v5';
 const ASSETS = [
   '/',
   '/index.html',
@@ -34,21 +34,37 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Intercept network requests and serve from cache
+// Intercept network requests - Network First for HTML/navigation requests so updates appear immediately
 self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate' || (event.request.url && event.request.url.includes('index.html'))) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cached asset, fetch fresh version in background (Stale-While-Revalidate)
         fetch(event.request)
           .then((networkResponse) => {
-            if (networkResponse.status === 200) {
+            if (networkResponse && networkResponse.status === 200) {
               caches.open(CACHE_NAME).then((cache) => {
                 cache.put(event.request, networkResponse);
               });
             }
           })
-          .catch(() => {/* Ignore network failures when offline */});
+          .catch(() => {});
         return cachedResponse;
       }
       return fetch(event.request);
