@@ -438,18 +438,13 @@
         </div>
     </div>
 
-    <!-- FLOATING REST INTERVAL STOPWATCH WIDGET (ONLY SHOWN IN WORKOUT ROUTINE TAB) -->
-    <div id="floating-rest-timer" class="hidden fixed bottom-16 md:bottom-6 right-4 z-50 bg-zinc-950/95 backdrop-blur-md border-2 border-cyan-400 p-3 rounded-md shadow-2xl flex items-center gap-3 transition-all select-none">
-        <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-            <span class="text-[10px] font-mono text-zinc-400 font-bold uppercase block">REST TIMER</span>
-        </div>
-        <span id="rest-timer-display" class="font-mono font-black text-xl text-white">01:30</span>
-        <div class="flex items-center gap-1">
-            <button onclick="adjustRestTimer(30)" class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-cyan-400 font-mono text-xs font-bold hover:bg-cyan-400 hover:text-black transition-all">+30s</button>
-            <button onclick="toggleRestTimer()" id="btn-rest-timer-start" class="px-2.5 py-0.5 bg-cyan-400 text-black font-outfit font-black text-xs uppercase shadow-sm hover:bg-cyan-300">START</button>
-            <button onclick="resetRestTimer()" class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-400 font-mono text-xs hover:text-white">✕</button>
-        </div>
+    <!-- MINIMALISTIC FLOATING REST TIMER PILL -->
+    <div id="floating-rest-timer" class="hidden fixed bottom-16 md:bottom-6 right-4 z-50 bg-zinc-950/90 backdrop-blur-xl border border-cyan-400/50 px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2.5 select-none transition-all">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <span id="rest-timer-display" class="font-mono font-bold text-sm text-cyan-300">01:30</span>
+        <button onclick="adjustRestTimer(30)" class="text-[10px] font-mono font-bold text-zinc-400 hover:text-white px-1">+30s</button>
+        <button onclick="toggleRestTimer()" id="btn-rest-timer-start" class="text-[10px] font-outfit font-black uppercase text-black bg-cyan-400 hover:bg-cyan-300 px-2 py-0.5 rounded-full">START</button>
+        <button onclick="resetRestTimer()" class="text-xs text-zinc-500 hover:text-red-400 px-0.5">✕</button>
     </div>
 
     <!-- MAIN CONTAINER -->
@@ -484,101 +479,37 @@
                 <div id="master-schedule-timeline" class="space-y-3">
                     <!-- Populated by JS -->
                 </div>
-            </div>
+                  <!-- ================= TAB 2: EXERCISE ROUTINE ================= -->
+        <div id="tab-workouts" class="tab-content hidden space-y-4">
 
-            <!-- GOA IRONMAN 70.3 TARGET RACE FINISH TIME CALCULATOR -->
-            <div class="brutal-card p-4 space-y-3 border border-zinc-800 bg-zinc-950">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                    <h4 class="font-outfit font-black text-sm uppercase text-white flex items-center gap-2">
-                        <i data-lucide="target" class="w-4 h-4 text-cyan-400"></i>
-                        GOA IRONMAN 70.3 Target Race Finish Time Calculator
-                    </h4>
-                    <span class="text-xs font-mono text-cyan-400">SELECT PACE TARGET TIER:</span>
+            <!-- Minimalist Horizontal Week & Day Selector Bar -->
+            <div class="brutal-card p-3 space-y-2.5">
+                <!-- Week Selector: W1 | W2 | W3 | W4 -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-zinc-800/80">
+                    <button onclick="switchWeek(1)" id="week-tab-1" class="week-tab-btn active px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-purple-400 bg-purple-400 text-black">W1</button>
+                    <button onclick="switchWeek(2)" id="week-tab-2" class="week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white">W2</button>
+                    <button onclick="switchWeek(3)" id="week-tab-3" class="week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white">W3</button>
+                    <button onclick="switchWeek(4)" id="week-tab-4" class="week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white">W4</button>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    <button onclick="selectRacePaceTarget('win')" id="pace-btn-win" class="p-2 bg-cyan-950 border-2 border-cyan-400 text-cyan-400 font-mono font-bold text-xs hover:bg-cyan-900 transition-all text-center">
-                        🥇 TO WIN (4h 05m)
-                    </button>
-                    <button onclick="selectRacePaceTarget('top10')" id="pace-btn-top10" class="p-2 bg-zinc-950 border border-zinc-700 text-zinc-300 font-mono font-bold text-xs hover:border-purple-400 transition-all text-center">
-                        🚀 TOP 10% (4h 45m)
-                    </button>
-                    <button onclick="selectRacePaceTarget('avg')" id="pace-btn-avg" class="p-2 bg-zinc-950 border border-zinc-700 text-zinc-300 font-mono font-bold text-xs hover:border-emerald-400 transition-all text-center">
-                        🏃 AVERAGE (5h 55m)
-                    </button>
-                    <button onclick="selectRacePaceTarget('pass')" id="pace-btn-pass" class="p-2 bg-zinc-950 border border-zinc-700 text-zinc-300 font-mono font-bold text-xs hover:border-amber-400 transition-all text-center">
-                        ⏱️ PASS CUTOFF (8h 10m)
-                    </button>
-                </div>
-
-                <div id="race-pace-summary-box" class="p-3 bg-zinc-950 border border-zinc-800 text-xs font-mono leading-relaxed text-zinc-300">
-                    Selected Target: <strong class="text-cyan-400">🥇 TO WIN GOA 70.3</strong> | Total Finish Time: <strong class="text-white">~4 Hours 05 Minutes</strong>
-                    <br>
-                    <span class="text-cyan-300">🏊 B-Swim (1.9k): 24m (@ 1:18/100m)</span> | 
-                    <span class="text-emerald-300">🚴 G-Cycle (90k): 2h 15m (@ 40.0 km/h)</span> | 
-                    <span class="text-red-300">🏃 R-Run (21.1k): 1h 22m (@ 3:53 min/km)</span> | 
-                    <span class="text-zinc-400">Transitions: ~4m</span>
+                <!-- Day Selector: MON | TUE | WED | THU | FRI | SAT | SUN -->
+                <div class="flex items-center gap-1.5 overflow-x-auto">
+                    <button onclick="switchDay(0)" id="day-tab-0" class="day-tab-btn active px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-cyan-400 bg-cyan-400 text-black">MON</button>
+                    <button onclick="switchDay(1)" id="day-tab-1" class="day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white">TUE</button>
+                    <button onclick="switchDay(2)" id="day-tab-2" class="day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white">WED</button>
+                    <button onclick="switchDay(3)" id="day-tab-3" class="day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white">THU</button>
+                    <button onclick="switchDay(4)" id="day-tab-4" class="day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white">FRI</button>
+                    <button onclick="switchDay(5)" id="day-tab-5" class="day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white">SAT</button>
+                    <button onclick="switchDay(6)" id="day-tab-6" class="day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white">SUN</button>
                 </div>
             </div>
 
-        </div>
-
-        <!-- ================= TAB 2: MONTH 1 EXERCISE PROGRAM ================= -->
-        <div id="tab-workouts" class="tab-content hidden space-y-6">
-
-            <!-- Week Selection Header -->
-            <div class="brutal-card p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <h2 class="font-outfit font-black text-xl uppercase text-white flex items-center gap-2">
-                        <span>MONTH 1: COMPLETE EXERCISE SHEET</span>
-                    </h2>
-                    <p class="text-xs text-zinc-400 mt-1">
-                        Form baseline, progressive overload, volume peaking, and deload protocols. Check off completed sets to auto-sync to cloud.
-                    </p>
-                </div>
-
-                <!-- Week Tabs & Export Button -->
-                <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
-                    <button onclick="switchWeek(1)" id="week-tab-1" class="week-tab-btn active px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-purple-400 bg-purple-400 text-black shadow-[2px_2px_0px_0px_#fff]">
-                        W1: Onboarding
-                    </button>
-                    <button onclick="switchWeek(2)" id="week-tab-2" class="week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-cyan-400 hover:text-white">
-                        W2: Overload
-                    </button>
-                    <button onclick="switchWeek(3)" id="week-tab-3" class="week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-emerald-400 hover:text-white">
-                        W3: Peak Volume
-                    </button>
-                    <button onclick="switchWeek(4)" id="week-tab-4" class="week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-amber-400 hover:text-white">
-                        W4: Deload 30%
-                    </button>
-                    <button onclick="exportWeeklyStatsCSV('active')" title="Export current week stats to CSV" class="brutal-btn brutal-btn-cyan text-xs px-3 py-2 flex items-center gap-1.5 whitespace-nowrap ml-1">
-                        📥 Export Stats
-                    </button>
-                </div>
-            </div>
-
-            <!-- Active Week Overview Card -->
-            <div id="week-goal-banner" class="brutal-card brutal-purple p-4 flex items-center justify-between bg-purple-950/20">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="target" class="w-6 h-6 text-purple-400"></i>
-                    <div>
-                        <span class="text-[10px] font-mono text-purple-300 uppercase block font-bold">CURRENT PHASE GOAL</span>
-                        <h4 id="week-goal-title" class="font-outfit font-black text-base text-white uppercase">
-                            WEEK 1: Onboarding & Baseline Alignment
-                        </h4>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <span id="week-progress-badge" class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1">
-                        0 / 7 DAYS COMPLETED (0%)
-                    </span>
-                </div>
-            </div>
-
-            <!-- Workouts Grid (Monday to Sunday) -->
-            <div id="workouts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Single Focused Workout Card View -->
+            <div id="workouts-grid" class="max-w-2xl mx-auto">
                 <!-- Rendered by JS -->
             </div>
+
+        </div>       </div>
 
         </div>
 
@@ -832,47 +763,22 @@
         <!-- ================= TAB 4: ADMIN ANALYTICS DASHBOARD ================= -->
         <div id="tab-analytics" class="tab-content hidden space-y-6">
 
-            <!-- WEEKLY STATS EXPORT CENTER BENTO CARD -->
-            <div class="brutal-card brutal-cyan p-5 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 space-y-4">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-800 pb-3">
+            <!-- AUTOMATIC SUNDAY 11:59 PM AUTO-EXPORT BENTO CARD -->
+            <div class="brutal-card brutal-cyan p-5 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 space-y-3">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                     <div>
-                        <h3 class="font-outfit font-black text-xl text-white uppercase flex items-center gap-2">
-                            <i data-lucide="download" class="w-6 h-6 text-cyan-400"></i>
-                            WEEKLY STATS EXPORT CENTER
+                        <h3 class="font-outfit font-black text-lg text-white uppercase flex items-center gap-2">
+                            <i data-lucide="clock" class="w-5 h-5 text-cyan-400"></i>
+                            AUTOMATIC SUNDAY 11:59 PM WEEKLY AUTO-EXPORT
                         </h3>
-                        <p class="text-xs text-zinc-400 mt-0.5">Export week-by-week workout logs, custom sets/reps, completion status, water intake & macros.</p>
+                        <p class="text-xs text-zinc-400">No manual exports required. Every Sunday at 11:59 PM, the app automatically compiles your CSV log & archives your completed week to permanent storage.</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono font-bold text-black bg-cyan-400 px-2.5 py-1 uppercase">CSV / JSON / SUMMARY</span>
-                    </div>
+                    <span class="text-xs font-mono font-bold text-black bg-cyan-400 px-2.5 py-1 uppercase flex items-center gap-1.5">
+                        <span class="live-dot bg-black"></span> AUTO-ACTIVE
+                    </span>
                 </div>
-
-                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3 w-full md:w-auto">
-                        <label class="text-xs font-mono text-zinc-300 whitespace-nowrap">SELECT TARGET WEEK:</label>
-                        <select id="export-week-select" class="bg-zinc-900 border-2 border-zinc-700 text-cyan-300 font-mono font-bold text-xs p-2 focus:border-cyan-400 focus:outline-none">
-                            <option value="1">Week 1: Onboarding</option>
-                            <option value="2">Week 2: Overload</option>
-                            <option value="3">Week 3: Peak Volume</option>
-                            <option value="4">Week 4: Deload 30%</option>
-                            <option value="all">ALL 4 WEEKS (COMPLETE MONTH)</option>
-                        </select>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-3">
-                        <button onclick="exportWeeklyStatsCSV(document.getElementById('export-week-select').value)" class="brutal-btn brutal-btn-cyan text-xs px-4 py-2.5 flex items-center gap-2">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                            Export CSV Sheet
-                        </button>
-                        <button onclick="exportWeeklyStatsJSON(document.getElementById('export-week-select').value)" class="brutal-btn brutal-btn-purple text-xs px-4 py-2.5 flex items-center gap-2">
-                            <i data-lucide="file-code" class="w-4 h-4"></i>
-                            Export JSON Backup
-                        </button>
-                        <button onclick="copyWeeklySummaryText(document.getElementById('export-week-select').value)" class="bg-zinc-900 text-zinc-300 border border-zinc-700 hover:border-amber-400 hover:text-white text-xs px-4 py-2.5 font-mono flex items-center gap-2 transition-all">
-                            <i data-lucide="copy" class="w-4 h-4 text-amber-400"></i>
-                            Copy Summary
-                        </button>
-                    </div>
+                <div id="sunday-auto-export-status" class="text-xs font-mono text-cyan-300">
+                    STATUS: <span class="text-emerald-400 font-bold">READY</span> — Next automated week export scheduled for Sunday @ 23:59:00.
                 </div>
             </div>
 
@@ -1680,6 +1586,9 @@
 
             APP_STATE.currentActiveSlot = activeSlot;
 
+            // Check Automated Sunday 11:59 PM Export Trigger
+            checkSundayAutoExport(now);
+
             if (activeSlot) {
                 if (currentActiveSlotId !== activeSlot.id) {
                     currentActiveSlotId = activeSlot.id;
@@ -1992,135 +1901,108 @@
             return null;
         }
 
+        function switchWeek(weekNum) {
+            APP_STATE.activeWeek = weekNum;
+            renderWorkoutsTab();
+        }
+
+        function switchDay(dayIndex) {
+            APP_STATE.activeDayIndex = dayIndex;
+            renderWorkoutsTab();
+        }
+
         function renderWorkoutsTab() {
             if (!APP_STATE.activeWeek) APP_STATE.activeWeek = 1;
+            if (APP_STATE.activeDayIndex === undefined) APP_STATE.activeDayIndex = 0;
 
-            // Highlight active week tab button
-            document.querySelectorAll('.week-tab-btn').forEach(btn => {
-                btn.className = "week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-cyan-400 hover:text-white";
+            // Highlight active week tab pill
+            document.querySelectorAll('.week-tab-btn').forEach((btn, idx) => {
+                btn.className = (idx + 1 === APP_STATE.activeWeek)
+                    ? "week-tab-btn active px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-purple-400 bg-purple-400 text-black"
+                    : "week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white";
             });
-            const activeWeekBtn = document.getElementById(`week-tab-${APP_STATE.activeWeek}`);
-            if (activeWeekBtn) activeWeekBtn.className = "week-tab-btn active px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-purple-400 bg-purple-400 text-black shadow-[2px_2px_0px_0px_#fff]";
+
+            // Highlight active day tab pill
+            document.querySelectorAll('.day-tab-btn').forEach((btn, idx) => {
+                btn.className = (idx === APP_STATE.activeDayIndex)
+                    ? "day-tab-btn active px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-cyan-400 bg-cyan-400 text-black"
+                    : "day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white";
+            });
 
             const data = MONTH_WORKOUTS[APP_STATE.activeWeek];
             if (!data) return;
-            document.getElementById('week-goal-title').innerText = data.goalTitle;
 
             const grid = document.getElementById('workouts-grid');
+            if (!grid) return;
             grid.innerHTML = '';
 
-            let totalExercises = 0;
-            let checkedExercises = 0;
+            const dayObj = data.days[APP_STATE.activeDayIndex] || data.days[0];
+            if (!dayObj) return;
 
-            data.days.forEach(dayObj => {
-                const dayCard = document.createElement('div');
-                dayCard.className = "brutal-card p-4 space-y-3 flex flex-col justify-between";
+            const dayCard = document.createElement('div');
+            dayCard.className = "brutal-card p-5 space-y-4";
 
-                let exercisesHtml = '';
-                dayObj.exercises.forEach(ex => {
-                    totalExercises++;
-                    const isChecked = APP_STATE.checklistState[ex.id] || false;
-                    if (isChecked) checkedExercises++;
+            let exercisesHtml = '';
+            dayObj.exercises.forEach(ex => {
+                const isChecked = APP_STATE.checklistState[ex.id] || false;
+                const details = getExerciseDetails(ex);
 
-                    const details = getExerciseDetails(ex);
-
-                    exercisesHtml += `
-                        <div class="group p-2.5 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 space-y-1.5 rounded-sm transition-all">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="space-y-0.5 flex-1">
-                                    <span class="font-outfit font-bold text-xs text-white block ${isChecked ? 'line-through text-zinc-500' : ''}">${ex.name}</span>
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <span class="text-[11px] font-mono font-bold text-purple-300">
-                                            ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
-                                        </span>
-                                        ${details.hasCustom ? '<span class="text-[9px] font-mono text-amber-400 bg-amber-950 border border-amber-800 px-1 font-bold">+CUSTOM</span>' : ''}
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <!-- UP / DOWN STEPPER CLICK CONTROL -->
-                                    <div class="flex flex-col bg-zinc-950 border border-zinc-700 overflow-hidden shadow-sm select-none">
-                                        <button title="Click upper half to add a set (+1)" onclick="adjustExerciseSet('${ex.id}', 1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors leading-none border-b border-zinc-800">
-                                            ▲
-                                        </button>
-                                        <button title="Click lower half to decrease a set (-1)" onclick="adjustExerciseSet('${ex.id}', -1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-pink-400 hover:bg-pink-400 hover:text-black transition-colors leading-none">
-                                            ▼
-                                        </button>
-                                    </div>
-                                    <input type="checkbox" class="check-box-brutal" ${isChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${ex.id}', this.checked)">
+                exercisesHtml += `
+                    <div class="group p-3 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 space-y-2 rounded-lg transition-all">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="space-y-0.5 flex-1">
+                                <span class="font-outfit font-bold text-sm text-white block ${isChecked ? 'line-through text-zinc-500' : ''}">${ex.name}</span>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs font-mono font-bold text-purple-300">
+                                        ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
+                                    </span>
+                                    ${details.hasCustom ? '<span class="text-[9px] font-mono text-amber-400 bg-amber-950 border border-amber-800 px-1 font-bold">+CUSTOM</span>' : ''}
                                 </div>
                             </div>
-
-                            <!-- Micro Quick Adjusters (Reveals seamlessly on hover/tap) -->
-                            <div class="${details.hasCustom ? 'flex' : 'hidden group-hover:flex'} items-center gap-1 text-[10px] font-mono text-zinc-400 pt-1 border-t border-zinc-800/60 transition-all">
-                                <span class="text-zinc-500">Quick:</span>
-                                <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded-sm">+2.5kg</button>
-                                <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded-sm">-2.5kg</button>
-                                <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-1.5 py-0.5 bg-zinc-800 hover:bg-cyan-900 hover:text-cyan-300 text-zinc-300 border border-zinc-700 rounded-sm">+1 Rep</button>
-                                ${details.hasCustom ? `<button onclick="resetExerciseDetail('${ex.id}')" title="Reset to preset" class="px-1.5 py-0.5 text-zinc-500 hover:text-red-400 ml-auto">Reset</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                // Daily Water Check item per day
-                totalExercises++;
-                const waterId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_water`;
-                const isWaterChecked = APP_STATE.checklistState[waterId] || false;
-                if (isWaterChecked) checkedExercises++;
-
-                let finisherHtml = '';
-                if (dayObj.finisher) {
-                    finisherHtml = `
-                        <div class="p-2.5 bg-amber-950/30 border border-amber-500/40 mt-2">
-                            <span class="text-[10px] font-mono text-amber-400 font-bold uppercase block">⚡ HIGH-ENERGY FINISHER</span>
-                            <span class="text-xs text-zinc-300 font-mono">${dayObj.finisher}</span>
-                        </div>
-                    `;
-                }
-
-                dayCard.innerHTML = `
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                            <h3 class="font-outfit font-black text-base text-white uppercase">${dayObj.day}</h3>
-                            <span class="text-[10px] font-mono bg-zinc-800 text-zinc-300 px-2 py-0.5">${dayObj.liftingTitle.split(' ')[0]}</span>
-                        </div>
-
-                        <!-- Cardio Section -->
-                        <div class="p-2.5 bg-cyan-950/30 border border-cyan-500/40 space-y-1">
-                            <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase block">🏃 LATE AFTERNOON CARDIO</span>
-                            <h4 class="font-outfit font-bold text-xs text-white">${dayObj.cardioTitle}</h4>
-                            <p class="text-[11px] text-zinc-300 font-mono">${dayObj.cardioDesc}</p>
-                        </div>
-
-                        <!-- Lifting Section -->
-                        <div class="space-y-2 pt-1">
-                            <span class="text-[10px] font-mono text-purple-300 font-bold uppercase block">🏋️ NIGHT HYPERTROPHY</span>
-                            <div class="space-y-1.5">
-                                ${exercisesHtml}
+                            <div class="flex items-center gap-2">
+                                <div class="flex flex-col bg-zinc-950 border border-zinc-700 overflow-hidden select-none rounded">
+                                    <button title="+1 Set" onclick="adjustExerciseSet('${ex.id}', 1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors leading-none border-b border-zinc-800">▲</button>
+                                    <button title="-1 Set" onclick="adjustExerciseSet('${ex.id}', -1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-pink-400 hover:bg-pink-400 hover:text-black transition-colors leading-none">▼</button>
+                                </div>
+                                <input type="checkbox" class="check-box-brutal" ${isChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${ex.id}', this.checked)">
                             </div>
                         </div>
 
-                        <!-- Daily Water Check Section -->
-                        <div class="p-2.5 bg-blue-950/40 border border-cyan-500/40 space-y-1 mt-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-mono text-cyan-300 font-bold uppercase flex items-center gap-1">
-                                    💧 3.5 – 4.0L WATER GOAL
-                                </span>
-                                <input type="checkbox" class="check-box-brutal" ${isWaterChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${waterId}', this.checked)">
-                            </div>
-                            <p class="text-[10px] text-zinc-400 font-mono">Hit 3.5–4.0L daily hydration target</p>
+                        <!-- Micro Quick Adjusters -->
+                        <div class="${details.hasCustom ? 'flex' : 'hidden group-hover:flex'} items-center gap-1.5 text-[10px] font-mono text-zinc-400 pt-1.5 border-t border-zinc-800/60">
+                            <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">+2.5kg</button>
+                            <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">-2.5kg</button>
+                            <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-2 py-0.5 bg-zinc-800 hover:bg-cyan-900 hover:text-cyan-300 text-zinc-300 border border-zinc-700 rounded">+1 Rep</button>
+                            ${details.hasCustom ? `<button onclick="resetExerciseDetail('${ex.id}')" title="Reset to preset" class="px-2 py-0.5 text-zinc-500 hover:text-red-400 ml-auto">Reset</button>` : ''}
                         </div>
-
-                        ${finisherHtml}
                     </div>
                 `;
-
-                grid.appendChild(dayCard);
             });
 
-            // Update Progress Badge
-            const percentage = Math.round((checkedExercises / (totalExercises || 1)) * 100);
-            document.getElementById('week-progress-badge').innerText = `${checkedExercises} / ${totalExercises} EXERCISES DONE (${percentage}%)`;
+            // Daily Water Check
+            const waterId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_water`;
+            const isWaterChecked = APP_STATE.checklistState[waterId] || false;
+
+            dayCard.innerHTML = `
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                    <div>
+                        <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase">${dayObj.day} • ${dayObj.liftingTitle}</span>
+                        <h3 class="font-outfit font-black text-base text-white uppercase">${dayObj.cardioTitle || 'CARDIO SESSION'}</h3>
+                    </div>
+                    <span class="text-xs font-mono text-zinc-400">${dayObj.cardioDesc || ''}</span>
+                </div>
+
+                <div class="space-y-3">
+                    ${exercisesHtml}
+                </div>
+
+                <div class="p-2.5 bg-blue-950/40 border border-cyan-500/40 flex items-center justify-between mt-2 rounded">
+                    <span class="text-[10px] font-mono text-cyan-300 font-bold uppercase">💧 3.5 – 4.0L DAILY WATER TARGET</span>
+                    <input type="checkbox" class="check-box-brutal" ${isWaterChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${waterId}', this.checked)">
+                </div>
+            `;
+
+            grid.appendChild(dayCard);
         }
 
         // EXPORT WEEKLY STATS ENGINE (CSV, JSON, CLIPBOARD SUMMARY)
@@ -2878,11 +2760,12 @@ Keep crushing the daily plan! 💪⚡`;
             lastPushTimestamp = Date.now();
 
             const payload = {
-                checklistState: APP_STATE.checklistState,
+                checklistState: APP_STATE.checklistState || {},
                 customExerciseDetails: APP_STATE.customExerciseDetails || {},
-                waterLoggedMl: APP_STATE.waterLoggedMl,
-                loggedMeals: APP_STATE.loggedMeals,
-                masterSchedule: APP_STATE.masterSchedule,
+                waterLoggedMl: APP_STATE.waterLoggedMl || 0,
+                loggedMeals: APP_STATE.loggedMeals || [],
+                masterSchedule: APP_STATE.masterSchedule || [],
+                historicalArchive: APP_STATE.historicalArchive || {},
                 updatedAt: new Date().toISOString()
             };
 
@@ -2910,12 +2793,12 @@ Keep crushing the daily plan! 💪⚡`;
                 updateSyncUIStatus(true, "SERVER LIVE");
             } catch(e) {}
 
-            setTimeout(() => { isPushingInFlight = false; }, 2000);
+            setTimeout(() => { isPushingInFlight = false; }, 1200);
         }
 
         async function pullCloudState() {
-            // Protect local interaction on PC or phone from being overwritten during push
-            if (isPushingInFlight || (Date.now() - lastPushTimestamp < 2000)) return;
+            // Protect local interaction on PC or phone from being overwritten during active push
+            if (isPushingInFlight || (Date.now() - lastPushTimestamp < 1200)) return;
 
             let cloudData = null;
 
@@ -2942,13 +2825,9 @@ Keep crushing the daily plan! 💪⚡`;
             if (cloudData) {
                 let updated = false;
 
-                if (cloudData.checklistState) {
-                    for (let key in cloudData.checklistState) {
-                        if (APP_STATE.checklistState[key] !== cloudData.checklistState[key]) {
-                            APP_STATE.checklistState[key] = cloudData.checklistState[key];
-                            updated = true;
-                        }
-                    }
+                if (cloudData.checklistState && JSON.stringify(cloudData.checklistState) !== JSON.stringify(APP_STATE.checklistState)) {
+                    APP_STATE.checklistState = cloudData.checklistState;
+                    updated = true;
                 }
 
                 if (cloudData.customExerciseDetails && JSON.stringify(cloudData.customExerciseDetails) !== JSON.stringify(APP_STATE.customExerciseDetails)) {
@@ -2966,10 +2845,23 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
+                if (cloudData.masterSchedule && JSON.stringify(cloudData.masterSchedule) !== JSON.stringify(APP_STATE.masterSchedule)) {
+                    APP_STATE.masterSchedule = cloudData.masterSchedule;
+                    updated = true;
+                }
+
+                if (cloudData.historicalArchive && JSON.stringify(cloudData.historicalArchive) !== JSON.stringify(APP_STATE.historicalArchive)) {
+                    APP_STATE.historicalArchive = cloudData.historicalArchive;
+                    updated = true;
+                }
+
                 if (updated) {
+                    saveLocalState();
+                    renderScheduleTimeline();
                     renderWorkoutsTab();
                     renderLoggedMeals();
                     updateMacroScales();
+                    renderAdminAnalytics();
                 }
 
                 updateSyncUIStatus(true, "SERVER LIVE");
@@ -3130,6 +3022,57 @@ Keep crushing the daily plan! 💪⚡`;
                 completionPct: total > 0 ? ((checked / total) * 100).toFixed(1) : "0.0"
             };
             saveLocalState();
+        }
+
+        let hasRunSundayExportToday = false;
+        function checkSundayAutoExport(now) {
+            const isSunday = (now.getDay() === 0);
+            const is2359 = (now.getHours() === 23 && now.getMinutes() === 59);
+
+            if (isSunday && is2359) {
+                if (!hasRunSundayExportToday) {
+                    hasRunSundayExportToday = true;
+                    autoPerformSundayAutoExport();
+                }
+            } else if (!isSunday) {
+                hasRunSundayExportToday = false;
+            }
+        }
+
+        function autoPerformSundayAutoExport() {
+            const weekNum = APP_STATE.activeWeek || 1;
+            archiveCurrentWeekOrMonth(`Week ${weekNum} (Auto-Exported Sunday 11:59PM)`);
+
+            let csv = "Week,Day,Lifting Title,Exercise,Sets,Reps,Weight,Status\n";
+            const wData = MONTH_WORKOUTS[weekNum];
+            if (wData) {
+                wData.days.forEach(d => {
+                    d.exercises.forEach(ex => {
+                        const isDone = APP_STATE.checklistState[ex.id] ? "COMPLETED" : "PENDING";
+                        const details = getExerciseDetails(ex);
+                        csv += `Week ${weekNum},"${d.day}","${d.liftingTitle}","${ex.name}","${details.setsCount}","${details.reps}","${details.weight}","${isDone}"\n`;
+                    });
+                });
+            }
+
+            try {
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `GrowthApp_Sunday_AutoExport_Week_${weekNum}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch(e) {}
+
+            pushCloudState();
+
+            const statusEl = document.getElementById('sunday-auto-export-status');
+            if (statusEl) {
+                statusEl.innerHTML = `STATUS: <span class="text-emerald-400 font-bold">AUTO-EXPORTED SUNDAY 11:59 PM</span> — Week ${weekNum} CSV saved & archived!`;
+            }
         }
 
         function resetChecklistForNewWeek() {

@@ -56,6 +56,7 @@ export default async function handler(req, res) {
       if (data.waterLoggedMl !== undefined) serverState.waterLoggedMl = data.waterLoggedMl;
       if (data.loggedMeals) serverState.loggedMeals = data.loggedMeals;
       if (data.masterSchedule) serverState.masterSchedule = data.masterSchedule;
+      if (data.historicalArchive) serverState.historicalArchive = { ...serverState.historicalArchive, ...data.historicalArchive };
       serverState.updatedAt = new Date().toISOString();
 
       if (kvUrl && kvToken) {
