@@ -287,18 +287,6 @@
             pointer-events: none;
         }
 
-        /* REACTBITS ANIMATION STYLES & BACKGROUND CANVAS */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -10;
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
         /* ReactBits Aurora Glow Orbs */
         .aurora-orb-1 {
             position: fixed;
@@ -359,8 +347,7 @@
 </head>
 <body class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
 
-    <!-- REACTBITS CANVAS BACKGROUND & AURORA ORBS -->
-    <canvas id="bg-canvas"></canvas>
+    <!-- AURORA ORBS -->
     <div class="aurora-orb-1"></div>
     <div class="aurora-orb-2"></div>
 
@@ -949,49 +936,6 @@
 
         </div>
 
-            <!-- Supabase Cloud Sync Credentials Card -->
-            <div class="brutal-card brutal-purple p-5 space-y-4 bg-purple-950/20">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                    <div>
-                        <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
-                            <i data-lucide="database" class="w-5 h-5 text-purple-400"></i>
-                            Supabase Real-Time Cloud Credentials
-                        </h3>
-                        <p class="text-xs text-zinc-400 mt-0.5">Link your Supabase database to sync workout checkmarks & logs across laptop and phone live.</p>
-                    </div>
-                    <span id="db-status-badge" class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1">
-                        CLOUD CONNECTED
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-mono text-zinc-300 block mb-1">SUPABASE API URL</label>
-                        <input type="text" id="supabase-url-input" placeholder="https://your-project.supabase.co" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2.5 font-mono focus:border-purple-400 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="text-xs font-mono text-zinc-300 block mb-1">SUPABASE ANON / PUBLIC KEY</label>
-                        <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1Ni..." class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2.5 font-mono focus:border-purple-400 focus:outline-none">
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3 pt-2">
-                    <button onclick="saveSupabaseCredentials()" class="brutal-btn brutal-btn-purple text-xs px-4 py-2 flex items-center gap-2">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        Save Credentials & Sync
-                    </button>
-                    <button onclick="testSupabaseConnection()" class="bg-zinc-900 text-zinc-300 border border-zinc-700 hover:border-cyan-400 text-xs px-4 py-2 font-mono flex items-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i>
-                        Test Connection
-                    </button>
-                    <button onclick="resetSupabaseCredentials()" class="text-xs text-zinc-500 hover:text-red-400 font-mono ml-auto">
-                        Reset Defaults
-                    </button>
-                </div>
-            </div>
-
-        </div>
-
     </main>
 
     <!-- QUICK EVENT INSERT MODAL -->
@@ -1166,19 +1110,15 @@
                         day: "Saturday",
                         cardioTitle: "LONG BIKE SPIN",
                         cardioDesc: "13–15 km @ 21–23 km/h ~35–40 mins.",
-                        liftingTitle: "NO LIFTING (CNS Reset)",
-                        exercises: [
-                            { id: "w1_s1", name: "Central Nervous System Recovery", sets: "Rest lifting muscles completely" }
-                        ]
+                        liftingTitle: "NO LIFTING",
+                        exercises: []
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST & RECOVERY",
-                        cardioDesc: "Rest completely, hydrate, and batch cook meals.",
+                        cardioDesc: "Rest completely & hydrate.",
                         liftingTitle: "FULL REST",
-                        exercises: [
-                            { id: "w1_su1", name: "Batch Meal Prep & Hydration", sets: "3.5-4.0L Water Target" }
-                        ]
+                        exercises: []
                     }
                 ]
             },
@@ -1259,18 +1199,14 @@
                         cardioTitle: "LONG CARDIO RUN",
                         cardioDesc: "Long Run/Walk — 3.0–3.5 km @ 8:00 min/km (~25 mins)",
                         liftingTitle: "NO LIFTING",
-                        exercises: [
-                            { id: "w2_s1", name: "Cardio Focus Day", sets: "No lifting sessions" }
-                        ]
+                        exercises: []
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST",
                         cardioDesc: "Rest completely",
                         liftingTitle: "FULL REST",
-                        exercises: [
-                            { id: "w2_su1", name: "Full CNS Recovery", sets: "Hydrate & Prep" }
-                        ]
+                        exercises: []
                     }
                 ]
             },
@@ -1349,18 +1285,14 @@
                         cardioTitle: "LONG BIKE SPIN",
                         cardioDesc: "15–18 km @ 22–24 km/h (~40 mins)",
                         liftingTitle: "NO LIFTING",
-                        exercises: [
-                            { id: "w3_s1", name: "CNS Active Reset", sets: "No lifting" }
-                        ]
+                        exercises: []
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST",
                         cardioDesc: "Rest completely",
                         liftingTitle: "FULL REST",
-                        exercises: [
-                            { id: "w3_su1", name: "Rest & Hydrate", sets: "Full rest" }
-                        ]
+                        exercises: []
                     }
                 ]
             },
@@ -1429,18 +1361,14 @@
                         cardioTitle: "LONG CARDIO",
                         cardioDesc: "Easy 2.5 km Run/Walk",
                         liftingTitle: "NO LIFTING",
-                        exercises: [
-                            { id: "w4_s1", name: "CNS Deload Reset", sets: "No lifting" }
-                        ]
+                        exercises: []
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST",
                         cardioDesc: "Rest completely",
                         liftingTitle: "FULL REST",
-                        exercises: [
-                            { id: "w4_su1", name: "Deload Complete", sets: "Ready for Phase 2" }
-                        ]
+                        exercises: []
                     }
                 ]
             }
@@ -1582,7 +1510,7 @@
             showActiveSlotToast();
         }
 
-        // TAB 1: RENDER MASTER SCHEDULE TIMELINE (COLOR GRADED WITH WHITE + GLINT FOR ACTIVE TIME)
+        // TAB 1: RENDER MASTER SCHEDULE TIMELINE (CLEAN SINGLE-LINE CARDS)
         function renderScheduleTimeline() {
             const container = document.getElementById('master-schedule-timeline');
             if (!container) return;
@@ -1617,38 +1545,31 @@
                 }
 
                 if (isActiveNow) {
-                    // PURE WHITE COLOR GRADE + GLINT SHIMMER + BLUR TO STAND OUT
-                    div.className = `p-4 border-2 active-time-plan-white flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition-all rounded-sm`;
+                    div.className = `p-3 border-2 active-time-plan-white flex items-center justify-between gap-2 transition-all rounded-sm`;
                     div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <span class="badge-active-time-black font-mono text-xs font-black px-2.5 py-1 bg-black text-white flex items-center gap-1.5 shadow-sm">
-                                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                        <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                            <span class="badge-active-time-black font-mono text-xs font-black px-2 py-0.5 bg-black text-white flex items-center gap-1.5 shrink-0 shadow-sm">
+                                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
                                 <span class="text-white font-bold">${item.start} – ${item.end}</span>
                             </span>
-                            <div>
-                                <h4 class="font-outfit font-black text-base text-black uppercase flex items-center gap-2">
-                                    <span>${item.title}</span>
-                                    <span class="badge-active-time-black text-[9px] bg-black text-white px-2 py-0.5 font-mono uppercase tracking-wider font-bold">⚡ ACTIVE TIME PLAN</span>
-                                    ${item.locked ? '<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.2 font-mono font-bold">LOCKED</span>' : ''}
-                                </h4>
-                                <p class="text-xs text-zinc-900 font-bold mt-0.5">${item.desc}</p>
-                            </div>
+                            <h4 class="font-outfit font-black text-xs md:text-sm text-black uppercase truncate flex items-center gap-1.5">
+                                <span class="truncate">${item.title}</span>
+                                <span class="badge-active-time-black text-[8px] bg-black text-white px-1.5 py-0.2 font-mono uppercase tracking-wider font-bold shrink-0">ACTIVE</span>
+                                ${item.locked ? '<span class="text-[8px] bg-red-600 text-white px-1 py-0.2 font-mono font-bold shrink-0">LOCKED</span>' : ''}
+                            </h4>
                         </div>
                     `;
                 } else {
-                    div.className = `p-3.5 border-2 ${borderClass} flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition-all`;
+                    div.className = `p-2.5 border ${borderClass} flex items-center justify-between gap-2 transition-all rounded-sm`;
                     div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <span class="font-mono text-xs font-bold px-2.5 py-1 ${badgeClass}">
+                        <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                            <span class="font-mono text-xs font-bold px-2 py-0.5 ${badgeClass} shrink-0">
                                 ${item.start} – ${item.end}
                             </span>
-                            <div>
-                                <h4 class="font-outfit font-bold text-sm text-white uppercase flex items-center gap-2">
-                                    ${item.title}
-                                    ${item.locked ? '<span class="text-[9px] bg-red-950 text-red-300 border border-red-800 px-1.5 py-0.2">LOCKED</span>' : ''}
-                                </h4>
-                                <p class="text-xs text-zinc-400 mt-0.5">${item.desc}</p>
-                            </div>
+                            <h4 class="font-outfit font-bold text-xs md:text-sm text-white uppercase truncate flex items-center gap-1.5">
+                                <span class="truncate">${item.title}</span>
+                                ${item.locked ? '<span class="text-[8px] bg-red-950 text-red-300 border border-red-800 px-1 py-0.2 shrink-0">LOCKED</span>' : ''}
+                            </h4>
                         </div>
                     `;
                 }
@@ -1875,41 +1796,50 @@
             dayCard.className = "brutal-card p-5 space-y-4";
 
             let exercisesHtml = '';
-            dayObj.exercises.forEach(ex => {
-                const isChecked = APP_STATE.checklistState[ex.id] || false;
-                const details = getExerciseDetails(ex);
-
-                exercisesHtml += `
-                    <div class="group p-3 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 space-y-2 rounded-lg transition-all">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="space-y-0.5 flex-1">
-                                <span class="font-outfit font-bold text-sm text-white block ${isChecked ? 'line-through text-zinc-500' : ''}">${ex.name}</span>
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs font-mono font-bold text-purple-300">
-                                        ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
-                                    </span>
-                                    ${details.hasCustom ? '<span class="text-[9px] font-mono text-amber-400 bg-amber-950 border border-amber-800 px-1 font-bold">+CUSTOM</span>' : ''}
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex flex-col bg-zinc-950 border border-zinc-700 overflow-hidden select-none rounded">
-                                    <button title="+1 Set" onclick="adjustExerciseSet('${ex.id}', 1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors leading-none border-b border-zinc-800">▲</button>
-                                    <button title="-1 Set" onclick="adjustExerciseSet('${ex.id}', -1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-pink-400 hover:bg-pink-400 hover:text-black transition-colors leading-none">▼</button>
-                                </div>
-                                <input type="checkbox" class="check-box-brutal" ${isChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${ex.id}', this.checked)">
-                            </div>
-                        </div>
-
-                        <!-- Micro Quick Adjusters -->
-                        <div class="${details.hasCustom ? 'flex' : 'hidden group-hover:flex'} items-center gap-1.5 text-[10px] font-mono text-zinc-400 pt-1.5 border-t border-zinc-800/60">
-                            <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">+2.5kg</button>
-                            <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">-2.5kg</button>
-                            <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-2 py-0.5 bg-zinc-800 hover:bg-cyan-900 hover:text-cyan-300 text-zinc-300 border border-zinc-700 rounded">+1 Rep</button>
-                            ${details.hasCustom ? `<button onclick="resetExerciseDetail('${ex.id}')" title="Reset to preset" class="px-2 py-0.5 text-zinc-500 hover:text-red-400 ml-auto">Reset</button>` : ''}
-                        </div>
+            if (dayObj.exercises.length === 0) {
+                exercisesHtml = `
+                    <div class="p-4 bg-zinc-900/80 border border-zinc-800 text-center rounded-lg space-y-1">
+                        <span class="text-xs font-mono text-cyan-400 font-bold uppercase block">⚡ FULL REST & RECOVERY</span>
+                        <p class="text-[11px] font-mono text-zinc-400">Zero lifting required. Hydrate and let muscles rebuild for your next session!</p>
                     </div>
                 `;
-            });
+            } else {
+                dayObj.exercises.forEach(ex => {
+                    const isChecked = APP_STATE.checklistState[ex.id] || false;
+                    const details = getExerciseDetails(ex);
+
+                    exercisesHtml += `
+                        <div class="group p-3 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 space-y-2 rounded-lg transition-all">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="space-y-0.5 flex-1">
+                                    <span class="font-outfit font-bold text-sm text-white block ${isChecked ? 'line-through text-zinc-500' : ''}">${ex.name}</span>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-xs font-mono font-bold text-purple-300">
+                                            ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
+                                        </span>
+                                        ${details.hasCustom ? '<span class="text-[9px] font-mono text-amber-400 bg-amber-950 border border-amber-800 px-1 font-bold">+CUSTOM</span>' : ''}
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex flex-col bg-zinc-950 border border-zinc-700 overflow-hidden select-none rounded">
+                                        <button title="+1 Set" onclick="adjustExerciseSet('${ex.id}', 1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors leading-none border-b border-zinc-800">▲</button>
+                                        <button title="-1 Set" onclick="adjustExerciseSet('${ex.id}', -1)" class="px-2 py-0.5 text-[10px] font-black font-mono text-pink-400 hover:bg-pink-400 hover:text-black transition-colors leading-none">▼</button>
+                                    </div>
+                                    <input type="checkbox" class="check-box-brutal" ${isChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${ex.id}', this.checked)">
+                                </div>
+                            </div>
+
+                            <!-- Micro Quick Adjusters -->
+                            <div class="${details.hasCustom ? 'flex' : 'hidden group-hover:flex'} items-center gap-1.5 text-[10px] font-mono text-zinc-400 pt-1.5 border-t border-zinc-800/60">
+                                <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">+2.5kg</button>
+                                <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">-2.5kg</button>
+                                <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-2 py-0.5 bg-zinc-800 hover:bg-cyan-900 hover:text-cyan-300 text-zinc-300 border border-zinc-700 rounded">+1 Rep</button>
+                                ${details.hasCustom ? `<button onclick="resetExerciseDetail('${ex.id}')" title="Reset to preset" class="px-2 py-0.5 text-zinc-500 hover:text-red-400 ml-auto">Reset</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
 
             // Daily Water Check
             const waterId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_water`;
@@ -3099,95 +3029,6 @@ Keep crushing the daily plan! 💪⚡`;
                 alert(`✨ Week ${APP_STATE.activeWeek} stats archived to permanent history, and checklist reset for your next cycle!`);
             }
         }
-
-        // REACTBITS INTERACTIVE PARTICLE CANVAS BACKGROUND ENGINE
-        (function initReactBitsBackground() {
-            const canvas = document.getElementById('bg-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            let width = canvas.width = window.innerWidth;
-            let height = canvas.height = window.innerHeight;
-
-            window.addEventListener('resize', () => {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            });
-
-            const particles = [];
-            const particleCount = Math.min(60, Math.floor(width / 25));
-
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.4,
-                    vy: (Math.random() - 0.5) * 0.4,
-                    radius: Math.random() * 1.8 + 0.8,
-                    alpha: Math.random() * 0.5 + 0.2
-                });
-            }
-
-            let mouseX = width / 2;
-            let mouseY = height / 2;
-
-            window.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-
-            function render() {
-                ctx.clearRect(0, 0, width, height);
-
-                // Constellation connection lines
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-
-                        if (dist < 120) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(0, 240, 255, ${0.15 * (1 - dist / 120)})`;
-                            ctx.lineWidth = 0.6;
-                            ctx.stroke();
-                        }
-                    }
-                }
-
-                // Update particles with mouse repulsion
-                particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-
-                    if (p.x < 0) p.x = width;
-                    if (p.x > width) p.x = 0;
-                    if (p.y < 0) p.y = height;
-                    if (p.y > height) p.y = 0;
-
-                    const mdx = p.x - mouseX;
-                    const mdy = p.y - mouseY;
-                    const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-                    if (mdist < 100) {
-                        p.x += (mdx / mdist) * 0.8;
-                        p.y += (mdy / mdist) * 0.8;
-                    }
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(192, 132, 252, ${p.alpha})`;
-                    ctx.shadowBlur = 8;
-                    ctx.shadowColor = "#00f0ff";
-                    ctx.fill();
-                });
-
-                requestAnimationFrame(render);
-            }
-
-            render();
-        })();
     </script>
 </body>
 </html>
