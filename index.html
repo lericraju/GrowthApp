@@ -223,8 +223,18 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .active-time-plan-white * {
+        .active-time-plan-white h4,
+        .active-time-plan-white p {
             color: #000000 !important;
+        }
+
+        .active-time-plan-white .badge-active-time-black {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        .active-time-plan-white .badge-active-time-black * {
+            color: #ffffff !important;
         }
 
         .active-time-plan-white::after {
@@ -1779,17 +1789,17 @@
                     div.className = `p-4 border-2 active-time-plan-white flex flex-col md:flex-row items-start md:items-center justify-between gap-3 transition-all rounded-sm`;
                     div.innerHTML = `
                         <div class="flex items-center gap-3">
-                            <span class="font-mono text-xs font-black px-2.5 py-1 bg-black text-white flex items-center gap-1.5 shadow-sm">
+                            <span class="badge-active-time-black font-mono text-xs font-black px-2.5 py-1 bg-black text-white flex items-center gap-1.5 shadow-sm">
                                 <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-                                ${item.start} – ${item.end}
+                                <span class="text-white font-bold">${item.start} – ${item.end}</span>
                             </span>
                             <div>
                                 <h4 class="font-outfit font-black text-base text-black uppercase flex items-center gap-2">
                                     <span>${item.title}</span>
-                                    <span class="text-[9px] bg-black text-white px-2 py-0.5 font-mono uppercase tracking-wider font-bold">⚡ ACTIVE TIME PLAN</span>
-                                    ${item.locked ? '<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.2 font-mono">LOCKED</span>' : ''}
+                                    <span class="badge-active-time-black text-[9px] bg-black text-white px-2 py-0.5 font-mono uppercase tracking-wider font-bold">⚡ ACTIVE TIME PLAN</span>
+                                    ${item.locked ? '<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.2 font-mono font-bold">LOCKED</span>' : ''}
                                 </h4>
-                                <p class="text-xs text-zinc-900 font-semibold mt-0.5">${item.desc}</p>
+                                <p class="text-xs text-zinc-900 font-bold mt-0.5">${item.desc}</p>
                             </div>
                         </div>
                     `;
