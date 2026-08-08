@@ -3,12 +3,8 @@
 
 let serverState = {
   checklistState: {},
-  waterLoggedMl: 2500,
-  loggedMeals: [
-    { id: 1, name: "🥣 Oats & Egg Whites", cal: 450, prot: 40, carbs: 55, fats: 6, sugar: 2 },
-    { id: 2, name: "🍗 Chicken Breast & Rice", cal: 550, prot: 50, carbs: 65, fats: 8, sugar: 1 },
-    { id: 3, name: "🥤 Whey Shake & Banana", cal: 250, prot: 20, carbs: 25, fats: 2, sugar: 13 }
-  ],
+  waterLoggedMl: 0,
+  loggedMeals: [],
   updatedAt: new Date().toISOString()
 };
 
