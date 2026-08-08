@@ -253,16 +253,6 @@
             animation: glintSweep 3.2s infinite ease-in-out;
             pointer-events: none;
         }
-
-        /* Ultra-Minimalist Zen Mode */
-        body.zen-mode-active .zen-hide {
-            display: none !important;
-        }
-        body.zen-mode-active .brutal-card {
-            box-shadow: none !important;
-            border-color: rgba(255, 255, 255, 0.12) !important;
-            background-color: #0c0c0e !important;
-        }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-16">
@@ -286,44 +276,32 @@
                     </div>
                 </div>
 
-                <!-- Sync Status Pill, Zen Mode Toggle & Daily Plan Notification trigger -->
-                <div class="flex items-center gap-2 flex-wrap">
-                    <div class="flex items-center gap-2 px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-xs font-mono">
-                        <span id="sync-icon" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="sync-label" class="text-zinc-300 font-bold">SERVER LIVE</span>
-                    </div>
-                    <button onclick="toggleZenMode()" id="btn-zen-mode" class="px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 font-outfit font-bold text-xs flex items-center gap-1 hover:border-white hover:text-white transition-all uppercase rounded-sm">
-                        🧘 Zen Mode
-                    </button>
-                    <button onclick="showDailyPlanNotificationModal()" id="btn-daily-notif-pop" class="px-2.5 py-1 bg-amber-400 text-black border border-white font-outfit font-bold text-xs shadow-[2px_2px_0px_0px_#fff] flex items-center gap-1 hover:bg-amber-300 transition-all uppercase">
-                        🔔 Daily Plan
-                    </button>
+                <!-- Sync LED Indicator -->
+                <div class="flex items-center gap-2">
+                    <span id="sync-icon" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" title="Server Sync Live"></span>
                 </div>
             </div>
 
             <!-- Desktop Navigation Tabs (Hidden on mobile) -->
             <nav class="hidden md:flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-                <button onclick="switchTab('notifier')" id="tab-btn-notifier" class="tab-btn active px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-cyan-400 bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#fff] whitespace-nowrap transition-all">
-                    📅 Schedule & Life Notifier
+                <button onclick="switchTab('notifier')" id="tab-btn-notifier" class="tab-btn active px-3.5 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-cyan-400 bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#fff] whitespace-nowrap transition-all">
+                    📅 Schedule
                 </button>
-                <button onclick="switchTab('workouts')" id="tab-btn-workouts" class="tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-purple-400 hover:text-white whitespace-nowrap transition-all">
-                    🏋️ Month 1 Routine
+                <button onclick="switchTab('workouts')" id="tab-btn-workouts" class="tab-btn px-3.5 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-purple-400 hover:text-white whitespace-nowrap transition-all">
+                    🏋️ Routine
                 </button>
-                <button onclick="switchTab('calories')" id="tab-btn-calories" class="tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-amber-400 hover:text-white whitespace-nowrap transition-all">
-                    🥗 Calorie & Macros
+                <button onclick="switchTab('calories')" id="tab-btn-calories" class="tab-btn px-3.5 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-amber-400 hover:text-white whitespace-nowrap transition-all">
+                    🥗 Macros
                 </button>
-                <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-emerald-400 hover:text-white whitespace-nowrap transition-all">
-                    📊 Admin Analytics
-                </button>
-                <button onclick="switchTab('physique')" id="tab-btn-physique" class="tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-pink-400 hover:text-white whitespace-nowrap transition-all">
-                    ⚡ Rules & DB
+                <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="tab-btn px-3.5 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-emerald-400 hover:text-white whitespace-nowrap transition-all">
+                    📊 Analytics & V-Taper
                 </button>
             </nav>
 
         </div>
     </header>
 
-    <!-- STICKY MOBILE BOTTOM NAVIGATION BAR (Android Touch View Optimization) -->
+    <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#09090b]/95 backdrop-blur-lg border-t-2 border-zinc-800 px-2 py-2 flex items-center justify-around">
         <button onclick="switchTab('notifier')" id="mob-nav-notifier" class="mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1">
             <i data-lucide="calendar" class="w-5 h-5"></i>
@@ -331,7 +309,7 @@
         </button>
         <button onclick="switchTab('workouts')" id="mob-nav-workouts" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
             <i data-lucide="dumbbell" class="w-5 h-5"></i>
-            <span class="text-[10px] font-outfit uppercase">Workouts</span>
+            <span class="text-[10px] font-outfit uppercase">Routine</span>
         </button>
         <button onclick="switchTab('calories')" id="mob-nav-calories" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
             <i data-lucide="utensils" class="w-5 h-5"></i>
@@ -339,141 +317,66 @@
         </button>
         <button onclick="switchTab('analytics')" id="mob-nav-analytics" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
             <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-            <span class="text-[10px] font-outfit uppercase">Stats</span>
-        </button>
-        <button onclick="switchTab('physique')" id="mob-nav-physique" class="mob-nav-btn flex flex-col items-center gap-0.5 text-zinc-400 font-bold p-1">
-            <i data-lucide="settings" class="w-5 h-5"></i>
-            <span class="text-[10px] font-outfit uppercase">Rules</span>
+            <span class="text-[10px] font-outfit uppercase">Analytics</span>
         </button>
     </nav>
+
+    <!-- SLIDE-OUT 3-SECOND ACTIVE ACTIVITY TOAST NOTIFIER -->
+    <div id="active-slot-toast" class="fixed top-16 right-4 z-50 bg-zinc-950/95 backdrop-blur-md border-2 border-cyan-400 px-4 py-2.5 rounded-sm shadow-2xl flex items-center gap-3 transition-all duration-500 transform translate-x-full opacity-0 pointer-events-none">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+        <div>
+            <span class="text-[9px] font-mono text-cyan-400 font-bold uppercase block">⚡ CURRENT ACTIVE PLAN</span>
+            <span id="toast-slot-title" class="font-outfit font-bold text-xs text-white uppercase block">College Classes</span>
+            <span id="toast-slot-time" class="text-[10px] font-mono text-zinc-400 block">07:30 – 14:00 • Next in 03h 40m</span>
+        </div>
+    </div>
+
+    <!-- FLOATING REST INTERVAL STOPWATCH WIDGET -->
+    <div id="floating-rest-timer" class="fixed bottom-16 md:bottom-6 right-4 z-50 bg-zinc-950/95 backdrop-blur-md border-2 border-cyan-400 p-3 rounded-md shadow-2xl flex items-center gap-3 transition-all select-none">
+        <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+            <span class="text-[10px] font-mono text-zinc-400 font-bold uppercase block">REST TIMER</span>
+        </div>
+        <span id="rest-timer-display" class="font-mono font-black text-xl text-white">01:30</span>
+        <div class="flex items-center gap-1">
+            <button onclick="adjustRestTimer(30)" class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-cyan-400 font-mono text-xs font-bold hover:bg-cyan-400 hover:text-black transition-all">+30s</button>
+            <button onclick="toggleRestTimer()" id="btn-rest-timer-start" class="px-2.5 py-0.5 bg-cyan-400 text-black font-outfit font-black text-xs uppercase shadow-sm hover:bg-cyan-300">START</button>
+            <button onclick="resetRestTimer()" class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-400 font-mono text-xs hover:text-white">✕</button>
+        </div>
+    </div>
 
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6">
 
-        <!-- LIVE ACTIVE ACTIVITY NOTIFIER BANNER -->
-        <div class="brutal-card brutal-cyan p-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-zinc-900 via-zinc-900 to-zinc-950">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-cyan-400 text-black border-2 border-white flex items-center justify-center font-outfit font-black text-2xl shadow-[3px_3px_0px_0px_#fff]">
-                    ⚡
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono uppercase bg-cyan-400 text-black px-2 py-0.5 font-bold">CURRENT ACTIVE SLOT</span>
-                        <span id="active-slot-time" class="text-xs font-mono text-cyan-300">07:30 AM – 02:00 PM</span>
-                    </div>
-                    <h2 id="active-slot-title" class="font-outfit font-black text-xl md:text-2xl text-white mt-1 uppercase">
-                        College Classes & Hydration Window
-                    </h2>
-                    <p id="active-slot-desc" class="text-xs text-zinc-400 mt-0.5">
-                        Stay hydrated; eat packed mid-day protein meal (e.g., oats/egg whites).
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-zinc-800 pt-3 md:pt-0">
-                <div class="text-right">
-                    <span class="text-[10px] font-mono text-zinc-400 block uppercase">NEXT ACTIVITY IN</span>
-                    <span id="next-slot-countdown" class="font-mono font-bold text-lg text-amber-400">01h 14m 22s</span>
-                </div>
-                <button onclick="showQuickInsertModal()" class="brutal-btn brutal-btn-cyan text-xs px-3 py-2 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                    Insert Event
-                </button>
-            </div>
-        </div>
-
         <!-- ================= TAB 1: SCHEDULE & LIFE NOTIFIER ================= -->
         <div id="tab-notifier" class="tab-content space-y-6">
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                <!-- Left Column: Dynamic Schedule Controls & Event Inserter -->
-                <div class="space-y-6 lg:col-span-1">
-                    
-                    <!-- Quick Event Inserter Bento Card -->
-                    <div class="brutal-card p-5 space-y-4">
-                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                            <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
-                                <i data-lucide="calendar-plus" class="w-5 h-5 text-cyan-400"></i>
-                                On-The-Spot Adjuster
-                            </h3>
-                            <span class="text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 font-bold">SMART REBALANCE</span>
-                        </div>
-
-                        <p class="text-xs text-zinc-400">
-                            Input custom life events (e.g. coffee dates, study shifts). The engine automatically shifts gym and work blocks while keeping <strong class="text-amber-400">6.0 hrs sleep strictly non-negotiable</strong>.
-                        </p>
-
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-xs font-mono text-zinc-300 block mb-1">EVENT CATEGORY</label>
-                                <select id="event-type-input" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
-                                    <option value="social">☕ Social / Coffee Date</option>
-                                    <option value="workout">🏋️ Workout / Extra Gym</option>
-                                    <option value="work">💼 Work Shift / Overtime</option>
-                                    <option value="study">📚 High-Focus Study / Project</option>
-                                    <option value="custom">⚡ Custom Activity</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-mono text-zinc-300 block mb-1">EVENT TITLE</label>
-                                <input type="text" id="event-title-input" placeholder="e.g. Coffee Date with Sarah" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="text-xs font-mono text-zinc-300 block mb-1">START TIME</label>
-                                    <input type="time" id="event-start-input" value="17:00" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-mono text-zinc-300 block mb-1">END TIME</label>
-                                    <input type="time" id="event-end-input" value="18:30" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
-                                </div>
-                            </div>
-
-                            <button onclick="insertCustomEvent()" class="w-full brutal-btn brutal-btn-purple text-xs py-2.5 flex items-center justify-center gap-2">
-                                <i data-lucide="sliders" class="w-4 h-4"></i>
-                                Realign Day Schedule
-                            </button>
-
-                            <button onclick="resetToMasterSchedule()" class="w-full bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs py-2 hover:bg-zinc-800 hover:text-white font-mono transition-all">
-                                Reset to Default Master Schedule
-                            </button>
-                        </div>
+            <!-- Full Width Interactive Timeline Breakdown -->
+            <div class="brutal-card p-5 space-y-4">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+                    <div>
+                        <h3 class="font-outfit font-black text-xl uppercase text-white flex items-center gap-2">
+                            <i data-lucide="clock" class="w-5 h-5 text-cyan-400"></i>
+                            Daily Master Schedule Timeline
+                        </h3>
+                        <p class="text-xs text-zinc-400 mt-0.5">Integrated college, double-session training, meal prep, and recovery.</p>
                     </div>
 
-                    <!-- Sleep Rule Non-Negotiable Card -->
-                    <div class="brutal-card brutal-amber p-4 space-y-2 bg-amber-950/20">
-                        <div class="flex items-center gap-2 text-amber-400 font-outfit font-black text-sm uppercase">
-                            <i data-lucide="moon" class="w-5 h-5"></i>
-                            Non-Negotiable Rule: 6.0 HRS SLEEP
-                        </div>
-                        <p class="text-xs text-zinc-300 leading-relaxed">
-                            <strong>12:30 AM – 6:30 AM</strong> is the locked deep sleep window. No matter how life events shift during the day, CNS recovery and growth hormone release require 6 consecutive hours.
-                        </p>
-                    </div>
-
-                </div>
-
-                <!-- Right Column: Interactive Timeline Breakdown -->
-                <div class="lg:col-span-2 brutal-card p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <div>
-                            <h3 class="font-outfit font-black text-lg uppercase text-white">Daily Master Schedule Timeline</h3>
-                            <p class="text-xs text-zinc-400">Integrated college, double-session training, meal prep, and part-time work.</p>
-                        </div>
-                        <span class="text-xs font-mono text-cyan-400 bg-cyan-950 border border-cyan-800 px-2.5 py-1 font-bold">
-                            18.0 HRS ACTIVE / 6.0 HRS SLEEP
-                        </span>
-                    </div>
-
-                    <!-- Timeline List Container -->
-                    <div id="master-schedule-timeline" class="space-y-3">
-                        <!-- Populated by JS -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="showQuickInsertModal()" class="brutal-btn brutal-btn-cyan text-xs px-3.5 py-2 flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            Insert Custom Event
+                        </button>
+                        <button onclick="resetToMasterSchedule()" class="bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs px-3 py-2 hover:bg-zinc-800 hover:text-white font-mono transition-all">
+                            Reset Schedule
+                        </button>
                     </div>
                 </div>
 
+                <!-- Timeline List Container -->
+                <div id="master-schedule-timeline" class="space-y-3">
+                    <!-- Populated by JS -->
+                </div>
             </div>
 
             <!-- GOA IRONMAN 70.3 TARGET RACE FINISH TIME CALCULATOR -->
@@ -2380,91 +2283,252 @@ Keep crushing the daily plan! 💪⚡`;
             });
         }
 
-        // TAB 4: ADMIN ANALYTICS & CHARTS
+        function toggleExerciseCheck(id, isChecked) {
+            APP_STATE.checklistState[id] = isChecked;
+            saveLocalState();
+            pushCloudState();
+            renderWorkoutsTab();
+            renderAdminAnalytics();
+        }
+
+        function parseAvgReps(repsStr) {
+            if (!repsStr) return 10;
+            const m = repsStr.match(/(\d+)[–\-]*(\d+)?/);
+            if (!m) return 10;
+            if (m[2]) return Math.round((parseInt(m[1]) + parseInt(m[2])) / 2);
+            return parseInt(m[1]) || 10;
+        }
+
+        function parseWeightKg(weightStr) {
+            if (!weightStr) return 20;
+            const m = weightStr.match(/(\d+(\.\d+)?)/);
+            return m ? parseFloat(m[1]) : 20;
+        }
+
+        // TAB 4: ADMIN ANALYTICS & CHARTS (100% DYNAMIC - STARTS AT 0 AND INCREMENTS ON LOGGED WORKOUTS)
         function renderAdminAnalytics() {
-            // 1. Render Volume Progression SVG Line Chart
-            const volContainer = document.getElementById('chart-volume-container');
-            volContainer.innerHTML = `
-                <svg viewBox="0 0 400 150" class="w-full h-full">
-                    <polyline fill="none" stroke="#c084fc" stroke-width="4" points="20,120 100,90 200,60 300,30 380,50" />
-                    <circle cx="20" cy="120" r="5" fill="#c084fc" />
-                    <circle cx="100" cy="90" r="5" fill="#c084fc" />
-                    <circle cx="200" cy="60" r="5" fill="#c084fc" />
-                    <circle cx="300" cy="30" r="6" fill="#00f0ff" stroke="#fff" stroke-width="2" />
-                    <circle cx="380" cy="50" r="5" fill="#c084fc" />
-                    <text x="20" y="145" fill="#a1a1aa" font-size="10" font-family="monospace">W1: 10.2k</text>
-                    <text x="100" y="145" fill="#a1a1aa" font-size="10" font-family="monospace">W2: 12.1k</text>
-                    <text x="200" y="145" fill="#a1a1aa" font-size="10" font-family="monospace">W3: 14.5k</text>
-                    <text x="300" y="145" fill="#00f0ff" font-size="10" font-family="monospace" font-weight="bold">PEAK: 16.8k</text>
-                    <text x="370" y="145" fill="#a1a1aa" font-size="10" font-family="monospace">W4: 8.5k</text>
-                </svg>
-            `;
+            let totalVolumeKg = 0;
+            let totalCardioKm = 0;
+            let runKm = 0;
+            let bikeKm = 0;
+            let totalItems = 0;
+            let checkedItems = 0;
 
-            // 2. Render Cardio Bar Chart
-            const cardioContainer = document.getElementById('chart-cardio-container');
-            cardioContainer.innerHTML = `
-                <div class="flex items-end gap-6 h-40 mx-auto">
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="w-8 bg-cyan-400 h-24 border-2 border-white shadow-[2px_2px_0px_0px_#fff]"></div>
-                        <span class="text-[10px] font-mono text-zinc-400">W1 (22km)</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="w-8 bg-cyan-400 h-32 border-2 border-white shadow-[2px_2px_0px_0px_#fff]"></div>
-                        <span class="text-[10px] font-mono text-zinc-400">W2 (28km)</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="w-8 bg-purple-400 h-36 border-2 border-white shadow-[2px_2px_0px_0px_#fff]"></div>
-                        <span class="text-[10px] font-mono text-cyan-300 font-bold">W3 (35km)</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="w-8 bg-zinc-700 h-16 border-2 border-zinc-500"></div>
-                        <span class="text-[10px] font-mono text-zinc-400">W4 (14km)</span>
-                    </div>
-                </div>
-            `;
+            let weeklyVolume = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            let weeklyCardio = { 1: 0, 2: 0, 3: 0, 4: 0 };
 
-            // 3. Render Muscle Distribution Bar
-            const muscleContainer = document.getElementById('chart-muscle-container');
-            muscleContainer.innerHTML = `
-                <div>
-                    <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
-                        <span>PULL / BACK WIDTH (35%)</span>
-                        <span class="text-purple-400">42 SETS</span>
-                    </div>
-                    <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-purple-400" style="width: 35%;"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
-                        <span>PUSH / UPPER CHEST & DELTS (30%)</span>
-                        <span class="text-cyan-400">36 SETS</span>
-                    </div>
-                    <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-cyan-400" style="width: 30%;"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
-                        <span>ABS & CORE STABILITY (20%)</span>
-                        <span class="text-emerald-400">24 SETS</span>
-                    </div>
-                    <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-emerald-400" style="width: 20%;"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
-                        <span>LEGS - QUAD ISOLATION (15%)</span>
-                        <span class="text-amber-400">18 SETS</span>
-                    </div>
-                    <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-amber-400" style="width: 15%;"></div></div>
-                </div>
-            `;
+            let muscleSets = {
+                pull: 0,
+                push: 0,
+                abs: 0,
+                legs: 0
+            };
 
-            // 4. Render 30-Day Heatmap Matrix
-            const heatContainer = document.getElementById('heatmap-matrix-container');
-            heatContainer.innerHTML = '';
+            let daysCompletedMap = {}; // D1..D28 true/false
+
+            [1, 2, 3, 4].forEach(w => {
+                const wData = MONTH_WORKOUTS[w];
+                if (!wData) return;
+
+                wData.days.forEach((dayObj, dayIdx) => {
+                    const dayNum = (w - 1) * 7 + (dayIdx + 1); // D1 to D28
+                    let dayAnyChecked = false;
+
+                    dayObj.exercises.forEach(ex => {
+                        totalItems++;
+                        const isChecked = APP_STATE.checklistState[ex.id] || false;
+                        if (isChecked) {
+                            checkedItems++;
+                            dayAnyChecked = true;
+
+                            const details = getExerciseDetails(ex);
+                            const sets = details.setsCount || 2;
+                            const reps = parseAvgReps(details.reps);
+                            const weight = parseWeightKg(details.weight);
+
+                            const exVol = sets * reps * weight;
+                            totalVolumeKg += exVol;
+                            weeklyVolume[w] += exVol;
+
+                            // Muscle group attribution
+                            const lowerName = ex.name.toLowerCase();
+                            if (lowerName.includes('lat') || lowerName.includes('row') || lowerName.includes('bicep') || lowerName.includes('pull')) {
+                                muscleSets.pull += sets;
+                            } else if (lowerName.includes('chest') || lowerName.includes('press') || lowerName.includes('delt') || lowerName.includes('tricep') || lowerName.includes('push') || lowerName.includes('incline')) {
+                                muscleSets.push += sets;
+                            } else if (lowerName.includes('raise') || lowerName.includes('abs') || lowerName.includes('core') || lowerName.includes('leg/knee')) {
+                                muscleSets.abs += sets;
+                            } else if (lowerName.includes('squat') || lowerName.includes('quad') || lowerName.includes('calf') || lowerName.includes('hamstring') || lowerName.includes('leg')) {
+                                muscleSets.legs += sets;
+                            } else {
+                                muscleSets.pull += sets;
+                            }
+                        }
+                    });
+
+                    // Daily Water check count
+                    totalItems++;
+                    const waterId = `w${w}_${dayObj.day.toLowerCase()}_water`;
+                    if (APP_STATE.checklistState[waterId]) {
+                        checkedItems++;
+                        dayAnyChecked = true;
+                    }
+
+                    // Cardio tracking
+                    if (dayObj.cardioDesc) {
+                        const m = dayObj.cardioDesc.match(/(\d+(\.\d+)?)\s*km/i);
+                        if (m) {
+                            const dist = parseFloat(m[1]);
+                            if (dayAnyChecked) {
+                                totalCardioKm += dist;
+                                weeklyCardio[w] += dist;
+                                if (dayObj.cardioTitle.toLowerCase().includes('run')) runKm += dist;
+                                else bikeKm += dist;
+                            }
+                        }
+                    }
+
+                    daysCompletedMap[dayNum] = dayAnyChecked;
+                });
+            });
+
+            // 1. Update Top Banner Cards
+            const volumeEl = document.getElementById('stat-total-volume');
+            if (volumeEl) volumeEl.innerText = `${Math.round(totalVolumeKg).toLocaleString()} kg`;
+
+            const cardioEl = document.getElementById('stat-total-cardio');
+            if (cardioEl) cardioEl.innerText = `${totalCardioKm.toFixed(1)} km`;
+
+            const cardioSubEl = document.querySelector('#stat-total-cardio + span');
+            if (cardioSubEl) cardioSubEl.innerText = `Run: ${runKm.toFixed(1)}km | Bike: ${bikeKm.toFixed(1)}km`;
+
+            const completionRate = totalItems > 0 ? ((checkedItems / totalItems) * 100).toFixed(1) : "0.0";
+            const completionEl = document.getElementById('stat-completion-rate');
+            if (completionEl) completionEl.innerText = `${completionRate}%`;
+
+            const completionSubEl = document.querySelector('#stat-completion-rate + span');
+            if (completionSubEl) completionSubEl.innerText = `${checkedItems} / ${totalItems} sessions logged`;
+
+            // Calculate active streak
+            let streakDays = 0;
             for (let i = 1; i <= 28; i++) {
-                const cell = document.createElement('div');
-                const isRest = (i % 7 === 0);
-                cell.className = `h-8 border flex items-center justify-center text-[10px] font-mono font-bold ${isRest ? 'bg-zinc-900 border-zinc-800 text-zinc-600' : 'bg-emerald-500 border-white text-black shadow-[2px_2px_0px_0px_#fff]'}`;
-                cell.innerText = `D${i}`;
-                heatContainer.appendChild(cell);
+                if (daysCompletedMap[i]) streakDays++;
+                else if (streakDays > 0) break; // Consecutive streak
+            }
+            const streakEl = document.getElementById('stat-streak-days');
+            if (streakEl) streakEl.innerText = `${streakDays} DAYS`;
+
+            // 2. Render Volume Progression SVG Line Chart dynamically
+            const volContainer = document.getElementById('chart-volume-container');
+            if (volContainer) {
+                const maxVol = Math.max(1, weeklyVolume[1], weeklyVolume[2], weeklyVolume[3], weeklyVolume[4]);
+                const getY = (val) => 130 - (val / maxVol) * 100;
+
+                const p1 = `20,${getY(weeklyVolume[1])}`;
+                const p2 = `120,${getY(weeklyVolume[2])}`;
+                const p3 = `220,${getY(weeklyVolume[3])}`;
+                const p4 = `320,${getY(weeklyVolume[4])}`;
+
+                volContainer.innerHTML = `
+                    <svg viewBox="0 0 360 160" class="w-full h-full">
+                        <polyline fill="none" stroke="#c084fc" stroke-width="4" points="${p1} ${p2} ${p3} ${p4}" />
+                        <circle cx="20" cy="${getY(weeklyVolume[1])}" r="5" fill="#c084fc" />
+                        <circle cx="120" cy="${getY(weeklyVolume[2])}" r="5" fill="#c084fc" />
+                        <circle cx="220" cy="${getY(weeklyVolume[3])}" r="5" fill="#c084fc" />
+                        <circle cx="320" cy="${getY(weeklyVolume[4])}" r="6" fill="#00f0ff" stroke="#fff" stroke-width="2" />
+
+                        <text x="20" y="152" fill="#a1a1aa" font-size="10" font-family="monospace">W1: ${(weeklyVolume[1]/1000).toFixed(1)}k</text>
+                        <text x="120" y="152" fill="#a1a1aa" font-size="10" font-family="monospace">W2: ${(weeklyVolume[2]/1000).toFixed(1)}k</text>
+                        <text x="220" y="152" fill="#a1a1aa" font-size="10" font-family="monospace">W3: ${(weeklyVolume[3]/1000).toFixed(1)}k</text>
+                        <text x="320" y="152" fill="#00f0ff" font-size="10" font-family="monospace" font-weight="bold">W4: ${(weeklyVolume[4]/1000).toFixed(1)}k</text>
+                    </svg>
+                `;
+            }
+
+            // 3. Render Cardio Bar Chart dynamically
+            const cardioContainer = document.getElementById('chart-cardio-container');
+            if (cardioContainer) {
+                const maxCardio = Math.max(1, weeklyCardio[1], weeklyCardio[2], weeklyCardio[3], weeklyCardio[4]);
+                const getH = (val) => Math.max(8, Math.round((val / maxCardio) * 120));
+
+                cardioContainer.innerHTML = `
+                    <div class="flex items-end justify-around h-40 w-full px-4">
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-cyan-400 border-2 border-white transition-all shadow-[2px_2px_0px_0px_#fff]" style="height: ${getH(weeklyCardio[1])}px;"></div>
+                            <span class="text-[10px] font-mono text-zinc-400">W1 (${weeklyCardio[1].toFixed(1)}km)</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-cyan-400 border-2 border-white transition-all shadow-[2px_2px_0px_0px_#fff]" style="height: ${getH(weeklyCardio[2])}px;"></div>
+                            <span class="text-[10px] font-mono text-zinc-400">W2 (${weeklyCardio[2].toFixed(1)}km)</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-purple-400 border-2 border-white transition-all shadow-[2px_2px_0px_0px_#fff]" style="height: ${getH(weeklyCardio[3])}px;"></div>
+                            <span class="text-[10px] font-mono text-cyan-300 font-bold">W3 (${weeklyCardio[3].toFixed(1)}km)</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-emerald-400 border-2 border-white transition-all shadow-[2px_2px_0px_0px_#fff]" style="height: ${getH(weeklyCardio[4])}px;"></div>
+                            <span class="text-[10px] font-mono text-zinc-400">W4 (${weeklyCardio[4].toFixed(1)}km)</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 4. Render Muscle Set Distribution Bar dynamically
+            const muscleContainer = document.getElementById('chart-muscle-container');
+            if (muscleContainer) {
+                const totalMuscleSets = Math.max(1, muscleSets.pull + muscleSets.push + muscleSets.abs + muscleSets.legs);
+                const getPct = (cnt) => Math.round((cnt / totalMuscleSets) * 100);
+
+                muscleContainer.innerHTML = `
+                    <div>
+                        <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
+                            <span>PULL / BACK WIDTH (${getPct(muscleSets.pull)}%)</span>
+                            <span class="text-purple-400">${muscleSets.pull} SETS</span>
+                        </div>
+                        <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-purple-400 transition-all" style="width: ${getPct(muscleSets.pull)}%;"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
+                            <span>PUSH / UPPER CHEST & DELTS (${getPct(muscleSets.push)}%)</span>
+                            <span class="text-cyan-400">${muscleSets.push} SETS</span>
+                        </div>
+                        <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-cyan-400 transition-all" style="width: ${getPct(muscleSets.push)}%;"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
+                            <span>ABS & CORE STABILITY (${getPct(muscleSets.abs)}%)</span>
+                            <span class="text-emerald-400">${muscleSets.abs} SETS</span>
+                        </div>
+                        <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-emerald-400 transition-all" style="width: ${getPct(muscleSets.abs)}%;"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-mono text-zinc-300 mb-1">
+                            <span>LEGS - QUAD ISOLATION (${getPct(muscleSets.legs)}%)</span>
+                            <span class="text-amber-400">${muscleSets.legs} SETS</span>
+                        </div>
+                        <div class="w-full h-3 bg-zinc-900 border border-zinc-700"><div class="h-full bg-amber-400 transition-all" style="width: ${getPct(muscleSets.legs)}%;"></div></div>
+                    </div>
+                `;
+            }
+
+            // 5. Render 30-Day Heatmap Matrix dynamically (Green ONLY if workouts/cardio logged!)
+            const heatContainer = document.getElementById('heatmap-matrix-container');
+            if (heatContainer) {
+                heatContainer.innerHTML = '';
+                for (let i = 1; i <= 28; i++) {
+                    const cell = document.createElement('div');
+                    const isDone = daysCompletedMap[i] || false;
+                    const isRest = (i % 7 === 0);
+                    cell.className = `h-8 border flex items-center justify-center text-[10px] font-mono font-bold transition-all ${
+                        isDone 
+                          ? 'bg-emerald-500 border-white text-black shadow-[2px_2px_0px_0px_#fff]' 
+                          : isRest 
+                            ? 'bg-zinc-950 border-zinc-800 text-zinc-600' 
+                            : 'bg-zinc-900 border-zinc-800 text-zinc-500'
+                    }`;
+                    cell.innerText = `D${i}`;
+                    heatContainer.appendChild(cell);
+                }
             }
         }
 
@@ -2747,28 +2811,88 @@ Keep crushing the daily plan! 💪⚡`;
             } catch(e) {}
         }
 
-        function toggleZenMode() {
-            APP_STATE.zenMode = !APP_STATE.zenMode;
-            const btn = document.getElementById('btn-zen-mode');
-            if (APP_STATE.zenMode) {
-                document.body.classList.add('zen-mode-active');
-                if (btn) {
-                    btn.className = "px-2.5 py-1 bg-cyan-400 text-black border border-white font-outfit font-bold text-xs flex items-center gap-1 shadow-[2px_2px_0px_0px_#fff] transition-all uppercase rounded-sm";
-                    btn.innerText = "🧘 Zen Mode ON";
-                }
+        // 3-SECOND SLIDE-OUT ACTIVE SLOT TOAST NOTIFIER
+        let toastTimeout = null;
+        function showActiveSlotToast() {
+            const toast = document.getElementById('active-slot-toast');
+            if (!toast) return;
+            const slot = APP_STATE.currentActiveSlot || (APP_STATE.masterSchedule && APP_STATE.masterSchedule[0]);
+            if (!slot) return;
+
+            const titleEl = document.getElementById('toast-slot-title');
+            const timeEl = document.getElementById('toast-slot-time');
+            if (titleEl) titleEl.innerText = slot.title;
+            if (timeEl) timeEl.innerText = `${slot.start} – ${slot.end}`;
+
+            toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-x-0', 'opacity-100');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // FLOATING REST INTERVAL STOPWATCH ENGINE
+        let restTimerSeconds = 90;
+        let restTimerInterval = null;
+        let isRestTimerRunning = false;
+
+        function updateRestTimerDisplay() {
+            const m = Math.floor(restTimerSeconds / 60);
+            const s = restTimerSeconds % 60;
+            const display = document.getElementById('rest-timer-display');
+            if (display) display.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function toggleRestTimer() {
+            const btn = document.getElementById('btn-rest-timer-start');
+            if (isRestTimerRunning) {
+                clearInterval(restTimerInterval);
+                isRestTimerRunning = false;
+                if (btn) btn.innerText = "START";
             } else {
-                document.body.classList.remove('zen-mode-active');
-                if (btn) {
-                    btn.className = "px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 font-outfit font-bold text-xs flex items-center gap-1 hover:border-white hover:text-white transition-all uppercase rounded-sm";
-                    btn.innerText = "🧘 Zen Mode";
-                }
+                if (restTimerSeconds <= 0) restTimerSeconds = 90;
+                isRestTimerRunning = true;
+                if (btn) btn.innerText = "PAUSE";
+                restTimerInterval = setInterval(() => {
+                    restTimerSeconds--;
+                    updateRestTimerDisplay();
+                    if (restTimerSeconds <= 0) {
+                        clearInterval(restTimerInterval);
+                        isRestTimerRunning = false;
+                        if (btn) btn.innerText = "START";
+                        if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+                    }
+                }, 1000);
             }
         }
 
-        function syncSupabaseCloud() {}
-        function saveSupabaseCredentials() {}
-        function testSupabaseConnection() { forcePushFromPC(); }
-        function resetSupabaseCredentials() {}
+        function adjustRestTimer(deltaSecs) {
+            restTimerSeconds = Math.max(10, restTimerSeconds + deltaSecs);
+            updateRestTimerDisplay();
+        }
+
+        function resetRestTimer() {
+            clearInterval(restTimerInterval);
+            isRestTimerRunning = false;
+            restTimerSeconds = 90;
+            updateRestTimerDisplay();
+            const btn = document.getElementById('btn-rest-timer-start');
+            if (btn) btn.innerText = "START";
+        }
+
+        function resetChecklistForNewWeek() {
+            if (confirm("Reset completed checkmarks to start a fresh week? (Your custom exercise set & weight history will stay intact)")) {
+                APP_STATE.checklistState = {};
+                saveLocalState();
+                pushCloudState();
+                renderWorkoutsTab();
+                renderAdminAnalytics();
+                alert("✨ Checklist reset for the new week!");
+            }
+        }
     </script>
 </body>
 </html>
