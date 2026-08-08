@@ -54,6 +54,7 @@ export default async function handler(req, res) {
         serverState.customExerciseDetails = { ...serverState.customExerciseDetails, ...data.customExerciseDetails };
       }
       if (data.waterLoggedMl !== undefined) serverState.waterLoggedMl = data.waterLoggedMl;
+      if (data.userProfile) serverState.userProfile = { ...serverState.userProfile, ...data.userProfile };
       if (data.loggedMeals) serverState.loggedMeals = data.loggedMeals;
       if (data.masterSchedule) serverState.masterSchedule = data.masterSchedule;
       if (data.historicalArchive) serverState.historicalArchive = { ...serverState.historicalArchive, ...data.historicalArchive };

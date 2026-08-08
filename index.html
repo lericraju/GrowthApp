@@ -454,32 +454,33 @@
         <div id="tab-notifier" class="tab-content space-y-6">
 
             <!-- Full Width Interactive Timeline Breakdown -->
-            <div class="brutal-card p-5 space-y-4">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
-                    <div>
-                        <h3 class="font-outfit font-black text-xl uppercase text-white flex items-center gap-2">
-                            <i data-lucide="clock" class="w-5 h-5 text-cyan-400"></i>
-                            Daily Master Schedule Timeline
-                        </h3>
-                        <p class="text-xs text-zinc-400 mt-0.5">Integrated college, double-session training, meal prep, and recovery.</p>
-                    </div>
+            <div class="brutal-card p-4 space-y-3">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+                    <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
+                        <i data-lucide="clock" class="w-5 h-5 text-cyan-400"></i>
+                        SCHEDULE
+                    </h3>
 
                     <div class="flex items-center gap-2">
-                        <button onclick="showQuickInsertModal()" class="brutal-btn brutal-btn-cyan text-xs px-3.5 py-2 flex items-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                            Insert Custom Event
+                        <button onclick="showQuickInsertModal()" class="brutal-btn brutal-btn-cyan text-xs px-3 py-1.5 flex items-center gap-1.5">
+                            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                            + Event
                         </button>
-                        <button onclick="resetToMasterSchedule()" class="bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs px-3 py-2 hover:bg-zinc-800 hover:text-white font-mono transition-all">
-                            Reset Schedule
+                        <button onclick="resetToMasterSchedule()" class="bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs px-2.5 py-1.5 hover:bg-zinc-800 hover:text-white font-mono transition-all">
+                            Reset
                         </button>
                     </div>
                 </div>
 
                 <!-- Timeline List Container -->
-                <div id="master-schedule-timeline" class="space-y-3">
+                <div id="master-schedule-timeline" class="space-y-2">
                     <!-- Populated by JS -->
                 </div>
-                  <!-- ================= TAB 2: EXERCISE ROUTINE ================= -->
+            </div>
+
+        </div>
+
+        <!-- ================= TAB 2: EXERCISE ROUTINE ================= -->
         <div id="tab-workouts" class="tab-content hidden space-y-4">
 
             <!-- Minimalist Horizontal Week & Day Selector Bar -->
@@ -509,166 +510,175 @@
                 <!-- Rendered by JS -->
             </div>
 
-        </div>       </div>
-
         </div>
 
         <!-- ================= TAB 3: CALORIE & MACRO TRACKER ================= -->
-        <div id="tab-calories" class="tab-content hidden space-y-6">
+        <div id="tab-calories" class="tab-content hidden space-y-5">
 
             <!-- Profile & Deficit Strategy Header -->
-            <div class="brutal-card p-5 bg-gradient-to-r from-zinc-900 via-zinc-900 to-amber-950/30">
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
-                    
-                    <div class="lg:col-span-2 space-y-2">
-                        <div class="flex items-center gap-2">
+            <div class="brutal-card p-4 bg-gradient-to-r from-zinc-900 via-zinc-900 to-amber-950/30 space-y-3">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-xs font-mono bg-amber-400 text-black px-2 py-0.5 font-bold uppercase">RECOMPOSITION DEFICIT</span>
-                            <span class="text-xs font-mono text-zinc-400">166 cm | 70 kg | 21 Y/O</span>
+                            <span id="profile-display-badge" class="text-xs font-mono text-zinc-300 font-bold">166 cm | 70 kg | 21 Y/O</span>
+                            <button onclick="toggleProfileEditModal()" class="text-[10px] font-mono text-amber-400 bg-amber-950 border border-amber-800 px-2 py-0.5 rounded font-bold hover:bg-amber-400 hover:text-black transition-all">EDIT</button>
                         </div>
-                        <h2 class="font-outfit font-black text-2xl text-white uppercase">
+                        <h2 class="font-outfit font-black text-xl text-white uppercase">
                             DAILY ENERGY & MACRO BUDGET
                         </h2>
-                        <p class="text-xs text-zinc-300">
-                            Drop body fat, reveal jawline, and build upper body width while preserving energy for double-session training.
-                        </p>
                     </div>
 
                     <!-- Macro Target Quick Cards -->
-                    <div class="grid grid-cols-2 gap-3 lg:col-span-2">
-                        <div class="bg-zinc-900 border border-zinc-700 p-3">
-                            <span class="text-[10px] font-mono text-zinc-400 block uppercase">BMR / TDEE</span>
-                            <span class="font-outfit font-black text-base text-cyan-400">1,600 / 2,450 kcal</span>
+                    <div class="flex items-center gap-2">
+                        <div class="bg-zinc-900 border border-zinc-700 px-3 py-1.5 text-center">
+                            <span class="text-[9px] font-mono text-zinc-400 block uppercase">BMR / TDEE</span>
+                            <span id="profile-bmr-tdee" class="font-outfit font-black text-sm text-cyan-400">1,600 / 2,450 kcal</span>
                         </div>
-                        <div class="bg-zinc-900 border border-amber-500/40 p-3">
-                            <span class="text-[10px] font-mono text-amber-400 block uppercase font-bold">TARGET CALORIES</span>
-                            <span class="font-outfit font-black text-lg text-amber-400">2,025 kcal</span>
-                            <span class="text-[9px] font-mono text-zinc-400 block">(-425 kcal deficit)</span>
+                        <div class="bg-zinc-900 border border-amber-500/40 px-3 py-1.5 text-center">
+                            <span class="text-[9px] font-mono text-amber-400 block uppercase font-bold">TARGET CALORIES</span>
+                            <span id="profile-target-cal" class="font-outfit font-black text-sm text-amber-400">2,025 kcal</span>
                         </div>
                     </div>
+                </div>
 
+                <!-- Profile Inline Edit Drawer (Hidden by default) -->
+                <div id="profile-edit-drawer" class="hidden p-3 bg-zinc-950 border border-amber-500/30 grid grid-cols-2 md:grid-cols-4 gap-2 pt-2">
+                    <div>
+                        <label class="text-[9px] font-mono text-zinc-400 block">HEIGHT (cm)</label>
+                        <input type="number" id="edit-height" value="166" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-1.5 font-mono">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-mono text-zinc-400 block">WEIGHT (kg)</label>
+                        <input type="number" id="edit-weight" value="70" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-1.5 font-mono">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-mono text-zinc-400 block">AGE (Years)</label>
+                        <input type="number" id="edit-age" value="21" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-1.5 font-mono">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="saveUserProfile()" class="w-full bg-amber-400 text-black font-outfit font-black text-xs py-2 uppercase hover:bg-amber-300">SAVE PROFILE</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Bento Layout: Macro Scales & Meal Logger -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
                 <!-- Left Column: Live Visual Macro Scales (1c) -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="lg:col-span-2 space-y-5">
                     
                     <!-- Macro Scales Bento Card -->
-                    <div class="brutal-card p-5 space-y-5">
-                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                            <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
-                                <i data-lucide="scale" class="w-5 h-5 text-amber-400"></i>
-                                Real-Time Macro & Energy Scales
+                    <div class="brutal-card p-4 space-y-4">
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                            <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
+                                <i data-lucide="scale" class="w-4 h-4 text-amber-400"></i>
+                                Real-Time Macro Scales
                             </h3>
-                            <span class="text-xs font-mono text-zinc-400">Target Scale vs Daily Allowance</span>
+                            <span class="text-[10px] font-mono text-zinc-400">Target vs Logged</span>
                         </div>
 
                         <!-- 1. Calories Gauge -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-1">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🔥 Calories (2,000 – 2,050 kcal): <span id="scale-calories-text" class="text-amber-400">0 / 2,025 kcal</span>
+                                    🔥 Calories: <span id="scale-calories-text" class="text-amber-400">0 / 2,025 kcal</span>
                                 </span>
-                                <span id="scale-calories-rem" class="text-zinc-400 font-bold">2,025 kcal remaining</span>
+                                <span id="scale-calories-rem" class="text-zinc-400 font-bold">2,025 kcal left</span>
                             </div>
-                            <div class="w-full h-4 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                            <div class="w-full h-3.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-calories-bar" class="h-full bg-amber-400 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
                         <!-- 2. Protein Scale -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-1">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🥩 Protein (145g – 150g): <span id="scale-protein-text" class="text-purple-400">0 / 150 g</span>
+                                    🥩 Protein: <span id="scale-protein-text" class="text-purple-400">0 / 150 g</span>
                                 </span>
-                                <span id="scale-protein-rem" class="text-purple-300 font-bold">150 g remaining</span>
+                                <span id="scale-protein-rem" class="text-purple-300 font-bold">150 g left</span>
                             </div>
-                            <div class="w-full h-3 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                            <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-protein-bar" class="h-full bg-purple-400 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
                         <!-- 3. Carbohydrates Scale -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-1">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🍚 Carbohydrates (230g – 240g): <span id="scale-carbs-text" class="text-cyan-400">0 / 240 g</span>
+                                    🍚 Carbohydrates: <span id="scale-carbs-text" class="text-cyan-400">0 / 240 g</span>
                                 </span>
-                                <span id="scale-carbs-rem" class="text-cyan-300 font-bold">240 g remaining</span>
+                                <span id="scale-carbs-rem" class="text-cyan-300 font-bold">240 g left</span>
                             </div>
-                            <div class="w-full h-3 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                            <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-carbs-bar" class="h-full bg-cyan-400 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
                         <!-- 4. Fats Scale -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-1">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🥑 Healthy Fats (50g – 55g): <span id="scale-fats-text" class="text-emerald-400">0 / 55 g</span>
+                                    🥑 Fats: <span id="scale-fats-text" class="text-emerald-400">0 / 55 g</span>
                                 </span>
-                                <span id="scale-fats-rem" class="text-emerald-300 font-bold">55 g remaining</span>
+                                <span id="scale-fats-rem" class="text-emerald-300 font-bold">55 g left</span>
                             </div>
-                            <div class="w-full h-3 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                            <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-fats-bar" class="h-full bg-emerald-400 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
                         <!-- 5. Sugar Limit Bar -->
-                        <div class="space-y-1.5 pt-2 border-t border-zinc-800">
+                        <div class="space-y-1 pt-1.5 border-t border-zinc-800">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-pink-400 uppercase flex items-center gap-1.5">
-                                    ⚠️ Added Sugar Limit (&lt; 25g – 30g): <span id="scale-sugar-text" class="text-white">0 / 25 g</span>
+                                    ⚠️ Sugar Limit (&lt;25g): <span id="scale-sugar-text" class="text-white">0 / 25 g</span>
                                 </span>
-                                <span id="scale-sugar-status" class="text-emerald-400 font-bold">SAFE ZONE</span>
+                                <span id="scale-sugar-status" class="text-emerald-400 font-bold">SAFE</span>
                             </div>
-                            <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                            <div class="w-full h-2 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-sugar-bar" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
                         <!-- 6. Sodium Electrolyte Limit Bar -->
-                        <div class="space-y-1.5 pt-2 border-t border-zinc-800">
+                        <div class="space-y-1 pt-1.5 border-t border-zinc-800">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-cyan-400 uppercase flex items-center gap-1.5">
-                                    🧂 Sodium Electrolytes (2,300 – 3,000 mg): <span id="scale-sodium-text" class="text-white">0 / 2,300 mg</span>
+                                    🧂 Sodium (2.3k–3k mg): <span id="scale-sodium-text" class="text-white">0 / 2,300 mg</span>
                                 </span>
                                 <span id="scale-sodium-status" class="text-cyan-400 font-bold">BALANCED</span>
                             </div>
-                            <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                            <div class="w-full h-2 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-sodium-bar" class="h-full bg-cyan-400 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
                     </div>
 
-                    <!-- Water Hydration Card (3.5 - 4.0 L Target) -->
-                    <div class="brutal-card brutal-cyan p-5 space-y-4">
+                    <!-- Water Hydration Card (4.0 Liters Target) -->
+                    <div class="brutal-card brutal-cyan p-4 space-y-3">
                         <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
-                                    <i data-lucide="droplet" class="w-5 h-5 text-cyan-400"></i>
-                                    Daily Water Target (3.5 – 4.0 Liters)
-                                </h3>
-                                <p class="text-xs text-zinc-400">Essential for Zone 2 cardio recovery & muscle hydration.</p>
-                            </div>
-                            <span id="water-progress-text" class="font-outfit font-black text-xl text-cyan-400">0.00 / 3.75 L</span>
+                            <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
+                                <i data-lucide="droplet" class="w-4 h-4 text-cyan-400"></i>
+                                Water Target (4.0 L)
+                            </h3>
+                            <span id="water-progress-text" class="font-outfit font-black text-lg text-cyan-400">0.00 / 4.00 L</span>
                         </div>
 
                         <!-- Water Bar Animation -->
-                        <div class="w-full h-6 bg-zinc-900 border-2 border-cyan-400 relative overflow-hidden">
+                        <div class="w-full h-5 bg-zinc-900 border-2 border-cyan-400 relative overflow-hidden">
                             <div id="water-bar-fill" class="h-full water-wave" style="width: 0%;"></div>
                         </div>
 
                         <!-- Quick Add Buttons -->
-                        <div class="flex items-center gap-3">
-                            <button onclick="addWater(250)" class="brutal-btn brutal-btn-cyan text-xs px-3 py-1.5">+250 ml</button>
-                            <button onclick="addWater(500)" class="brutal-btn brutal-btn-cyan text-xs px-3 py-1.5">+500 ml</button>
-                            <button onclick="addWater(1000)" class="brutal-btn brutal-btn-cyan text-xs px-3 py-1.5">+1.0 Liter</button>
-                            <button onclick="resetWater()" class="bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs px-3 py-1.5 hover:text-white font-mono ml-auto">Reset</button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="addWater(250)" class="brutal-btn brutal-btn-cyan text-xs px-2.5 py-1">+250 ml</button>
+                            <button onclick="addWater(500)" class="brutal-btn brutal-btn-cyan text-xs px-2.5 py-1">+500 ml</button>
+                            <button onclick="addWater(1000)" class="brutal-btn brutal-btn-cyan text-xs px-2.5 py-1">+1.0 L</button>
+                            <button onclick="resetWater()" class="bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs px-2.5 py-1 hover:text-white font-mono ml-auto">Reset</button>
                         </div>
                     </div>
 
@@ -749,7 +759,7 @@
                     <!-- Logged Meals List -->
                     <div class="brutal-card p-4 space-y-3">
                         <h4 class="font-outfit font-bold text-xs uppercase text-zinc-400">TODAY'S LOGGED MEALS</h4>
-                        <div id="logged-meals-list" class="space-y-2 max-h-48 overflow-y-auto">
+<div id="logged-meals-list" class="space-y-2 max-h-48 overflow-y-auto">
                             <!-- Populated by JS -->
                         </div>
                     </div>
@@ -760,131 +770,177 @@
 
         </div>
 
-        <!-- ================= TAB 4: ADMIN ANALYTICS DASHBOARD ================= -->
+        <!-- ================= TAB 4: ANALYTICS & V-TAPER ================= -->
         <div id="tab-analytics" class="tab-content hidden space-y-6">
 
-            <!-- AUTOMATIC SUNDAY 11:59 PM AUTO-EXPORT BENTO CARD -->
-            <div class="brutal-card brutal-cyan p-5 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 space-y-3">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                    <div>
-                        <h3 class="font-outfit font-black text-lg text-white uppercase flex items-center gap-2">
-                            <i data-lucide="clock" class="w-5 h-5 text-cyan-400"></i>
-                            AUTOMATIC SUNDAY 11:59 PM WEEKLY AUTO-EXPORT
-                        </h3>
-                        <p class="text-xs text-zinc-400">No manual exports required. Every Sunday at 11:59 PM, the app automatically compiles your CSV log & archives your completed week to permanent storage.</p>
-                    </div>
-                    <span class="text-xs font-mono font-bold text-black bg-cyan-400 px-2.5 py-1 uppercase flex items-center gap-1.5">
-                        <span class="live-dot bg-black"></span> AUTO-ACTIVE
-                    </span>
+            <!-- Stats Baseline Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="brutal-card brutal-purple p-3.5">
+                    <span class="text-[9px] font-mono text-purple-300 uppercase block font-bold">MONTHLY VOLUME</span>
+                    <span id="stat-total-volume" class="font-outfit font-black text-xl text-white">0 kg</span>
+                    <span class="text-[9px] text-zinc-400 block mt-0.5">Progressive total</span>
                 </div>
-                <div id="sunday-auto-export-status" class="text-xs font-mono text-cyan-300">
-                    STATUS: <span class="text-emerald-400 font-bold">READY</span> — Next automated week export scheduled for Sunday @ 23:59:00.
+                <div class="brutal-card brutal-cyan p-3.5">
+                    <span class="text-[9px] font-mono text-cyan-300 uppercase block font-bold">CARDIO DISTANCE</span>
+                    <span id="stat-total-cardio" class="font-outfit font-black text-xl text-white">0.0 km</span>
+                    <span class="text-[9px] text-cyan-400 block mt-0.5">Run: 0.0km | Bike: 0.0km</span>
+                </div>
+                <div class="brutal-card brutal-green p-3.5">
+                    <span class="text-[9px] font-mono text-emerald-300 uppercase block font-bold">COMPLETION RATE</span>
+                    <span id="stat-completion-rate" class="font-outfit font-black text-xl text-white">0.0%</span>
+                    <span class="text-[9px] text-emerald-400 block mt-0.5">0 / 28 logged</span>
+                </div>
+                <div class="brutal-card brutal-amber p-3.5">
+                    <span class="text-[9px] font-mono text-amber-300 uppercase block font-bold">STREAK</span>
+                    <span id="stat-streak-days" class="font-outfit font-black text-xl text-white">0 DAYS</span>
+                    <span class="text-[9px] text-amber-400 block mt-0.5">Consistency count</span>
                 </div>
             </div>
 
-            <!-- Stats Banner Cards (STARTS AT CLEAN 0 BASELINE - INCREMENTS DYNAMICALLY ON LOGGED WORKOUTS) -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="brutal-card brutal-purple p-4">
-                    <span class="text-[10px] font-mono text-purple-300 uppercase block font-bold">MONTHLY VOLUME LIFTED</span>
-                    <span id="stat-total-volume" class="font-outfit font-black text-2xl text-white">0 kg</span>
-                    <span class="text-[10px] text-zinc-400 block mt-1">Real-time progressive total</span>
+            <!-- Human Joint Skeleton Body Structure & V-Taper Ratio Diagram (FRONT AND CENTER) -->
+            <div class="brutal-card brutal-purple p-4 space-y-3 bg-zinc-950">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="user-check" class="w-4 h-4 text-purple-400"></i>
+                        <h3 class="font-outfit font-black text-base uppercase text-white">
+                            V-Taper Skeleton Structure
+                        </h3>
+                    </div>
+                    <span class="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-950 border border-cyan-800 px-2 py-0.5">
+                        TARGET: 1.618 GOLDEN RATIO
+                    </span>
                 </div>
-                <div class="brutal-card brutal-cyan p-4">
-                    <span class="text-[10px] font-mono text-cyan-300 uppercase block font-bold">TOTAL CARDIO DISTANCE</span>
-                    <span id="stat-total-cardio" class="font-outfit font-black text-2xl text-white">0.0 km</span>
-                    <span class="text-[10px] text-cyan-400 block mt-1">Run: 0.0km | Bike: 0.0km</span>
-                </div>
-                <div class="brutal-card brutal-green p-4">
-                    <span class="text-[10px] font-mono text-emerald-300 uppercase block font-bold">WORKOUT COMPLETION RATE</span>
-                    <span id="stat-completion-rate" class="font-outfit font-black text-2xl text-white">0.0%</span>
-                    <span class="text-[10px] text-emerald-400 block mt-1">0 / 28 sessions logged</span>
-                </div>
-                <div class="brutal-card brutal-amber p-4">
-                    <span class="text-[10px] font-mono text-amber-300 uppercase block font-bold">ACTIVE CONSISTENCY STREAK</span>
-                    <span id="stat-streak-days" class="font-outfit font-black text-2xl text-white">0 DAYS</span>
-                    <span class="text-[10px] text-amber-400 block mt-1">Check off workouts to build streak</span>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <!-- Joint Dots SVG Skeleton Visualizer -->
+                    <div class="flex justify-center p-3 bg-zinc-900/90 border border-zinc-800 rounded">
+                        <svg id="human-skeleton-svg" viewBox="0 0 200 320" class="w-44 h-72 overflow-visible">
+                            <!-- Human Outline -->
+                            <circle cx="100" cy="35" r="16" fill="none" stroke="#3f3f46" stroke-width="2" />
+                            <line x1="100" y1="51" x2="100" y2="65" stroke="#52525b" stroke-width="3" />
+                            
+                            <!-- Shoulder Width Bar (Cyan) -->
+                            <line id="svg-shoulder-bar" x1="45" y1="65" x2="155" y2="65" stroke="#00f0ff" stroke-width="4" stroke-linecap="round" />
+                            <circle id="svg-joint-l-shoulder" cx="45" cy="65" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
+                            <circle id="svg-joint-r-shoulder" cx="155" cy="65" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
+                            <text x="100" y="60" text-anchor="middle" fill="#00f0ff" font-size="8" font-family="monospace" font-weight="bold">SHOULDERS</text>
+
+                            <!-- Torso Outline Taper Lines -->
+                            <line id="svg-taper-left" x1="45" y1="65" x2="68" y2="145" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
+                            <line id="svg-taper-right" x1="155" y1="65" x2="132" y2="145" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
+
+                            <!-- Waist Width Bar (Purple) -->
+                            <line id="svg-waist-bar" x1="68" y1="145" x2="132" y2="145" stroke="#c084fc" stroke-width="4" stroke-linecap="round" />
+                            <circle id="svg-joint-l-waist" cx="68" cy="145" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
+                            <circle id="svg-joint-r-waist" cx="132" cy="145" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
+                            <text x="100" y="140" text-anchor="middle" fill="#c084fc" font-size="8" font-family="monospace" font-weight="bold">WAIST</text>
+
+                            <!-- Hips Bar & Joints -->
+                            <line x1="72" y1="175" x2="128" y2="175" stroke="#34d399" stroke-width="3" />
+                            <circle cx="72" cy="175" r="5" fill="#34d399" />
+                            <circle cx="128" cy="175" r="5" fill="#34d399" />
+
+                            <!-- Arms Joints -->
+                            <line x1="45" y1="65" x2="35" y2="120" stroke="#52525b" stroke-width="2" />
+                            <line x1="155" y1="65" x2="165" y2="120" stroke="#52525b" stroke-width="2" />
+                            <circle cx="35" cy="120" r="4" fill="#a1a1aa" />
+                            <circle cx="165" cy="120" r="4" fill="#a1a1aa" />
+                            <line x1="35" y1="120" x2="30" y2="170" stroke="#52525b" stroke-width="2" />
+                            <line x1="165" y1="120" x2="170" y2="170" stroke="#52525b" stroke-width="2" />
+                            <circle cx="30" cy="170" r="3" fill="#a1a1aa" />
+                            <circle cx="170" cy="170" r="3" fill="#a1a1aa" />
+
+                            <!-- Legs Joints -->
+                            <line x1="72" y1="175" x2="75" y2="245" stroke="#52525b" stroke-width="2" />
+                            <line x1="128" y1="175" x2="125" y2="245" stroke="#52525b" stroke-width="2" />
+                            <circle cx="75" cy="245" r="4.5" fill="#facc15" />
+                            <circle cx="125" cy="245" r="4.5" fill="#facc15" />
+                            <line x1="75" cy="245" x2="78" y2="300" stroke="#52525b" stroke-width="2" />
+                            <line x1="125" y1="245" x2="122" y2="300" stroke="#52525b" stroke-width="2" />
+                            <circle cx="78" cy="300" r="3.5" fill="#facc15" />
+                            <circle cx="122" cy="300" r="3.5" fill="#facc15" />
+                        </svg>
+                    </div>
+
+                    <!-- Interactive Inputs & Live Ratio Display -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] font-mono text-zinc-300 block mb-1">SHOULDER CIRCUMFERENCE (CM)</label>
+                            <input type="number" id="vital-shoulders" value="116" min="80" max="180" oninput="calculateVTaper()" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-mono text-zinc-300 block mb-1">WAIST CIRCUMFERENCE (CM)</label>
+                            <input type="number" id="vital-waist" value="72" min="50" max="140" oninput="calculateVTaper()" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono focus:border-purple-400 focus:outline-none">
+                        </div>
+
+                        <div id="v-taper-result" class="p-2.5 bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
+                            Current Ratio: <strong class="text-white">1.611</strong> (Golden Target: 1.618)
+                            <span class="text-cyan-400 font-bold block mt-0.5">⚡ V-TAPER NEAR PERFECT</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Bento Charts Layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                <!-- PERMANENT HISTORICAL LOGS ARCHIVE BENTO CARD -->
-                <div class="brutal-card brutal-purple p-5 space-y-4 lg:col-span-2">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <div>
-                            <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
-                                <i data-lucide="archive" class="w-5 h-5 text-purple-400"></i>
-                                Permanent Historical Logs Archive (Weekly & Monthly Saved Records)
-                            </h3>
-                            <p class="text-xs text-zinc-400">Your completed weekly & monthly achievements are permanently preserved here so stats never get wiped out after a cycle.</p>
-                        </div>
-                        <span class="text-xs font-mono text-purple-300 bg-purple-950 border border-purple-800 px-3 py-1 font-bold">
-                            PERMANENT HISTORY
-                        </span>
-                    </div>
-
-                    <div id="historical-archive-container" class="space-y-2 max-h-60 overflow-y-auto">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                 <!-- 1. Volume Progression Line Chart -->
-                <div class="brutal-card p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
-                            <i data-lucide="trending-up" class="w-5 h-5 text-purple-400"></i>
-                            Weekly Lifting Volume Trend (kg)
+                <div class="brutal-card p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <h3 class="font-outfit font-black text-sm uppercase text-white flex items-center gap-2">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i>
+                            Weekly Volume Trend (kg)
                         </h3>
-                        <span class="text-[10px] font-mono bg-purple-950 text-purple-300 px-2 py-0.5">PROGRESSIVE OVERLOAD</span>
+                        <span class="text-[9px] font-mono bg-purple-950 text-purple-300 px-2 py-0.5">OVERLOAD</span>
                     </div>
 
-                    <div id="chart-volume-container" class="w-full h-56 flex items-end justify-between pt-4 px-2">
+                    <div id="chart-volume-container" class="w-full h-48 flex items-end justify-between pt-3 px-1">
                         <!-- SVG Chart Rendered by JS -->
                     </div>
                 </div>
 
                 <!-- 2. Cardio Distance Bar Chart -->
-                <div class="brutal-card p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
-                            <i data-lucide="bike" class="w-5 h-5 text-cyan-400"></i>
-                            Cardio Distance Breakdown (Run vs Bike)
+                <div class="brutal-card p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <h3 class="font-outfit font-black text-sm uppercase text-white flex items-center gap-2">
+                            <i data-lucide="bike" class="w-4 h-4 text-cyan-400"></i>
+                            Cardio Breakdown (Run vs Bike)
                         </h3>
-                        <span class="text-[10px] font-mono bg-cyan-950 text-cyan-300 px-2 py-0.5">IRONMAN 70.3 BASE</span>
+                        <span class="text-[9px] font-mono bg-cyan-950 text-cyan-300 px-2 py-0.5">DISTANCE</span>
                     </div>
 
-                    <div id="chart-cardio-container" class="w-full h-56 flex items-end justify-between pt-4 px-2">
+                    <div id="chart-cardio-container" class="w-full h-48 flex items-end justify-between pt-3 px-1">
                         <!-- SVG Chart Rendered by JS -->
                     </div>
                 </div>
 
                 <!-- 3. Muscle Group Workload Bar Chart -->
-                <div class="brutal-card p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
-                            <i data-lucide="pie-chart" class="w-5 h-5 text-emerald-400"></i>
-                            Muscle Group Set Distribution
+                <div class="brutal-card p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <h3 class="font-outfit font-black text-sm uppercase text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i>
+                            Muscle Group Distribution
                         </h3>
-                        <span class="text-[10px] font-mono text-zinc-400">V-Taper Balance</span>
+                        <span class="text-[9px] font-mono text-zinc-400">Sets Balance</span>
                     </div>
 
-                    <div id="chart-muscle-container" class="w-full h-48 space-y-3 pt-2">
+                    <div id="chart-muscle-container" class="w-full h-40 space-y-2 pt-1">
                         <!-- Rendered by JS -->
                     </div>
                 </div>
 
                 <!-- 4. 30-Day Activity Heatmap Matrix -->
-                <div class="brutal-card p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <h3 class="font-outfit font-black text-base uppercase text-white flex items-center gap-2">
-                            <i data-lucide="grid" class="w-5 h-5 text-amber-400"></i>
-                            30-Day Double-Session Heatmap
+                <div class="brutal-card p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <h3 class="font-outfit font-black text-sm uppercase text-white flex items-center gap-2">
+                            <i data-lucide="grid" class="w-4 h-4 text-amber-400"></i>
+                            30-Day Activity Heatmap
                         </h3>
-                        <span class="text-[10px] font-mono text-zinc-400">Consistency Grid</span>
+                        <span class="text-[9px] font-mono text-zinc-400">Consistency Grid</span>
                     </div>
 
-                    <div id="heatmap-matrix-container" class="grid grid-cols-7 gap-2 pt-2">
+                    <div id="heatmap-matrix-container" class="grid grid-cols-7 gap-1.5 pt-1">
                         <!-- Rendered by JS -->
                     </div>
                 </div>
@@ -892,132 +948,6 @@
             </div>
 
         </div>
-
-        <!-- ================= TAB 5: PHYSIQUE RULES & DB SETTINGS ================= -->
-        <div id="tab-physique" class="tab-content hidden space-y-6">
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                <!-- V-Taper Progression Tracker -->
-                <div class="brutal-card p-5 space-y-4">
-                    <h3 class="font-outfit font-black text-lg uppercase text-white">V-Taper Golden Ratio Tracker</h3>
-                    <p class="text-xs text-zinc-400">Target Shoulder-to-Waist Circumference Ratio is <strong>1.618</strong> (Golden Ratio V-Taper).</p>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] font-mono text-zinc-400 block">HEIGHT (cm)</label>
-                            <input type="number" id="vital-height" value="166" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-mono text-zinc-400 block">WEIGHT (kg)</label>
-                            <input type="number" id="vital-weight" value="70" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-mono text-zinc-400 block">SHOULDER CIRCUMFERENCE (cm)</label>
-                            <input type="number" id="vital-shoulders" value="116" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-mono text-zinc-400 block">WAIST CIRCUMFERENCE (cm)</label>
-                            <input type="number" id="vital-waist" value="72" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
-                        </div>
-                    </div>
-
-                    <button onclick="calculateVTaper()" class="w-full brutal-btn brutal-btn-purple text-xs py-2.5">
-                        Calculate V-Taper Score
-                    </button>
-
-                    <div id="v-taper-result" class="p-3 bg-zinc-900 border border-purple-500/40 text-center font-mono text-xs text-purple-300">
-                        Current V-Taper Ratio: <strong class="text-white text-base">1.611</strong> (Golden Ratio Target: 1.618)
-                    </div>
-                </div>
-
-                <!-- Human Joint Skeleton Body Structure & V-Taper Ratio Diagram -->
-                <div class="brutal-card brutal-purple p-5 space-y-4 bg-zinc-950">
-                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                        <div>
-                            <h3 class="font-outfit font-black text-lg uppercase text-white flex items-center gap-2">
-                                <i data-lucide="user-check" class="w-5 h-5 text-purple-400"></i>
-                                Human Joint Skeleton & V-Taper Structure
-                            </h3>
-                            <p class="text-xs text-zinc-400 mt-0.5">Physical joint dots layout with Golden Ratio (1.618) Shoulder-to-Waist measurement.</p>
-                        </div>
-                        <span class="text-xs font-mono font-bold text-cyan-400 bg-cyan-950 border border-cyan-800 px-3 py-1">
-                            TARGET: 1.618 GOLDEN RATIO
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <!-- Joint Dots SVG Skeleton Visualizer -->
-                        <div class="flex justify-center p-4 bg-zinc-900 border border-zinc-800 relative">
-                            <svg id="human-skeleton-svg" viewBox="0 0 200 320" class="w-48 h-80 overflow-visible">
-                                <!-- Human Outline -->
-                                <circle cx="100" cy="35" r="16" fill="none" stroke="#3f3f46" stroke-width="2" />
-                                <line x1="100" y1="51" x2="100" y2="65" stroke="#52525b" stroke-width="3" />
-                                
-                                <!-- Shoulder Width Bar (Cyan) -->
-                                <line id="svg-shoulder-bar" x1="45" y1="65" x2="155" y2="65" stroke="#00f0ff" stroke-width="4" stroke-linecap="round" />
-                                <circle id="svg-joint-l-shoulder" cx="45" cy="65" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
-                                <circle id="svg-joint-r-shoulder" cx="155" cy="65" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
-                                <text x="100" y="60" text-anchor="middle" fill="#00f0ff" font-size="9" font-family="monospace" font-weight="bold">SHOULDERS</text>
-
-                                <!-- Torso Outline Taper Lines -->
-                                <line id="svg-taper-left" x1="45" y1="65" x2="68" y2="145" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
-                                <line id="svg-taper-right" x1="155" y1="65" x2="132" y2="145" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
-
-                                <!-- Waist Width Bar (Purple) -->
-                                <line id="svg-waist-bar" x1="68" y1="145" x2="132" y2="145" stroke="#c084fc" stroke-width="4" stroke-linecap="round" />
-                                <circle id="svg-joint-l-waist" cx="68" cy="145" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
-                                <circle id="svg-joint-r-waist" cx="132" cy="145" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
-                                <text x="100" y="140" text-anchor="middle" fill="#c084fc" font-size="9" font-family="monospace" font-weight="bold">WAIST</text>
-
-                                <!-- Hips Bar & Joints -->
-                                <line x1="72" y1="175" x2="128" y2="175" stroke="#34d399" stroke-width="3" />
-                                <circle cx="72" cy="175" r="5" fill="#34d399" />
-                                <circle cx="128" cy="175" r="5" fill="#34d399" />
-
-                                <!-- Arms Joints -->
-                                <line x1="45" y1="65" x2="35" y2="120" stroke="#52525b" stroke-width="2" />
-                                <line x1="155" y1="65" x2="165" y2="120" stroke="#52525b" stroke-width="2" />
-                                <circle cx="35" cy="120" r="4" fill="#a1a1aa" />
-                                <circle cx="165" cy="120" r="4" fill="#a1a1aa" />
-                                <line x1="35" y1="120" x2="30" y2="170" stroke="#52525b" stroke-width="2" />
-                                <line x1="165" y1="120" x2="170" y2="170" stroke="#52525b" stroke-width="2" />
-                                <circle cx="30" cy="170" r="3" fill="#a1a1aa" />
-                                <circle cx="170" cy="170" r="3" fill="#a1a1aa" />
-
-                                <!-- Legs Joints -->
-                                <line x1="72" y1="175" x2="75" y2="245" stroke="#52525b" stroke-width="2" />
-                                <line x1="128" y1="175" x2="125" y2="245" stroke="#52525b" stroke-width="2" />
-                                <circle cx="75" cy="245" r="4.5" fill="#facc15" />
-                                <circle cx="125" cy="245" r="4.5" fill="#facc15" />
-                                <line x1="75" y1="245" x2="78" y2="300" stroke="#52525b" stroke-width="2" />
-                                <line x1="125" y1="245" x2="122" y2="300" stroke="#52525b" stroke-width="2" />
-                                <circle cx="78" cy="300" r="3.5" fill="#facc15" />
-                                <circle cx="122" cy="300" r="3.5" fill="#facc15" />
-                            </svg>
-                        </div>
-
-                        <!-- Interactive Inputs & Live Ratio Display -->
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-xs font-mono text-zinc-300 block mb-1">SHOULDER CIRCUMFERENCE (CM)</label>
-                                <input type="number" id="vital-shoulders" value="116" min="80" max="180" oninput="calculateVTaper()" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-sm p-2.5 font-mono focus:border-cyan-400 focus:outline-none">
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-mono text-zinc-300 block mb-1">WAIST CIRCUMFERENCE (CM)</label>
-                                <input type="number" id="vital-waist" value="72" min="50" max="140" oninput="calculateVTaper()" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-sm p-2.5 font-mono focus:border-purple-400 focus:outline-none">
-                            </div>
-
-                            <div id="v-taper-result" class="p-3 bg-zinc-900 border border-zinc-800 text-xs font-mono leading-relaxed text-zinc-300">
-                                Current Ratio: <strong class="text-white text-base">1.611</strong> (Golden Target: 1.618)
-                                <br><span class="text-cyan-400 font-bold block mt-1">⚡ V-TAPER NEAR PERFECT</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
 
             <!-- Supabase Cloud Sync Credentials Card -->
             <div class="brutal-card brutal-purple p-5 space-y-4 bg-purple-950/20">
@@ -1523,12 +1453,14 @@
             renderScheduleTimeline();
             renderWorkoutsTab();
             renderLoggedMeals();
+            updateProfileUI();
             updateMacroScales();
             renderAdminAnalytics();
+            calculateVTaper();
             
-            // Pull real-time cloud state on launch and start 3s polling for multi-device sync
+            // Pull real-time cloud state on launch and start 1.5s polling for multi-device sync
             pullCloudState();
-            setInterval(pullCloudState, 3000);
+            setInterval(pullCloudState, 1500);
         });
 
         // CLOCK & ACTIVE SLOT NOTIFIER
@@ -2202,7 +2134,56 @@ Keep crushing the daily plan! 💪⚡`;
             pushCloudState();
         }
 
-        // TAB 3: CALORIE & MACRO ENGINE
+        // TAB 3: CALORIE & USER PROFILE RECOMPOSITION ENGINE
+        function toggleProfileEditModal() {
+            const drawer = document.getElementById('profile-edit-drawer');
+            if (drawer) {
+                drawer.classList.toggle('hidden');
+                if (!drawer.classList.contains('hidden')) {
+                    const p = APP_STATE.userProfile || { height: 166, weight: 70, age: 21 };
+                    document.getElementById('edit-height').value = p.height;
+                    document.getElementById('edit-weight').value = p.weight;
+                    document.getElementById('edit-age').value = p.age;
+                }
+            }
+        }
+
+        function saveUserProfile() {
+            const h = Number(document.getElementById('edit-height').value) || 166;
+            const w = Number(document.getElementById('edit-weight').value) || 70;
+            const a = Number(document.getElementById('edit-age').value) || 21;
+
+            const bmr = Math.round(10 * w + 6.25 * h - 5 * a + 5);
+            const tdee = Math.round(bmr * 1.53);
+            const targetCal = Math.round(tdee - 425);
+
+            APP_STATE.userProfile = { height: h, weight: w, age: a, bmr, tdee, targetCal };
+
+            updateProfileUI();
+            toggleProfileEditModal();
+            saveLocalState();
+            pushCloudState();
+        }
+
+        function updateProfileUI() {
+            const p = APP_STATE.userProfile || { height: 166, weight: 70, age: 21, bmr: 1600, tdee: 2450, targetCal: 2025 };
+            const badge = document.getElementById('profile-display-badge');
+            if (badge) badge.innerText = `${p.height} cm | ${p.weight} kg | ${p.age} Y/O`;
+
+            const bmrEl = document.getElementById('profile-bmr-tdee');
+            if (bmrEl) bmrEl.innerText = `${p.bmr.toLocaleString()} / ${p.tdee.toLocaleString()} kcal`;
+
+            const targetCalEl = document.getElementById('profile-target-cal');
+            if (targetCalEl) targetCalEl.innerText = `${p.targetCal.toLocaleString()} kcal`;
+
+            const vH = document.getElementById('vital-height');
+            if (vH) vH.value = p.height;
+            const vW = document.getElementById('vital-weight');
+            if (vW) vW.value = p.weight;
+
+            updateMacroScales();
+        }
+
         function updateMacroScales() {
             let totalCal = 0, totalProt = 0, totalCarbs = 0, totalFats = 0, totalSugar = 0, totalSodium = 0;
             
@@ -2215,7 +2196,8 @@ Keep crushing the daily plan! 💪⚡`;
                 totalSodium += (m.sodium || 0);
             });
 
-            const targetCal = 2025;
+            const p = APP_STATE.userProfile || { targetCal: 2025 };
+            const targetCal = p.targetCal || 2025;
             const targetProt = 150;
             const targetCarbs = 240;
             const targetFats = 55;
@@ -2223,32 +2205,48 @@ Keep crushing the daily plan! 💪⚡`;
             const targetSodium = 2300;
 
             // Updates Scale Text & Bars
-            document.getElementById('scale-calories-text').innerText = `${totalCal} / ${targetCal} kcal`;
-            document.getElementById('scale-calories-rem').innerText = `${Math.max(0, targetCal - totalCal)} kcal remaining`;
-            document.getElementById('scale-calories-bar').style.width = `${Math.min(100, (totalCal / targetCal) * 100)}%`;
+            const calText = document.getElementById('scale-calories-text');
+            if (calText) calText.innerText = `${totalCal} / ${targetCal} kcal`;
+            const calRem = document.getElementById('scale-calories-rem');
+            if (calRem) calRem.innerText = `${Math.max(0, targetCal - totalCal)} kcal left`;
+            const calBar = document.getElementById('scale-calories-bar');
+            if (calBar) calBar.style.width = `${Math.min(100, (totalCal / targetCal) * 100)}%`;
 
-            document.getElementById('scale-protein-text').innerText = `${totalProt} / ${targetProt} g`;
-            document.getElementById('scale-protein-rem').innerText = `${Math.max(0, targetProt - totalProt)} g remaining`;
-            document.getElementById('scale-protein-bar').style.width = `${Math.min(100, (totalProt / targetProt) * 100)}%`;
+            const protText = document.getElementById('scale-protein-text');
+            if (protText) protText.innerText = `${totalProt} / ${targetProt} g`;
+            const protRem = document.getElementById('scale-protein-rem');
+            if (protRem) protRem.innerText = `${Math.max(0, targetProt - totalProt)} g left`;
+            const protBar = document.getElementById('scale-protein-bar');
+            if (protBar) protBar.style.width = `${Math.min(100, (totalProt / targetProt) * 100)}%`;
 
-            document.getElementById('scale-carbs-text').innerText = `${totalCarbs} / ${targetCarbs} g`;
-            document.getElementById('scale-carbs-rem').innerText = `${Math.max(0, targetCarbs - totalCarbs)} g remaining`;
-            document.getElementById('scale-carbs-bar').style.width = `${Math.min(100, (totalCarbs / targetCarbs) * 100)}%`;
+            const carbsText = document.getElementById('scale-carbs-text');
+            if (carbsText) carbsText.innerText = `${totalCarbs} / ${targetCarbs} g`;
+            const carbsRem = document.getElementById('scale-carbs-rem');
+            if (carbsRem) carbsRem.innerText = `${Math.max(0, targetCarbs - totalCarbs)} g left`;
+            const carbsBar = document.getElementById('scale-carbs-bar');
+            if (carbsBar) carbsBar.style.width = `${Math.min(100, (totalCarbs / targetCarbs) * 100)}%`;
 
-            document.getElementById('scale-fats-text').innerText = `${totalFats} / ${targetFats} g`;
-            document.getElementById('scale-fats-rem').innerText = `${Math.max(0, targetFats - totalFats)} g remaining`;
-            document.getElementById('scale-fats-bar').style.width = `${Math.min(100, (totalFats / targetFats) * 100)}%`;
+            const fatsText = document.getElementById('scale-fats-text');
+            if (fatsText) fatsText.innerText = `${totalFats} / ${targetFats} g`;
+            const fatsRem = document.getElementById('scale-fats-rem');
+            if (fatsRem) fatsRem.innerText = `${Math.max(0, targetFats - totalFats)} g left`;
+            const fatsBar = document.getElementById('scale-fats-bar');
+            if (fatsBar) fatsBar.style.width = `${Math.min(100, (totalFats / targetFats) * 100)}%`;
 
-            document.getElementById('scale-sugar-text').innerText = `${totalSugar} / ${maxSugar} g`;
-            document.getElementById('scale-sugar-bar').style.width = `${Math.min(100, (totalSugar / maxSugar) * 100)}%`;
+            const sugarText = document.getElementById('scale-sugar-text');
+            if (sugarText) sugarText.innerText = `${totalSugar} / ${maxSugar} g`;
+            const sugarBar = document.getElementById('scale-sugar-bar');
+            if (sugarBar) sugarBar.style.width = `${Math.min(100, (totalSugar / maxSugar) * 100)}%`;
             
             const sugarStatus = document.getElementById('scale-sugar-status');
-            if (totalSugar > maxSugar) {
-                sugarStatus.innerText = "OVER LIMIT ALERT";
-                sugarStatus.className = "text-red-400 font-bold";
-            } else {
-                sugarStatus.innerText = "SAFE ZONE";
-                sugarStatus.className = "text-emerald-400 font-bold";
+            if (sugarStatus) {
+                if (totalSugar > maxSugar) {
+                    sugarStatus.innerText = "OVER LIMIT";
+                    sugarStatus.className = "text-red-400 font-bold";
+                } else {
+                    sugarStatus.innerText = "SAFE";
+                    sugarStatus.className = "text-emerald-400 font-bold";
+                }
             }
 
             // Update Sodium Scale
@@ -2259,10 +2257,10 @@ Keep crushing the daily plan! 💪⚡`;
             if (sodiumBar) sodiumBar.style.width = `${Math.min(100, (totalSodium / targetSodium) * 100)}%`;
             if (sodiumStatus) {
                 if (totalSodium > 3000) {
-                    sodiumStatus.innerText = "HIGH SODIUM ALERT";
+                    sodiumStatus.innerText = "HIGH SODIUM";
                     sodiumStatus.className = "text-red-400 font-bold";
                 } else if (totalSodium >= 2300) {
-                    sodiumStatus.innerText = "OPTIMAL ELECTROLYTE RANGE";
+                    sodiumStatus.innerText = "OPTIMAL";
                     sodiumStatus.className = "text-emerald-400 font-bold";
                 } else {
                     sodiumStatus.innerText = "BALANCED";
@@ -2270,11 +2268,14 @@ Keep crushing the daily plan! 💪⚡`;
                 }
             }
 
-            // Update Water
+            // Update Water Target (4.00 Liters)
+            const targetWater = APP_STATE.waterTargetMl || 4000;
             const waterL = (APP_STATE.waterLoggedMl / 1000).toFixed(2);
-            const waterTargetL = (APP_STATE.waterTargetMl / 1000).toFixed(2);
-            document.getElementById('water-progress-text').innerText = `${waterL} / ${waterTargetL} L`;
-            document.getElementById('water-bar-fill').style.width = `${Math.min(100, (APP_STATE.waterLoggedMl / APP_STATE.waterTargetMl) * 100)}%`;
+            const waterTargetL = (targetWater / 1000).toFixed(2);
+            const waterText = document.getElementById('water-progress-text');
+            if (waterText) waterText.innerText = `${waterL} / ${waterTargetL} L`;
+            const waterBar = document.getElementById('water-bar-fill');
+            if (waterBar) waterBar.style.width = `${Math.min(100, (APP_STATE.waterLoggedMl / targetWater) * 100)}%`;
         }
 
         function addWater(amountMl) {
@@ -2763,6 +2764,7 @@ Keep crushing the daily plan! 💪⚡`;
                 checklistState: APP_STATE.checklistState || {},
                 customExerciseDetails: APP_STATE.customExerciseDetails || {},
                 waterLoggedMl: APP_STATE.waterLoggedMl || 0,
+                userProfile: APP_STATE.userProfile || { height: 166, weight: 70, age: 21, bmr: 1600, tdee: 2450, targetCal: 2025 },
                 loggedMeals: APP_STATE.loggedMeals || [],
                 masterSchedule: APP_STATE.masterSchedule || [],
                 historicalArchive: APP_STATE.historicalArchive || {},
@@ -2840,6 +2842,11 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
+                if (cloudData.userProfile && JSON.stringify(cloudData.userProfile) !== JSON.stringify(APP_STATE.userProfile)) {
+                    APP_STATE.userProfile = cloudData.userProfile;
+                    updated = true;
+                }
+
                 if (cloudData.loggedMeals && JSON.stringify(cloudData.loggedMeals) !== JSON.stringify(APP_STATE.loggedMeals)) {
                     APP_STATE.loggedMeals = cloudData.loggedMeals;
                     updated = true;
@@ -2860,8 +2867,10 @@ Keep crushing the daily plan! 💪⚡`;
                     renderScheduleTimeline();
                     renderWorkoutsTab();
                     renderLoggedMeals();
+                    updateProfileUI();
                     updateMacroScales();
                     renderAdminAnalytics();
+                    calculateVTaper();
                 }
 
                 updateSyncUIStatus(true, "SERVER LIVE");
@@ -2887,7 +2896,9 @@ Keep crushing the daily plan! 💪⚡`;
             await pullCloudState();
             renderWorkoutsTab();
             renderLoggedMeals();
+            updateProfileUI();
             updateMacroScales();
+            calculateVTaper();
             alert("⬇️ Pulled latest Vercel Server state to screen.");
         }
 
@@ -2902,6 +2913,7 @@ Keep crushing the daily plan! 💪⚡`;
                     checklistState: APP_STATE.checklistState,
                     customExerciseDetails: APP_STATE.customExerciseDetails || {},
                     waterLoggedMl: APP_STATE.waterLoggedMl,
+                    userProfile: APP_STATE.userProfile,
                     loggedMeals: APP_STATE.loggedMeals,
                     historicalArchive: APP_STATE.historicalArchive || {}
                 }));
@@ -2915,6 +2927,7 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.checklistState) APP_STATE.checklistState = parsed.checklistState;
                     if (parsed.customExerciseDetails) APP_STATE.customExerciseDetails = parsed.customExerciseDetails;
                     if (parsed.waterLoggedMl !== undefined) APP_STATE.waterLoggedMl = parsed.waterLoggedMl;
+                    if (parsed.userProfile) APP_STATE.userProfile = parsed.userProfile;
                     if (parsed.loggedMeals) APP_STATE.loggedMeals = parsed.loggedMeals;
                     if (parsed.historicalArchive) APP_STATE.historicalArchive = parsed.historicalArchive;
                 }
