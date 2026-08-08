@@ -605,7 +605,7 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🔥 Calories: <span id="scale-calories-text" class="text-amber-400">0 / 2,025 kcal</span>
+                                    🔥 Calories (2,000 – 2,050 kcal): <span id="scale-calories-text" class="text-amber-400">0 / 2,025 kcal</span>
                                 </span>
                                 <span id="scale-calories-rem" class="text-zinc-400 font-bold">2,025 kcal remaining</span>
                             </div>
@@ -618,7 +618,7 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🥩 Protein (2.1g/kg): <span id="scale-protein-text" class="text-purple-400">0 / 150 g</span>
+                                    🥩 Protein (145g – 150g): <span id="scale-protein-text" class="text-purple-400">0 / 150 g</span>
                                 </span>
                                 <span id="scale-protein-rem" class="text-purple-300 font-bold">150 g remaining</span>
                             </div>
@@ -631,7 +631,7 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🍚 Carbohydrates: <span id="scale-carbs-text" class="text-cyan-400">0 / 240 g</span>
+                                    🍚 Carbohydrates (230g – 240g): <span id="scale-carbs-text" class="text-cyan-400">0 / 240 g</span>
                                 </span>
                                 <span id="scale-carbs-rem" class="text-cyan-300 font-bold">240 g remaining</span>
                             </div>
@@ -644,9 +644,9 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-white uppercase flex items-center gap-1.5">
-                                    🥑 Healthy Fats: <span id="scale-fats-text" class="text-emerald-400">0 / 52 g</span>
+                                    🥑 Healthy Fats (50g – 55g): <span id="scale-fats-text" class="text-emerald-400">0 / 55 g</span>
                                 </span>
-                                <span id="scale-fats-rem" class="text-emerald-300 font-bold">52 g remaining</span>
+                                <span id="scale-fats-rem" class="text-emerald-300 font-bold">55 g remaining</span>
                             </div>
                             <div class="w-full h-3 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-fats-bar" class="h-full bg-emerald-400 transition-all duration-500" style="width: 0%;"></div>
@@ -657,12 +657,25 @@
                         <div class="space-y-1.5 pt-2 border-t border-zinc-800">
                             <div class="flex justify-between text-xs font-mono">
                                 <span class="font-bold text-pink-400 uppercase flex items-center gap-1.5">
-                                    ⚠️ Sugar Limit (Max 35g): <span id="scale-sugar-text" class="text-white">0 / 35 g</span>
+                                    ⚠️ Added Sugar Limit (&lt; 25g – 30g): <span id="scale-sugar-text" class="text-white">0 / 25 g</span>
                                 </span>
                                 <span id="scale-sugar-status" class="text-emerald-400 font-bold">SAFE ZONE</span>
                             </div>
                             <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
                                 <div id="scale-sugar-bar" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Sodium Electrolyte Limit Bar -->
+                        <div class="space-y-1.5 pt-2 border-t border-zinc-800">
+                            <div class="flex justify-between text-xs font-mono">
+                                <span class="font-bold text-cyan-400 uppercase flex items-center gap-1.5">
+                                    🧂 Sodium Electrolytes (2,300 – 3,000 mg): <span id="scale-sodium-text" class="text-white">0 / 2,300 mg</span>
+                                </span>
+                                <span id="scale-sodium-status" class="text-cyan-400 font-bold">BALANCED</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-zinc-900 border border-zinc-700 overflow-hidden">
+                                <div id="scale-sodium-bar" class="h-full bg-cyan-400 transition-all duration-500" style="width: 0%;"></div>
                             </div>
                         </div>
 
@@ -759,9 +772,13 @@
                                     <label class="text-[10px] font-mono text-zinc-400 block">FATS (g)</label>
                                     <input type="number" id="meal-fats-input" placeholder="10" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
                                 </div>
-                                <div class="col-span-2">
-                                    <label class="text-[10px] font-mono text-pink-400 block font-bold">SUGAR INTAKE (g) [MAX 35g]</label>
+                                <div>
+                                    <label class="text-[10px] font-mono text-pink-400 block font-bold">SUGAR (g)</label>
                                     <input type="number" id="meal-sugar-input" placeholder="5" class="w-full bg-zinc-900 border border-pink-500/50 text-white text-xs p-2 font-mono focus:border-pink-400 focus:outline-none">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="text-[10px] font-mono text-cyan-400 block font-bold">SODIUM (mg) [2.3k–3k mg]</label>
+                                    <input type="number" id="meal-sodium-input" placeholder="400" class="w-full bg-zinc-900 border border-cyan-500/50 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
                                 </div>
                             </div>
 
@@ -2248,7 +2265,7 @@ Keep crushing the daily plan! 💪⚡`;
 
         // TAB 3: CALORIE & MACRO ENGINE
         function updateMacroScales() {
-            let totalCal = 0, totalProt = 0, totalCarbs = 0, totalFats = 0, totalSugar = 0;
+            let totalCal = 0, totalProt = 0, totalCarbs = 0, totalFats = 0, totalSugar = 0, totalSodium = 0;
             
             APP_STATE.loggedMeals.forEach(m => {
                 totalCal += m.cal;
@@ -2256,13 +2273,15 @@ Keep crushing the daily plan! 💪⚡`;
                 totalCarbs += m.carbs;
                 totalFats += m.fats;
                 totalSugar += (m.sugar || 0);
+                totalSodium += (m.sodium || 0);
             });
 
             const targetCal = 2025;
             const targetProt = 150;
             const targetCarbs = 240;
-            const targetFats = 52;
-            const maxSugar = 35;
+            const targetFats = 55;
+            const maxSugar = 25;
+            const targetSodium = 2300;
 
             // Updates Scale Text & Bars
             document.getElementById('scale-calories-text').innerText = `${totalCal} / ${targetCal} kcal`;
@@ -2293,6 +2312,25 @@ Keep crushing the daily plan! 💪⚡`;
                 sugarStatus.className = "text-emerald-400 font-bold";
             }
 
+            // Update Sodium Scale
+            const sodiumText = document.getElementById('scale-sodium-text');
+            const sodiumBar = document.getElementById('scale-sodium-bar');
+            const sodiumStatus = document.getElementById('scale-sodium-status');
+            if (sodiumText) sodiumText.innerText = `${totalSodium} / ${targetSodium} mg`;
+            if (sodiumBar) sodiumBar.style.width = `${Math.min(100, (totalSodium / targetSodium) * 100)}%`;
+            if (sodiumStatus) {
+                if (totalSodium > 3000) {
+                    sodiumStatus.innerText = "HIGH SODIUM ALERT";
+                    sodiumStatus.className = "text-red-400 font-bold";
+                } else if (totalSodium >= 2300) {
+                    sodiumStatus.innerText = "OPTIMAL ELECTROLYTE RANGE";
+                    sodiumStatus.className = "text-emerald-400 font-bold";
+                } else {
+                    sodiumStatus.innerText = "BALANCED";
+                    sodiumStatus.className = "text-cyan-400 font-bold";
+                }
+            }
+
             // Update Water
             const waterL = (APP_STATE.waterLoggedMl / 1000).toFixed(2);
             const waterTargetL = (APP_STATE.waterTargetMl / 1000).toFixed(2);
@@ -2314,11 +2352,11 @@ Keep crushing the daily plan! 💪⚡`;
 
         function quickLogPreset(type) {
             if (type === 'oats') {
-                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥣 Oats & Egg Whites", cal: 450, prot: 40, carbs: 55, fats: 6, sugar: 2 });
+                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥣 Oats & Egg Whites", cal: 450, prot: 40, carbs: 55, fats: 6, sugar: 2, sodium: 320 });
             } else if (type === 'chicken') {
-                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🍗 Chicken Breast & Rice", cal: 550, prot: 50, carbs: 65, fats: 8, sugar: 1 });
+                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🍗 Chicken Breast & Rice", cal: 550, prot: 50, carbs: 65, fats: 8, sugar: 1, sodium: 450 });
             } else if (type === 'shake') {
-                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥤 Whey Shake & Banana", cal: 300, prot: 35, carbs: 30, fats: 2, sugar: 12 });
+                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥤 Whey Shake & Banana", cal: 300, prot: 35, carbs: 30, fats: 2, sugar: 12, sodium: 180 });
             }
             renderLoggedMeals();
             updateMacroScales();
@@ -2332,8 +2370,9 @@ Keep crushing the daily plan! 💪⚡`;
             const carbs = Number(document.getElementById('meal-carbs-input').value) || 0;
             const fats = Number(document.getElementById('meal-fats-input').value) || 0;
             const sugar = Number(document.getElementById('meal-sugar-input').value) || 0;
+            const sodium = Number(document.getElementById('meal-sodium-input').value) || 0;
 
-            APP_STATE.loggedMeals.push({ id: Date.now(), name, cal, prot, carbs, fats, sugar });
+            APP_STATE.loggedMeals.push({ id: Date.now(), name, cal, prot, carbs, fats, sugar, sodium });
             renderLoggedMeals();
             updateMacroScales();
             pushCloudState();
@@ -2344,6 +2383,7 @@ Keep crushing the daily plan! 💪⚡`;
             document.getElementById('meal-carbs-input').value = '';
             document.getElementById('meal-fats-input').value = '';
             document.getElementById('meal-sugar-input').value = '';
+            document.getElementById('meal-sodium-input').value = '';
         }
 
         function removeMeal(id) {
@@ -2368,7 +2408,7 @@ Keep crushing the daily plan! 💪⚡`;
                 div.innerHTML = `
                     <div>
                         <span class="text-white font-bold block">${m.name}</span>
-                        <span class="text-[10px] text-zinc-400">${m.cal} kcal | ${m.prot}g P | ${m.carbs}g C | ${m.fats}g F | <span class="text-pink-400">${m.sugar || 0}g Sugar</span></span>
+                        <span class="text-[10px] text-zinc-400">${m.cal} kcal | ${m.prot}g P | ${m.carbs}g C | ${m.fats}g F | <span class="text-pink-400">${m.sugar || 0}g Sugar</span> | <span class="text-cyan-400">${m.sodium || 0}mg Na</span></span>
                     </div>
                     <button onclick="removeMeal(${m.id})" class="text-red-400 hover:text-red-300 font-bold px-1">✕</button>
                 `;
