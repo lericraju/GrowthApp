@@ -802,50 +802,50 @@
                     <!-- Joint Dots SVG Skeleton Visualizer -->
                     <div class="flex justify-center p-3 bg-zinc-900/90 border border-zinc-800 rounded">
                         <svg id="human-skeleton-svg" viewBox="0 0 200 320" class="w-44 h-72 overflow-visible">
-                            <!-- Human Outline -->
-                            <circle cx="100" cy="35" r="16" fill="none" stroke="#3f3f46" stroke-width="2" />
-                            <line x1="100" y1="51" x2="100" y2="65" stroke="#52525b" stroke-width="3" />
+                            <!-- Head & Spine -->
+                            <circle cx="100" cy="30" r="14" fill="none" stroke="#71717a" stroke-width="2" />
+                            <line x1="100" y1="44" x2="100" y2="160" stroke="#52525b" stroke-width="2" />
                             
                             <!-- Shoulder Width Bar (Cyan) -->
-                            <line id="svg-shoulder-bar" x1="45" y1="65" x2="155" y2="65" stroke="#00f0ff" stroke-width="4" stroke-linecap="round" />
-                            <circle id="svg-joint-l-shoulder" cx="45" cy="65" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
-                            <circle id="svg-joint-r-shoulder" cx="155" cy="65" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
-                            <text x="100" y="60" text-anchor="middle" fill="#00f0ff" font-size="8" font-family="monospace" font-weight="bold">SHOULDERS</text>
+                            <line id="svg-shoulder-bar" x1="45" y1="60" x2="155" y2="60" stroke="#00f0ff" stroke-width="4" stroke-linecap="round" />
+                            <circle id="svg-joint-l-shoulder" cx="45" cy="60" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
+                            <circle id="svg-joint-r-shoulder" cx="155" cy="60" r="6" fill="#00f0ff" stroke="#ffffff" stroke-width="2" />
+                            <text x="100" y="54" text-anchor="middle" fill="#00f0ff" font-size="8" font-family="monospace" font-weight="bold">SHOULDERS</text>
 
                             <!-- Torso Outline Taper Lines -->
-                            <line id="svg-taper-left" x1="45" y1="65" x2="68" y2="145" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
-                            <line id="svg-taper-right" x1="155" y1="65" x2="132" y2="145" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
+                            <line id="svg-taper-left" x1="45" y1="60" x2="68" y2="130" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
+                            <line id="svg-taper-right" x1="155" y1="60" x2="132" y2="130" stroke="#c084fc" stroke-width="2" stroke-dasharray="4" />
 
                             <!-- Waist Width Bar (Purple) -->
-                            <line id="svg-waist-bar" x1="68" y1="145" x2="132" y2="145" stroke="#c084fc" stroke-width="4" stroke-linecap="round" />
-                            <circle id="svg-joint-l-waist" cx="68" cy="145" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
-                            <circle id="svg-joint-r-waist" cx="132" cy="145" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
-                            <text x="100" y="140" text-anchor="middle" fill="#c084fc" font-size="8" font-family="monospace" font-weight="bold">WAIST</text>
+                            <line id="svg-waist-bar" x1="68" y1="130" x2="132" y2="130" stroke="#c084fc" stroke-width="4" stroke-linecap="round" />
+                            <circle id="svg-joint-l-waist" cx="68" cy="130" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
+                            <circle id="svg-joint-r-waist" cx="132" cy="130" r="5" fill="#c084fc" stroke="#ffffff" stroke-width="2" />
+                            <text x="100" y="124" text-anchor="middle" fill="#c084fc" font-size="8" font-family="monospace" font-weight="bold">WAIST</text>
 
                             <!-- Hips Bar & Joints -->
-                            <line x1="72" y1="175" x2="128" y2="175" stroke="#34d399" stroke-width="3" />
-                            <circle cx="72" cy="175" r="5" fill="#34d399" />
-                            <circle cx="128" cy="175" r="5" fill="#34d399" />
+                            <line x1="72" y1="160" x2="128" y2="160" stroke="#34d399" stroke-width="3" stroke-linecap="round" />
+                            <circle cx="72" cy="160" r="5" fill="#34d399" stroke="#ffffff" stroke-width="1.5" />
+                            <circle cx="128" cy="160" r="5" fill="#34d399" stroke="#ffffff" stroke-width="1.5" />
 
                             <!-- Arms Joints -->
-                            <line x1="45" y1="65" x2="35" y2="120" stroke="#52525b" stroke-width="2" />
-                            <line x1="155" y1="65" x2="165" y2="120" stroke="#52525b" stroke-width="2" />
-                            <circle cx="35" cy="120" r="4" fill="#a1a1aa" />
-                            <circle cx="165" cy="120" r="4" fill="#a1a1aa" />
-                            <line x1="35" y1="120" x2="30" y2="170" stroke="#52525b" stroke-width="2" />
-                            <line x1="165" y1="120" x2="170" y2="170" stroke="#52525b" stroke-width="2" />
-                            <circle cx="30" cy="170" r="3" fill="#a1a1aa" />
-                            <circle cx="170" cy="170" r="3" fill="#a1a1aa" />
+                            <line id="svg-arm-l" x1="45" y1="60" x2="32" y2="110" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <line id="svg-arm-r" x1="155" y1="60" x2="168" y2="110" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="32" cy="110" r="4" fill="#a1a1aa" />
+                            <circle cx="168" cy="110" r="4" fill="#a1a1aa" />
+                            <line x1="32" y1="110" x2="26" y2="160" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <line x1="168" y1="110" x2="174" y2="160" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="26" cy="160" r="3" fill="#a1a1aa" />
+                            <circle cx="174" cy="160" r="3" fill="#a1a1aa" />
 
                             <!-- Legs Joints -->
-                            <line x1="72" y1="175" x2="75" y2="245" stroke="#52525b" stroke-width="2" />
-                            <line x1="128" y1="175" x2="125" y2="245" stroke="#52525b" stroke-width="2" />
-                            <circle cx="75" cy="245" r="4.5" fill="#facc15" />
-                            <circle cx="125" cy="245" r="4.5" fill="#facc15" />
-                            <line x1="75" cy="245" x2="78" y2="300" stroke="#52525b" stroke-width="2" />
-                            <line x1="125" y1="245" x2="122" y2="300" stroke="#52525b" stroke-width="2" />
-                            <circle cx="78" cy="300" r="3.5" fill="#facc15" />
-                            <circle cx="122" cy="300" r="3.5" fill="#facc15" />
+                            <line x1="72" y1="160" x2="72" y2="230" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <line x1="128" y1="160" x2="128" y2="230" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="72" cy="230" r="5" fill="#facc15" stroke="#ffffff" stroke-width="1" />
+                            <circle cx="128" cy="230" r="5" fill="#facc15" stroke="#ffffff" stroke-width="1" />
+                            <line x1="72" y1="230" x2="72" y2="295" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <line x1="128" y1="230" x2="128" y2="295" stroke="#71717a" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="72" cy="295" r="4" fill="#facc15" />
+                            <circle cx="128" cy="295" r="4" fill="#facc15" />
                         </svg>
                     </div>
 
@@ -2581,28 +2581,46 @@ Keep crushing the daily plan! 💪⚡`;
             // Dynamic SVG Skeleton adjustment
             const shBar = document.getElementById('svg-shoulder-bar');
             if (shBar) {
-                const shoulderWidthPx = Math.min(170, Math.max(80, (sh / 116) * 110));
-                const waistWidthPx = Math.min(140, Math.max(40, (wa / 72) * 64));
+                const shoulderWidthPx = Math.min(160, Math.max(80, (sh / 116) * 110));
+                const waistWidthPx = Math.min(130, Math.max(40, (wa / 72) * 64));
                 
-                const lSh = 100 - (shoulderWidthPx / 2);
-                const rSh = 100 + (shoulderWidthPx / 2);
-                const lWa = 100 - (waistWidthPx / 2);
-                const rWa = 100 + (waistWidthPx / 2);
+                const lSh = Math.round(100 - (shoulderWidthPx / 2));
+                const rSh = Math.round(100 + (shoulderWidthPx / 2));
+                const lWa = Math.round(100 - (waistWidthPx / 2));
+                const rWa = Math.round(100 + (waistWidthPx / 2));
 
                 shBar.setAttribute('x1', lSh);
                 shBar.setAttribute('x2', rSh);
-                document.getElementById('svg-joint-l-shoulder').setAttribute('cx', lSh);
-                document.getElementById('svg-joint-r-shoulder').setAttribute('cx', rSh);
+                const jlSh = document.getElementById('svg-joint-l-shoulder');
+                const jrSh = document.getElementById('svg-joint-r-shoulder');
+                if (jlSh) jlSh.setAttribute('cx', lSh);
+                if (jrSh) jrSh.setAttribute('cx', rSh);
 
-                document.getElementById('svg-waist-bar').setAttribute('x1', lWa);
-                document.getElementById('svg-waist-bar').setAttribute('x2', rWa);
-                document.getElementById('svg-joint-l-waist').setAttribute('cx', lWa);
-                document.getElementById('svg-joint-r-waist').setAttribute('cx', rWa);
+                const wBar = document.getElementById('svg-waist-bar');
+                if (wBar) {
+                    wBar.setAttribute('x1', lWa);
+                    wBar.setAttribute('x2', rWa);
+                }
+                const jlWa = document.getElementById('svg-joint-l-waist');
+                const jrWa = document.getElementById('svg-joint-r-waist');
+                if (jlWa) jlWa.setAttribute('cx', lWa);
+                if (jrWa) jrWa.setAttribute('cx', rWa);
 
-                document.getElementById('svg-taper-left').setAttribute('x1', lSh);
-                document.getElementById('svg-taper-left').setAttribute('x2', lWa);
-                document.getElementById('svg-taper-right').setAttribute('x1', rSh);
-                document.getElementById('svg-taper-right').setAttribute('x2', rWa);
+                const tL = document.getElementById('svg-taper-left');
+                const tR = document.getElementById('svg-taper-right');
+                if (tL) {
+                    tL.setAttribute('x1', lSh);
+                    tL.setAttribute('x2', lWa);
+                }
+                if (tR) {
+                    tR.setAttribute('x1', rSh);
+                    tR.setAttribute('x2', rWa);
+                }
+
+                const lArm = document.getElementById('svg-arm-l');
+                const rArm = document.getElementById('svg-arm-r');
+                if (lArm) lArm.setAttribute('x1', lSh);
+                if (rArm) rArm.setAttribute('x1', rSh);
             }
         }
 
