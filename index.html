@@ -75,45 +75,62 @@
         }
 
         /* Bitkit / Neo-Brutalist Hard Shadows */
-        .brutal-card {
-            background: #121216;
-            border: 2px solid var(--border-hard);
-            box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.12);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        /* LIQUID GLASS & NEOMORPHISM DESIGN SYSTEM */
+        .brutal-card, .bento-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 18, 24, 0.75) 100%) !important;
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 
+                8px 8px 24px rgba(0, 0, 0, 0.65), 
+                -3px -3px 12px rgba(255, 255, 255, 0.03),
+                inset 1px 1px 1px rgba(255, 255, 255, 0.15) !important;
+            border-radius: 1rem !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            position: relative;
+            overflow: hidden;
         }
 
-        .brutal-card:hover {
-            border-color: rgba(255, 255, 255, 0.25);
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px 0px rgba(255, 255, 255, 0.2);
+        .brutal-card::before, .bento-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            pointer-events: none;
+        }
+
+        .brutal-card:hover, .bento-card:hover {
+            border-color: rgba(0, 240, 255, 0.35) !important;
+            box-shadow: 
+                12px 12px 32px rgba(0, 0, 0, 0.75), 
+                -4px -4px 16px rgba(0, 240, 255, 0.08),
+                inset 1px 1px 2px rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-3px);
         }
 
         .brutal-cyan {
-            border-color: var(--accent-cyan) !important;
-            box-shadow: 4px 4px 0px 0px var(--accent-cyan) !important;
-        }
-
-        .brutal-cyan:hover {
-            box-shadow: 6px 6px 0px 0px var(--accent-cyan) !important;
+            border-color: rgba(0, 240, 255, 0.4) !important;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
         }
 
         .brutal-purple {
-            border-color: var(--accent-purple) !important;
-            box-shadow: 4px 4px 0px 0px var(--accent-purple) !important;
-        }
-
-        .brutal-purple:hover {
-            box-shadow: 6px 6px 0px 0px var(--accent-purple) !important;
+            border-color: rgba(192, 132, 252, 0.4) !important;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
         }
 
         .brutal-green {
-            border-color: var(--accent-green) !important;
-            box-shadow: 4px 4px 0px 0px var(--accent-green) !important;
+            border-color: rgba(52, 211, 147, 0.4) !important;
+            box-shadow: 0 0 20px rgba(52, 211, 147, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
         }
 
         .brutal-amber {
-            border-color: var(--accent-amber) !important;
-            box-shadow: 4px 4px 0px 0px var(--accent-amber) !important;
+            border-color: rgba(250, 204, 21, 0.4) !important;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
         }
 
         .brutal-btn {
@@ -121,50 +138,66 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            border: 2px solid #ffffff;
-            box-shadow: 3px 3px 0px 0px #ffffff;
-            transition: all 0.15s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            box-shadow: 
+                4px 4px 10px rgba(0, 0, 0, 0.5), 
+                -2px -2px 6px rgba(255, 255, 255, 0.04),
+                inset 1px 1px 1px rgba(255, 255, 255, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .brutal-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px 0px #ffffff;
+            box-shadow: 
+                inset 3px 3px 6px rgba(0, 0, 0, 0.7), 
+                inset -2px -2px 4px rgba(255, 255, 255, 0.05);
+            transform: translateY(1px);
         }
 
         .brutal-btn-cyan {
-            background-color: var(--accent-cyan);
+            background: linear-gradient(135deg, #00f0ff 0%, #00a8ff 100%);
             color: #000000;
-            border-color: var(--accent-cyan);
-            box-shadow: 3px 3px 0px 0px #ffffff;
+            border-color: #00f0ff;
         }
 
         .brutal-btn-purple {
-            background-color: var(--accent-purple);
+            background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
             color: #000000;
-            border-color: var(--accent-purple);
-            box-shadow: 3px 3px 0px 0px #ffffff;
+            border-color: #c084fc;
         }
 
-        /* Touch Checkbox Styling for Mobile & Desktop */
+        /* Neomorphic Checkbox & Controls */
         .check-box-brutal {
             appearance: none;
             width: 28px;
             height: 28px;
             min-width: 28px;
             min-height: 28px;
-            border: 2px solid #a1a1aa;
-            background: #18181b;
-            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(12, 12, 16, 0.9);
+            box-shadow: 
+                inset 3px 3px 6px rgba(0, 0, 0, 0.7), 
+                inset -2px -2px 4px rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
             cursor: pointer;
             display: inline-grid;
             place-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .check-box-brutal:checked {
-            background: var(--accent-green);
-            border-color: var(--accent-green);
-            box-shadow: 2px 2px 0px 0px #ffffff;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-color: #34d399;
+            box-shadow: 
+                0 0 12px rgba(52, 211, 153, 0.6), 
+                inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .check-box-brutal:checked::before {
+            content: "✓";
+            font-weight: 900;
+            color: #000;
+            font-size: 16px;
         }
 
         .check-box-brutal:checked::before {
