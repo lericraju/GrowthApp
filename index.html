@@ -757,28 +757,21 @@
 
                         <!-- Preset Quick Add Buttons -->
                         <div class="space-y-2">
-                            <span class="text-[10px] font-mono text-zinc-400 block uppercase font-bold">PRESET MASTER MEALS</span>
+                            <span class="text-[10px] font-mono text-zinc-400 block uppercase font-bold">FASTER MEAL PREP PRESETS</span>
                             <div class="grid grid-cols-1 gap-2">
-                                <button onclick="quickLogPreset('oats')" class="text-left bg-zinc-900 border border-zinc-700 hover:border-purple-400 p-2.5 text-xs font-mono flex justify-between items-center transition-all">
+                                <button onclick="quickLogPreset('egg')" class="text-left bg-zinc-900 border border-zinc-700 hover:border-amber-400 p-2.5 text-xs font-mono flex justify-between items-center transition-all">
                                     <div>
-                                        <span class="font-bold text-white block">🥣 Oats & Egg Whites</span>
-                                        <span class="text-[10px] text-zinc-400">450 kcal | 40g P | 55g C | 6g F</span>
+                                        <span class="font-bold text-white block">🥚 1 Boiled Egg</span>
+                                        <span class="text-[10px] text-zinc-400">70 kcal | 6g P | 0.5g C | 5g F | 62mg Na</span>
                                     </div>
-                                    <span class="text-purple-400 font-bold">+ LOG</span>
+                                    <span class="text-amber-400 font-bold">+ LOG</span>
                                 </button>
-                                <button onclick="quickLogPreset('chicken')" class="text-left bg-zinc-900 border border-zinc-700 hover:border-cyan-400 p-2.5 text-xs font-mono flex justify-between items-center transition-all">
+                                <button onclick="quickLogPreset('banana')" class="text-left bg-zinc-900 border border-zinc-700 hover:border-yellow-400 p-2.5 text-xs font-mono flex justify-between items-center transition-all">
                                     <div>
-                                        <span class="font-bold text-white block">🍗 Chicken Breast & Rice</span>
-                                        <span class="text-[10px] text-zinc-400">550 kcal | 50g P | 65g C | 8g F</span>
+                                        <span class="font-bold text-white block">🍌 1 Banana Robust</span>
+                                        <span class="text-[10px] text-zinc-400">105 kcal | 1g P | 27g C | 14g Sugar</span>
                                     </div>
-                                    <span class="text-cyan-400 font-bold">+ LOG</span>
-                                </button>
-                                <button onclick="quickLogPreset('shake')" class="text-left bg-zinc-900 border border-zinc-700 hover:border-emerald-400 p-2.5 text-xs font-mono flex justify-between items-center transition-all">
-                                    <div>
-                                        <span class="font-bold text-white block">🥤 Whey Shake & Banana</span>
-                                        <span class="text-[10px] text-zinc-400">300 kcal | 35g P | 30g C | 2g F</span>
-                                    </div>
-                                    <span class="text-emerald-400 font-bold">+ LOG</span>
+                                    <span class="text-yellow-400 font-bold">+ LOG</span>
                                 </button>
                             </div>
                         </div>
@@ -2415,12 +2408,10 @@ Keep crushing the daily plan! 💪⚡`;
         }
 
         function quickLogPreset(type) {
-            if (type === 'oats') {
-                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥣 Oats & Egg Whites", cal: 450, prot: 40, carbs: 55, fats: 6, sugar: 2, sodium: 320 });
-            } else if (type === 'chicken') {
-                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🍗 Chicken Breast & Rice", cal: 550, prot: 50, carbs: 65, fats: 8, sugar: 1, sodium: 450 });
-            } else if (type === 'shake') {
-                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥤 Whey Shake & Banana", cal: 300, prot: 35, carbs: 30, fats: 2, sugar: 12, sodium: 180 });
+            if (type === 'egg') {
+                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🥚 1 Boiled Egg", cal: 70, prot: 6, carbs: 1, fats: 5, sugar: 0, sodium: 62 });
+            } else if (type === 'banana') {
+                APP_STATE.loggedMeals.push({ id: Date.now(), name: "🍌 1 Banana Robust", cal: 105, prot: 1, carbs: 27, fats: 0, sugar: 14, sodium: 1 });
             }
             renderLoggedMeals();
             updateMacroScales();
