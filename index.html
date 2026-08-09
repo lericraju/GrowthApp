@@ -939,9 +939,19 @@
                 <button onclick="closeQuickInsertModal()" class="text-zinc-400 hover:text-white font-mono font-bold">✕</button>
             </div>
             <p class="text-xs text-zinc-300">
-                Shift workout or study windows dynamically while keeping <strong class="text-amber-400">6.0 hrs sleep locked</strong>.
+                Pick the day's focus — the engine rebuilds the schedule around your event while keeping <strong class="text-amber-400">6.0 hrs sleep locked</strong>.
             </p>
             <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] font-mono text-zinc-400 block uppercase font-bold mb-1">WHAT SHOULD THIS DAY FOCUS ON?</label>
+                    <select id="modal-event-type" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
+                        <option value="social">☕ Social / Coffee Date</option>
+                        <option value="workout">🏋️ Workout / Extra Gym</option>
+                        <option value="work">💼 Work Shift / Overtime</option>
+                        <option value="study">📚 High-Focus Study / Project</option>
+                        <option value="custom">⚡ Custom Activity</option>
+                    </select>
+                </div>
                 <input type="text" id="modal-event-title" placeholder="Event (e.g., Coffee Date with Sarah)" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="time" id="modal-event-start" value="17:00" class="w-full bg-zinc-900 border-2 border-zinc-700 text-white text-xs p-2 font-mono">
@@ -1588,41 +1598,68 @@
             });
         }
 
-        // TAB 1: DYNAMIC SCHEDULE REBALANCE ENGINE (Coffee Date / Custom Events)
+        // TAB 1: DYNAMIC SCHEDULE REBALANCE ENGINE (Pick the day's focus → schedule adjusts around it)
         function insertCustomEvent(title, start, end, type) {
             title = (title || '').trim() || 'Custom Life Activity';
             type = type || 'social';
 
             if (!start || !end) return alert('Please enter valid start and end times');
 
-            // Insert custom item into schedule timeline while keeping sleep non-negotiable
+            const EVENT_EMOJIS = { social: '☕', workout: '🏋️', work: '💼', study: '📚', custom: '⚡' };
             const newEvent = {
                 id: `custom_${Date.now()}`,
                 start: start,
                 end: end,
-                title: `${type === 'social' ? '☕' : '⚡'} ${title}`,
+                title: `${EVENT_EMOJIS[type] || '⚡'} ${title}`,
                 desc: 'On-the-spot adjusted life event.',
                 category: type,
                 locked: false
             };
 
-            // Remove non-locked overlapping events and insert
-            APP_STATE.masterSchedule = APP_STATE.masterSchedule.filter(item => {
-                if (item.locked) return true; // KEEP SLEEP & WORK & COLLEGE
-                return false;
-            });
+            // Rebuild the day around the new event — keep sleep, college & work shifts locked
+            APP_STATE.masterSchedule = APP_STATE.masterSchedule.filter(item => item.locked);
 
-            // Re-insert custom event + default gym/cardio adjusted
-            APP_STATE.masterSchedule.push(newEvent);
-            APP_STATE.masterSchedule.push({ id: "s5_adj", start: "16:00", end: "16:45", title: "Ironman Cardio Session", desc: "Zone 2 Run or Bike Spin", category: "cardio", locked: false });
-            APP_STATE.masterSchedule.push({ id: "s10_adj", start: "23:00", end: "23:45", title: "Night Bodybuilding Session", desc: "Hit gym for targeted hypertrophy", category: "gym", locked: false });
-            
+            const fmtTime = (mins) => {
+                const m = ((mins % 1440) + 1440) % 1440;
+                return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+            };
+
+            const eventStart = parseTimeToMinutes(start);
+            let eventEnd = parseTimeToMinutes(end);
+            if (eventEnd < eventStart) eventEnd += 1440; // event crosses midnight
+
+            // Place a training block so it never overlaps the new event — shifted to sit right
+            // after it when needed, or dropped when it can't fit before midnight.
+            const placeBlock = (id, blockTitle, desc, category, defaultStart, defaultEnd) => {
+                let s = defaultStart;
+                let e = defaultEnd;
+                if (!(eventEnd <= s || eventStart >= e)) { // overlaps the event
+                    s = eventEnd + 15; // 15 min breather after the event
+                    e = s + (defaultEnd - defaultStart);
+                }
+                if (e > 1435) return null; // can't fit before midnight → skip this session
+                return { id, start: fmtTime(s), end: fmtTime(e), title: blockTitle, desc, category, locked: false };
+            };
+
+            const blocks = [];
+
+            // The event itself IS the workout → no extra night gym block
+            if (type !== 'workout') {
+                const gym = placeBlock('s10_adj', 'Night Bodybuilding Session', 'Hit gym for targeted hypertrophy (Pull, Push, or Legs).', 'gym', 1380, 1425);
+                if (gym) blocks.push(gym);
+            }
+
+            const cardio = placeBlock('s5_adj', 'Ironman Cardio Session', 'Zone 2 Run or Bike Spin (per daily plan).', 'cardio', 960, 1005);
+            if (cardio) blocks.push(cardio);
+
+            APP_STATE.masterSchedule.push(newEvent, ...blocks);
+
             // Sort by start time
             APP_STATE.masterSchedule.sort((a, b) => a.start.localeCompare(b.start));
 
             renderScheduleTimeline();
             saveLocalState();
-            alert(`Schedule realigned! Event "${title}" inserted. Sleep remains 100% locked.`);
+            alert(`Schedule realigned! "${title}" (${type}) inserted — training blocks were shifted around it. Sleep remains 100% locked.`);
         }
 
         function resetToMasterSchedule() {
@@ -2679,9 +2716,10 @@ Keep crushing the daily plan! 💪⚡`;
             const title = document.getElementById('modal-event-title').value.trim() || 'Life Event';
             const start = document.getElementById('modal-event-start').value;
             const end = document.getElementById('modal-event-end').value;
+            const type = document.getElementById('modal-event-type').value;
 
             closeQuickInsertModal();
-            insertCustomEvent(title, start, end);
+            insertCustomEvent(title, start, end, type);
         }
 
         // SERVER-LEVEL REALTIME SYNC ENGINE (SERVER SINGLE SOURCE OF TRUTH)
