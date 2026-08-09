@@ -1,9 +1,12 @@
-const CACHE_NAME = 'growthapp-cache-v23';
+const CACHE_NAME = 'growthapp-cache-v24';
 const ASSETS = [
   '/',
   '/index.html',
+  '/Gym.html',
   '/manifest.json',
-  '/icon.svg'
+  '/icon.svg',
+  '/logo.png',
+  '/favicon.png'
 ];
 
 // Install Service Worker and cache resources
@@ -36,38 +39,46 @@ self.addEventListener('activate', (event) => {
 
 // Intercept network requests - Network First for HTML/navigation requests so updates appear immediately
 self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate' || (event.request.url && event.request.url.includes('index.html'))) {
+  const { request } = event;
+
+  // Never intercept non-GET requests (POST/PUT sync calls pass straight through)
+  if (request.method !== 'GET') return;
+
+  // Keep the sync API network-only so polling always returns the freshest server state
+  if (request.url && request.url.includes('/api/')) return;
+
+  if (request.mode === 'navigate' || (request.url && request.url.includes('index.html'))) {
     event.respondWith(
-      fetch(event.request)
+      fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
+              cache.put(request, responseClone);
             });
           }
           return networkResponse;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => caches.match(request))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
-        fetch(event.request)
+        fetch(request)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
               caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, networkResponse);
+                cache.put(request, networkResponse);
               });
             }
           })
           .catch(() => {});
         return cachedResponse;
       }
-      return fetch(event.request);
+      return fetch(request);
     })
   );
 });

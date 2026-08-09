@@ -47,24 +47,24 @@ export default async function handler(req, res) {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const data = body.data || body;
 
-      if (data.checklistState) {
-        serverState.checklistState = { ...serverState.checklistState, ...data.checklistState };
-      }
-      if (data.customExerciseDetails) {
-        serverState.customExerciseDetails = { ...serverState.customExerciseDetails, ...data.customExerciseDetails };
-      }
+      // The client always sends complete snapshots, so replace (not merge) the stored state.
+      // Merging would prevent deletions (e.g. unchecking a workout) from ever reaching other devices.
+      if (data.checklistState) serverState.checklistState = data.checklistState;
+      if (data.customExerciseDetails) serverState.customExerciseDetails = data.customExerciseDetails;
       if (data.waterLoggedMl !== undefined) serverState.waterLoggedMl = data.waterLoggedMl;
-      if (data.userProfile) serverState.userProfile = { ...serverState.userProfile, ...data.userProfile };
+      if (data.userProfile) serverState.userProfile = data.userProfile;
       if (data.loggedMeals) serverState.loggedMeals = data.loggedMeals;
       if (data.masterSchedule) serverState.masterSchedule = data.masterSchedule;
-      if (data.historicalArchive) serverState.historicalArchive = { ...serverState.historicalArchive, ...data.historicalArchive };
+      if (data.historicalArchive) serverState.historicalArchive = data.historicalArchive;
       serverState.updatedAt = new Date().toISOString();
 
       if (kvUrl && kvToken) {
+        // Store the JSON string once — double-encoding made the GET round-trip return a string
+        // instead of an object, so synced clients silently ignored the KV snapshot.
         await fetch(`${kvUrl}/set/growthapp_master_state`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${kvToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(JSON.stringify(serverState))
+          body: JSON.stringify(serverState)
         });
       }
 

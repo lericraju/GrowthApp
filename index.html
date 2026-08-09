@@ -200,13 +200,6 @@
             font-size: 16px;
         }
 
-        .check-box-brutal:checked::before {
-            content: "✓";
-            font-weight: 900;
-            color: #000;
-            font-size: 16px;
-        }
-
         /* Hide scrollbars globally across PC & Mobile */
         * {
             -ms-overflow-style: none !important;
@@ -973,7 +966,7 @@
             </div>
             
             <p class="text-xs text-zinc-300 font-mono">
-                Pop-up notifications keep you aligned with your daily schedule blocks, hydration target (3.75L), and 6.0hr locked sleep window.
+                Pop-up notifications keep you aligned with your daily schedule blocks, hydration target (4.0L), and 6.0hr locked sleep window.
             </p>
 
             <div id="daily-plan-modal-body" class="space-y-3 p-3 bg-zinc-900 border border-zinc-800">
@@ -1007,7 +1000,7 @@
             activeWeek: 1,
             currentTime: new Date(),
             waterLoggedMl: 0,
-            waterTargetMl: 3750,
+            waterTargetMl: 4000,
             loggedMeals: [],
             notificationsEnabled: false,
             lastNotifiedSlotId: null,
@@ -1386,6 +1379,11 @@
             renderAdminAnalytics();
             calculateVTaper();
             
+            // Register the service worker so offline caching & updates actually activate
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
+
             // Pull real-time cloud state on launch and start 1.5s polling for multi-device sync
             pullCloudState();
             setInterval(pullCloudState, 1500);
@@ -1456,9 +1454,14 @@
                     checkAndSendNotification(false);
                 }
 
-                document.getElementById('active-slot-title').innerText = activeSlot.title;
-                document.getElementById('active-slot-desc').innerText = activeSlot.desc;
-                document.getElementById('active-slot-time').innerText = `${activeSlot.start} – ${activeSlot.end}`;
+                // Keep the (optional) live slot header in sync — those elements were removed in the
+                // minimalist refactor, so guard against them being absent.
+                const titleEl = document.getElementById('active-slot-title');
+                const descEl = document.getElementById('active-slot-desc');
+                const timeEl = document.getElementById('active-slot-time');
+                if (titleEl) titleEl.innerText = activeSlot.title;
+                if (descEl) descEl.innerText = activeSlot.desc;
+                if (timeEl) timeEl.innerText = `${activeSlot.start} – ${activeSlot.end}`;
 
                 // Calculate countdown to next slot
                 const nextStartVal = parseTimeToMinutes(nextSlot.start);
@@ -1466,7 +1469,14 @@
                 if (diffMins <= 0) diffMins += 1440;
                 const remHours = Math.floor(diffMins / 60);
                 const remMins = diffMins % 60;
-                document.getElementById('next-slot-countdown').innerText = `${String(remHours).padStart(2, '0')}h ${String(remMins).padStart(2, '0')}m`;
+                const countdownStr = `${String(remHours).padStart(2, '0')}h ${String(remMins).padStart(2, '0')}m`;
+
+                const countdownEl = document.getElementById('next-slot-countdown');
+                if (countdownEl) countdownEl.innerText = countdownStr;
+
+                // Surface the countdown on the floating toast pill as well
+                const toastTimeEl = document.getElementById('toast-slot-time');
+                if (toastTimeEl) toastTimeEl.innerText = `${activeSlot.start} – ${activeSlot.end} • Next in ${countdownStr}`;
             }
         }
 
@@ -1579,11 +1589,9 @@
         }
 
         // TAB 1: DYNAMIC SCHEDULE REBALANCE ENGINE (Coffee Date / Custom Events)
-        function insertCustomEvent() {
-            const type = document.getElementById('event-type-input').value;
-            const title = document.getElementById('event-title-input').value.trim() || 'Custom Life Activity';
-            const start = document.getElementById('event-start-input').value;
-            const end = document.getElementById('event-end-input').value;
+        function insertCustomEvent(title, start, end, type) {
+            title = (title || '').trim() || 'Custom Life Activity';
+            type = type || 'social';
 
             if (!start || !end) return alert('Please enter valid start and end times');
 
@@ -1637,17 +1645,6 @@
         }
 
         // TAB 2: MONTH 1 WORKOUT ROUTINE ENGINE
-        function switchWeek(weekNum) {
-            APP_STATE.activeWeek = weekNum;
-            document.querySelectorAll('.week-tab-btn').forEach(btn => {
-                btn.className = "week-tab-btn px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-cyan-400 hover:text-white";
-            });
-            const activeBtn = document.getElementById(`week-tab-${weekNum}`);
-            if (activeBtn) activeBtn.className = "week-tab-btn active px-3.5 py-2 text-xs font-outfit font-black uppercase border-2 border-purple-400 bg-purple-400 text-black shadow-[2px_2px_0px_0px_#fff]";
-
-            renderWorkoutsTab();
-        }
-
         function getExerciseDetails(ex) {
             const custom = APP_STATE.customExerciseDetails && APP_STATE.customExerciseDetails[ex.id];
             if (custom) {
@@ -2056,12 +2053,6 @@ Keep crushing the daily plan! 💪⚡`;
                     <p class="text-xs text-zinc-400 font-mono">${nextSlot.desc}</p>
                 </div>
             `;
-        }
-
-        function toggleExerciseCheck(id, checked) {
-            APP_STATE.checklistState[id] = checked;
-            renderWorkoutsTab();
-            pushCloudState();
         }
 
         // TAB 3: CALORIE & USER PROFILE RECOMPOSITION ENGINE
@@ -2689,12 +2680,8 @@ Keep crushing the daily plan! 💪⚡`;
             const start = document.getElementById('modal-event-start').value;
             const end = document.getElementById('modal-event-end').value;
 
-            document.getElementById('event-title-input').value = title;
-            document.getElementById('event-start-input').value = start;
-            document.getElementById('event-end-input').value = end;
-
             closeQuickInsertModal();
-            insertCustomEvent();
+            insertCustomEvent(title, start, end);
         }
 
         // SERVER-LEVEL REALTIME SYNC ENGINE (SERVER SINGLE SOURCE OF TRUTH)
@@ -2707,6 +2694,7 @@ Keep crushing the daily plan! 💪⚡`;
         async function pushCloudState() {
             isPushingInFlight = true;
             lastPushTimestamp = Date.now();
+            APP_STATE.lastUpdatedAt = new Date().toISOString();
 
             const payload = {
                 checklistState: APP_STATE.checklistState || {},
@@ -2773,6 +2761,15 @@ Keep crushing the daily plan! 💪⚡`;
             }
 
             if (cloudData) {
+                // Only apply cloud state when it is genuinely newer than our last local update.
+                // This stops a stale server snapshot from clobbering fresh local edits.
+                const cloudTs = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : null;
+                const localTs = APP_STATE.lastUpdatedAt ? new Date(APP_STATE.lastUpdatedAt).getTime() : null;
+                if (cloudTs !== null && localTs !== null && cloudTs <= localTs) {
+                    updateSyncUIStatus(true, "SERVER LIVE");
+                    return;
+                }
+
                 let updated = false;
 
                 if (cloudData.checklistState && JSON.stringify(cloudData.checklistState) !== JSON.stringify(APP_STATE.checklistState)) {
@@ -2863,7 +2860,8 @@ Keep crushing the daily plan! 💪⚡`;
                     waterLoggedMl: APP_STATE.waterLoggedMl,
                     userProfile: APP_STATE.userProfile,
                     loggedMeals: APP_STATE.loggedMeals,
-                    historicalArchive: APP_STATE.historicalArchive || {}
+                    historicalArchive: APP_STATE.historicalArchive || {},
+                    lastUpdatedAt: APP_STATE.lastUpdatedAt
                 }));
             } catch(e) {}
         }
@@ -2878,6 +2876,7 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.userProfile) APP_STATE.userProfile = parsed.userProfile;
                     if (parsed.loggedMeals) APP_STATE.loggedMeals = parsed.loggedMeals;
                     if (parsed.historicalArchive) APP_STATE.historicalArchive = parsed.historicalArchive;
+                    if (parsed.lastUpdatedAt) APP_STATE.lastUpdatedAt = parsed.lastUpdatedAt;
                 }
             } catch(e) {}
         }

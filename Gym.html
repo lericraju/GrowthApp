@@ -2524,6 +2524,11 @@ CREATE TABLE cardio_logs (
             calculateBuffer();
             renderSchemaCode();
             writeToTerminal("[Database System] Successfully initialized. Loaded local SQL tables.");
+
+            // Register the shared service worker so this page is also cached offline
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
         });
     </script>
 </body>
