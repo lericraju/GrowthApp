@@ -3037,13 +3037,17 @@ Keep crushing the daily plan! 💪⚡`;
             if (isPushingInFlight || (Date.now() - lastPushTimestamp < 1200)) return;
 
             let cloudData = null;
+            let cloudDurable = false;
 
             // 1. Try Vercel Serverless API first
             try {
                 const res = await fetch(SERVER_SYNC_ENDPOINT);
                 if (res.ok) {
                     const result = await res.json();
-                    if (result && result.data) cloudData = result.data;
+                    if (result && result.data) {
+                        cloudData = result.data;
+                        cloudDurable = !!(result.durable); // true when Upstash KV is configured server-side
+                    }
                 }
             } catch(e) {}
 
@@ -3053,9 +3057,20 @@ Keep crushing the daily plan! 💪⚡`;
                     const res = await fetch(FALLBACK_CLOUD_URL);
                     if (res.ok) {
                         const result = await res.json();
-                        if (result && result.data) cloudData = result.data;
+                        if (result && result.data) {
+                            cloudData = result.data;
+                            cloudDurable = false;
+                        }
                     }
                 } catch(e) {}
+            }
+
+            // Reflect whether the server stores state durably (survives redeploys) on the sync LED
+            const syncIcon = document.getElementById('sync-icon');
+            if (syncIcon) {
+                syncIcon.title = cloudDurable
+                    ? 'Server sync live — durable Upstash KV storage (survives redeploys)'
+                    : 'Server sync live — memory only (a redeploy resets it; add KV_REST_API_URL + KV_REST_API_TOKEN)';
             }
 
             if (cloudData) {

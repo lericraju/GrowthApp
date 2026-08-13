@@ -32,13 +32,13 @@ export default async function handler(req, res) {
         const kvData = await kvRes.json();
         if (kvData && kvData.result) {
           const parsed = typeof kvData.result === 'string' ? JSON.parse(kvData.result) : kvData.result;
-          return res.status(200).json({ success: true, source: 'vercel_kv', data: parsed });
+          return res.status(200).json({ success: true, source: 'vercel_kv', durable: true, data: parsed });
         }
       } catch (e) {
         console.warn("Vercel KV fetch notice:", e);
       }
     }
-    return res.status(200).json({ success: true, source: 'server_api', data: serverState });
+    return res.status(200).json({ success: true, source: 'server_api', durable: false, data: serverState });
   }
 
   // POST Update Server State
@@ -63,11 +63,17 @@ export default async function handler(req, res) {
       if (kvUrl && kvToken) {
         // Store the JSON string once — double-encoding made the GET round-trip return a string
         // instead of an object, so synced clients silently ignored the KV snapshot.
-        await fetch(`${kvUrl}/set/growthapp_master_state`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${kvToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(serverState)
-        });
+        // Never let a flaky KV write fail the whole push: the in-memory state is still updated
+        // above, and the client guard protects local data until KV recovers.
+        try {
+          await fetch(`${kvUrl}/set/growthapp_master_state`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${kvToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(serverState)
+          });
+        } catch (e) {
+          console.warn("Vercel KV write notice:", e);
+        }
       }
 
       return res.status(200).json({ success: true, data: serverState });
