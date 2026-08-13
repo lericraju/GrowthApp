@@ -336,6 +336,12 @@
         .brutal-card:hover {
             transform: translateY(-2px);
         }
+
+        /* Active Plan Banner: keep it a clean horizontal strip on tiny phone screens */
+        @media (max-width: 400px) {
+            #toast-slot-countdown { display: none !important; }
+            #active-slot-toast { gap: 0.5rem; }
+        }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
@@ -408,14 +414,17 @@
         </button>
     </nav>
 
-    <!-- SLIDE-OUT 3-SECOND ACTIVE ACTIVITY TOAST NOTIFIER -->
-    <div id="active-slot-toast" class="fixed top-16 right-4 z-50 bg-zinc-950/95 backdrop-blur-md border-2 border-cyan-400 px-4 py-2.5 rounded-sm shadow-2xl flex items-center gap-3 transition-all duration-500 transform translate-x-full opacity-0 pointer-events-none">
-        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-        <div>
-            <span class="text-[9px] font-mono text-cyan-400 font-bold uppercase block">⚡ CURRENT ACTIVE PLAN</span>
-            <span id="toast-slot-title" class="font-outfit font-bold text-xs text-white uppercase block">College Classes</span>
-            <span id="toast-slot-time" class="text-[10px] font-mono text-zinc-400 block">07:30 – 14:00 • Next in 03h 40m</span>
+    <!-- HORIZONTAL ACTIVE PLAN BANNER (sits across the top of the schedule, below the header) -->
+    <div id="active-slot-toast" class="fixed top-20 left-3 right-3 md:left-4 md:right-4 z-50 mx-auto max-w-2xl bg-zinc-950/95 backdrop-blur-md border-2 border-cyan-400 px-3 py-2 md:px-4 md:py-2.5 rounded-sm shadow-2xl flex items-center justify-between gap-2 md:gap-3 transition-all duration-500 transform -translate-y-3 opacity-0 pointer-events-none">
+        <div class="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping shrink-0"></span>
+            <div class="min-w-0">
+                <span class="text-[9px] font-mono text-cyan-400 font-bold uppercase block truncate">⚡ CURRENT ACTIVE PLAN</span>
+                <span id="toast-slot-title" class="font-outfit font-bold text-xs text-white uppercase block truncate">College Classes</span>
+            </div>
         </div>
+        <span id="toast-slot-time" class="text-[9px] md:text-[10px] font-mono text-cyan-300 font-bold whitespace-nowrap shrink-0">07:30 – 14:00</span>
+        <span id="toast-slot-countdown" class="text-[9px] md:text-[10px] font-mono text-cyan-300/80 font-bold whitespace-nowrap shrink-0 hidden">Next in 03h 40m</span>
     </div>
 
     <!-- MINIMALISTIC FLOATING REST TIMER PILL -->
@@ -923,11 +932,26 @@
                             30-Day Activity Heatmap
                         </h3>
                         <span class="text-[9px] font-mono text-zinc-400">Consistency Grid</span>
-                    </div>
-
-                    <div id="heatmap-matrix-container" class="grid grid-cols-7 gap-1.5 pt-1">
+                    </div>                    <div id="heatmap-matrix-container" class="grid grid-cols-7 gap-1.5 pt-1">
                         <!-- Rendered by JS -->
                     </div>
+                </div>
+
+                <!-- 5. Permanent Historical Archive + Start New Week -->
+                <div class="brutal-card p-4 space-y-3 lg:col-span-2">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <h3 class="font-outfit font-black text-sm uppercase text-white flex items-center gap-2">
+                            <i data-lucide="archive" class="w-4 h-4 text-purple-400"></i>
+                            Historical Archive
+                        </h3>
+                        <button onclick="resetChecklistForNewWeek()" class="bg-amber-400 text-black font-outfit font-black text-[10px] px-2.5 py-1.5 uppercase hover:bg-amber-300 transition-all">
+                            Start New Week
+                        </button>
+                    </div>
+                    <div id="historical-archive-container" class="space-y-2">
+                        <!-- Rendered by JS -->
+                    </div>
+                    <span id="sunday-auto-export-status" class="text-[10px] font-mono text-zinc-500 block"></span>
                 </div>
 
             </div>
@@ -1078,7 +1102,9 @@
             masterSchedule: getTodayScheduleTemplate(),
             lastScheduleDateKey: null,
             // Exercise Checklist State across 4 Weeks
-            checklistState: {}
+            checklistState: {},
+            // Cardio tracking per day: { 'w1_sat_cardio': { done: bool, km: number|null } }
+            cardioState: {}
         };
 
         // MONTH 1 WORKOUT DATA (WEEKS 1 TO 4 COMPLETE)
@@ -1542,9 +1568,14 @@
                 const countdownEl = document.getElementById('next-slot-countdown');
                 if (countdownEl) countdownEl.innerText = countdownStr;
 
-                // Surface the countdown on the floating toast pill as well
+                // Surface the countdown on the active plan banner as well
                 const toastTimeEl = document.getElementById('toast-slot-time');
-                if (toastTimeEl) toastTimeEl.innerText = `${activeSlot.start} – ${activeSlot.end} • Next in ${countdownStr}`;
+                if (toastTimeEl) toastTimeEl.innerText = `${activeSlot.start} – ${activeSlot.end}`;
+                const toastCountdownEl = document.getElementById('toast-slot-countdown');
+                if (toastCountdownEl) {
+                    toastCountdownEl.innerText = `Next in ${countdownStr}`;
+                    toastCountdownEl.classList.remove('hidden');
+                }
             }
         }
 
@@ -1964,8 +1995,14 @@
             dayCard.className = "brutal-card p-5 space-y-4";
 
             let exercisesHtml = '';
+            const isLongCardioDay = /long cardio/i.test(dayObj.cardioTitle || '');
             if (dayObj.exercises.length === 0) {
-                exercisesHtml = `
+                exercisesHtml = isLongCardioDay ? `
+                    <div class="p-4 bg-zinc-900/80 border border-cyan-800/50 text-center rounded-lg space-y-1">
+                        <span class="text-xs font-mono text-cyan-400 font-bold uppercase block">🏃 CARDIO ENGINE DAY — NO WEIGHTS</span>
+                        <p class="text-[11px] font-mono text-zinc-400">Zero lifting today. Let your upper body rest completely and crush the Zone 2 session below!</p>
+                    </div>
+                ` : `
                     <div class="p-4 bg-zinc-900/80 border border-zinc-800 text-center rounded-lg space-y-1">
                         <span class="text-xs font-mono text-cyan-400 font-bold uppercase block">⚡ FULL REST & RECOVERY</span>
                         <p class="text-[11px] font-mono text-zinc-400">Zero lifting required. Hydrate and let muscles rebuild for your next session!</p>
@@ -2029,6 +2066,34 @@
             const waterId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_water`;
             const isWaterChecked = APP_STATE.checklistState[waterId] || false;
 
+            // Cardio DONE button + KM input (hidden on full-rest days)
+            let cardioHtml = '';
+            const isFullRest = /full rest/i.test(dayObj.cardioTitle || '');
+            if (!isFullRest) {
+                const cardioId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_cardio`;
+                const cardioSt = getCardioState(cardioId);
+                const kmVal = (cardioSt.km !== null && cardioSt.km !== undefined && !isNaN(cardioSt.km)) ? cardioSt.km : '';
+                const kmTarget = getCardioKm(cardioId, dayObj);
+                cardioHtml = `
+                    <div class="p-2.5 ${cardioSt.done ? 'bg-cyan-500/15 border-cyan-400' : 'bg-cyan-950/40 border-cyan-500/40'} border rounded flex items-center justify-between gap-2">
+                        <div class="flex-1 min-w-0 space-y-0.5">
+                            <span class="text-[10px] font-mono text-cyan-300 font-bold uppercase block ${cardioSt.done ? 'line-through text-cyan-500' : ''}">🏃 ${dayObj.cardioTitle}</span>
+                            <span class="text-[10px] font-mono text-zinc-400 block truncate">${dayObj.cardioDesc || ''}</span>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <label class="flex items-center gap-1" title="Distance in km">
+                                <span class="text-[9px] font-mono font-bold text-cyan-300">KM</span>
+                                <input type="number" min="0" step="0.1" value="${kmVal}" placeholder="${kmTarget || ''}"
+                                    onchange="setCardioKm('${cardioId}', this.value)"
+                                    onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
+                                    class="w-14 bg-zinc-950 border border-zinc-700 text-white px-1.5 py-0.5 rounded text-[11px] font-mono focus:border-cyan-400 focus:outline-none">
+                            </label>
+                            <button onclick="toggleCardioCheck('${cardioId}', ${!cardioSt.done})" class="px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded border ${cardioSt.done ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-zinc-900 text-cyan-300 border-cyan-600 hover:bg-cyan-400 hover:text-black'} transition-colors">${cardioSt.done ? '✓ DONE' : 'DONE'}</button>
+                        </div>
+                    </div>
+                `;
+            }
+
             dayCard.innerHTML = `
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                     <div>
@@ -2041,6 +2106,8 @@
                 <div class="space-y-3">
                     ${exercisesHtml}
                 </div>
+
+                ${cardioHtml}
 
                 <div class="p-2.5 bg-blue-950/40 border border-cyan-500/40 flex items-center justify-between mt-2 rounded">
                     <span class="text-[10px] font-mono text-cyan-300 font-bold uppercase">💧 3.5 – 4.0L DAILY WATER TARGET</span>
@@ -2099,6 +2166,7 @@
                 exportedAt: new Date().toISOString(),
                 week: targetW,
                 checklistState: APP_STATE.checklistState,
+                cardioState: APP_STATE.cardioState || {},
                 customExerciseDetails: APP_STATE.customExerciseDetails || {},
                 loggedMeals: APP_STATE.loggedMeals,
                 waterLoggedMl: APP_STATE.waterLoggedMl,
@@ -2470,6 +2538,43 @@ Keep crushing the daily plan! 💪⚡`;
             renderAdminAnalytics();
         }
 
+        function getCardioState(id) {
+            if (!APP_STATE.cardioState) APP_STATE.cardioState = {};
+            if (!APP_STATE.cardioState[id]) APP_STATE.cardioState[id] = { done: false, km: null };
+            return APP_STATE.cardioState[id];
+        }
+
+        // Mark today's cardio session as done / undone
+        function toggleCardioCheck(id, isChecked) {
+            const st = getCardioState(id);
+            st.done = isChecked;
+            saveLocalState();
+            pushCloudState();
+            renderWorkoutsTab();
+            renderAdminAnalytics();
+        }
+
+        // Direct distance entry (km) for a cardio session
+        function setCardioKm(id, value) {
+            const st = getCardioState(id);
+            const km = parseFloat(value);
+            st.km = (isNaN(km) || km < 0) ? null : km;
+            saveLocalState();
+            pushCloudState();
+            renderAdminAnalytics();
+        }
+
+        // Distance actually credited: user-entered km, else the plan's target from the description
+        function getCardioKm(id, dayObj) {
+            const st = APP_STATE.cardioState && APP_STATE.cardioState[id];
+            if (st && st.km !== null && st.km !== undefined && !isNaN(st.km)) return st.km;
+            if (dayObj && dayObj.cardioDesc) {
+                const m = dayObj.cardioDesc.match(/(\d+(\.\d+)?)\s*km/i);
+                if (m) return parseFloat(m[1]);
+            }
+            return 0;
+        }
+
         function parseAvgReps(repsStr) {
             if (!repsStr) return 10;
             const m = repsStr.match(/(\d+)[–\-]*(\d+)?/);
@@ -2479,9 +2584,11 @@ Keep crushing the daily plan! 💪⚡`;
         }
 
         function parseWeightKg(weightStr) {
-            if (!weightStr) return 20;
+            // No known weight (bodyweight, machine plate, etc.) → 0, so volume stays truthful.
+            // Users can type the real kg on the Routine tab and it feeds this calculation.
+            if (!weightStr) return 0;
             const m = weightStr.match(/(\d+(\.\d+)?)/);
-            return m ? parseFloat(m[1]) : 20;
+            return m ? parseFloat(m[1]) : 0;
         }
 
         // TAB 4: ADMIN ANALYTICS & CHARTS (100% DYNAMIC - STARTS AT 0 AND INCREMENTS ON LOGGED WORKOUTS)
@@ -2537,7 +2644,7 @@ Keep crushing the daily plan! 💪⚡`;
                                 muscleSets.legs += sets;
                             } else if (/crunch|plank|rollout|knee raise|leg raise|hanging|toe touch|v-up|situp|sit-up|ab wheel|abs|core|captain/.test(lowerName)) {
                                 muscleSets.abs += sets;
-                            } else if (/lat|row|bicep|curl|pull|rear|reverse|face pull|straight-arm|shrug/.test(lowerName)) {
+                            } else if (/\blat\b|row|bicep|curl|pull|rear|reverse|face pull|straight-arm|shrug/.test(lowerName)) {
                                 muscleSets.pull += sets;
                             } else if (/chest|press|delt|lateral|tricep|pushdown|push|fly|bench|shoulder|incline|overhead/.test(lowerName)) {
                                 muscleSets.push += sets;
@@ -2554,17 +2661,18 @@ Keep crushing the daily plan! 💪⚡`;
                         dayAnyChecked = true;
                     }
 
-                    // Cardio tracking
-                    if (dayObj.cardioDesc) {
-                        const m = dayObj.cardioDesc.match(/(\d+(\.\d+)?)\s*km/i);
-                        if (m) {
-                            const dist = parseFloat(m[1]);
-                            if (dayAnyChecked) {
-                                totalCardioKm += dist;
-                                weeklyCardio[w] += dist;
-                                if (dayObj.cardioTitle.toLowerCase().includes('run')) runKm += dist;
-                                else bikeKm += dist;
-                            }
+                    // Cardio tracking — credited from the dedicated cardio DONE state
+                    const cardioId = `w${w}_${dayObj.day.toLowerCase()}_cardio`;
+                    const cardioSt = APP_STATE.cardioState && APP_STATE.cardioState[cardioId];
+                    if (cardioSt && cardioSt.done) {
+                        dayAnyChecked = true; // a completed cardio session marks the day done
+                        const dist = getCardioKm(cardioId, dayObj);
+                        if (dist > 0) {
+                            totalCardioKm += dist;
+                            weeklyCardio[w] += dist;
+                            const cTitle = (dayObj.cardioTitle || '').toLowerCase();
+                            if (cTitle.includes('run')) runKm += dist;
+                            else bikeKm += dist;
                         }
                     }
 
@@ -2887,6 +2995,7 @@ Keep crushing the daily plan! 💪⚡`;
 
             const payload = {
                 checklistState: APP_STATE.checklistState || {},
+                cardioState: APP_STATE.cardioState || {},
                 customExerciseDetails: APP_STATE.customExerciseDetails || {},
                 waterLoggedMl: APP_STATE.waterLoggedMl || 0,
                 userProfile: APP_STATE.userProfile || { height: 166, weight: 70, age: 21, bmr: 1600, tdee: 2450, targetCal: 2025 },
@@ -2963,6 +3072,11 @@ Keep crushing the daily plan! 💪⚡`;
 
                 if (cloudData.checklistState && JSON.stringify(cloudData.checklistState) !== JSON.stringify(APP_STATE.checklistState)) {
                     APP_STATE.checklistState = cloudData.checklistState;
+                    updated = true;
+                }
+
+                if (cloudData.cardioState && JSON.stringify(cloudData.cardioState) !== JSON.stringify(APP_STATE.cardioState || {})) {
+                    APP_STATE.cardioState = cloudData.cardioState;
                     updated = true;
                 }
 
@@ -3049,6 +3163,7 @@ Keep crushing the daily plan! 💪⚡`;
             try {
                 localStorage.setItem('growth_app_state', JSON.stringify({
                     checklistState: APP_STATE.checklistState,
+                    cardioState: APP_STATE.cardioState || {},
                     customExerciseDetails: APP_STATE.customExerciseDetails || {},
                     waterLoggedMl: APP_STATE.waterLoggedMl,
                     userProfile: APP_STATE.userProfile,
@@ -3065,6 +3180,7 @@ Keep crushing the daily plan! 💪⚡`;
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     if (parsed.checklistState) APP_STATE.checklistState = parsed.checklistState;
+                    if (parsed.cardioState) APP_STATE.cardioState = parsed.cardioState;
                     if (parsed.customExerciseDetails) APP_STATE.customExerciseDetails = parsed.customExerciseDetails;
                     if (parsed.waterLoggedMl !== undefined) APP_STATE.waterLoggedMl = parsed.waterLoggedMl;
                     if (parsed.userProfile) APP_STATE.userProfile = parsed.userProfile;
@@ -3088,14 +3204,18 @@ Keep crushing the daily plan! 💪⚡`;
             const timeEl = document.getElementById('toast-slot-time');
             if (titleEl) titleEl.innerText = slot.title;
             if (timeEl) timeEl.innerText = `${slot.start} – ${slot.end}`;
+            const countdownEl = document.getElementById('toast-slot-countdown');
+            if (countdownEl) {
+                countdownEl.classList.add('hidden'); // hidden on tiny screens; filled by the live tick
+            }
 
-            toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
-            toast.classList.add('translate-x-0', 'opacity-100');
+            toast.classList.remove('-translate-y-3', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
 
             if (toastTimeout) clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
-                toast.classList.remove('translate-x-0', 'opacity-100');
-                toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-3', 'opacity-0', 'pointer-events-none');
             }, 3000);
         }
 
@@ -3164,10 +3284,9 @@ Keep crushing the daily plan! 💪⚡`;
                             vol += (details.setsCount || 2) * parseAvgReps(details.reps) * parseWeightKg(details.weight);
                         }
                     });
-                    if (dayObj.cardioDesc) {
-                        const m = dayObj.cardioDesc.match(/(\d+(\.\d+)?)\s*km/i);
-                        if (m && dayObj.exercises.some(e => APP_STATE.checklistState[e.id])) cardio += parseFloat(m[1]);
-                    }
+                    const cardioId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_cardio`;
+                    const cSt = APP_STATE.cardioState && APP_STATE.cardioState[cardioId];
+                    if (cSt && cSt.done) cardio += getCardioKm(cardioId, dayObj);
                 });
             }
 
@@ -3235,6 +3354,7 @@ Keep crushing the daily plan! 💪⚡`;
             if (confirm("Archive current week logs & start a fresh week? (Your custom set & weight history will stay intact, and finished week stats will be saved to your permanent archive!)")) {
                 archiveCurrentWeekOrMonth(`Month 1 - Week ${APP_STATE.activeWeek}`);
                 APP_STATE.checklistState = {};
+                APP_STATE.cardioState = {};
                 saveLocalState();
                 pushCloudState();
                 renderWorkoutsTab();
