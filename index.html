@@ -441,6 +441,8 @@
                         SCHEDULE
                     </h3>
 
+                    <span id="schedule-day-label" class="text-[9px] font-mono text-cyan-400 bg-cyan-950 border border-cyan-800 px-2 py-0.5 font-bold uppercase"></span>
+
                     <div class="flex items-center gap-2">
                         <button onclick="showQuickInsertModal()" class="brutal-btn brutal-btn-cyan text-xs px-2.5 py-1.5">
                             Event
@@ -470,6 +472,10 @@
                     <button onclick="switchWeek(2)" id="week-tab-2" class="week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white">W2</button>
                     <button onclick="switchWeek(3)" id="week-tab-3" class="week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white">W3</button>
                     <button onclick="switchWeek(4)" id="week-tab-4" class="week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white">W4</button>
+                    <span class="ml-auto flex items-center gap-1.5 shrink-0">
+                        <label for="program-start-date" class="text-[9px] font-mono text-zinc-500 uppercase font-bold whitespace-nowrap">Started</label>
+                        <input type="date" id="program-start-date" value="2026-08-03" onchange="setProgramStartDate(this.value)" class="bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-mono px-1.5 py-1 rounded focus:border-purple-400 focus:outline-none">
+                    </span>
                 </div>
 
                 <!-- Day Selector: MON | TUE | WED | THU | FRI | SAT | SUN -->
@@ -1004,9 +1010,64 @@
         const DEFAULT_SUPABASE_URL = 'https://yooodsqvivviwraufkqi.supabase.co';
         const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvb29kc3F2aXZ2aXdyYXVma3FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTk5ODksImV4cCI6MjA5ODkyODAwMH0.ypgvL6oCKzZy2YOnGQW_jvsbUbMRluNoLOIL7GCl6NA';
 
+        // --- DAILY SCHEDULE TEMPLATES (DAY-OF-WEEK AWARE) ---
+        // Standard days: Mon, Tue, Wed, Fri, Sat (college 7:30 AM – 12:00 PM)
+        const STANDARD_SCHEDULE = [
+            { id: "s1", start: "06:30", end: "07:10", title: "Morning Prep & Hydration", desc: "Water, light hydration, commute to college.", category: "prep", locked: false },
+            { id: "s2", start: "07:30", end: "12:00", title: "College Classes", desc: "Focus on classes; keep a protein snack/shake handy.", category: "college", locked: true },
+            { id: "s3", start: "12:00", end: "12:20", title: "Commute Home", desc: "Return home.", category: "commute", locked: false },
+            { id: "s4", start: "12:20", end: "13:30", title: "Lunch & Rest", desc: "Carbs + Protein lunch meal; relax/digest.", category: "meal", locked: false },
+            { id: "s5", start: "13:30", end: "15:15", title: "Study / Personal Projects / Sim Rig", desc: "Primary high-focus window for coding, big data, sim racing.", category: "study", locked: false },
+            { id: "s6", start: "15:30", end: "16:15", title: "Ironman Cardio Session", desc: "Zone 2 Run or Bike Spin (per daily plan).", category: "cardio", locked: false },
+            { id: "s7", start: "16:15", end: "17:00", title: "Post-Cardio Shower & Snack", desc: "Protein shake + fruit; light meal prep.", category: "snack", locked: false },
+            { id: "s8", start: "17:00", end: "18:45", title: "Free Time / Prep", desc: "Unwind, review project code, prep for work.", category: "prep", locked: false },
+            { id: "s9", start: "18:45", end: "19:00", title: "Commute to Work", desc: "Commute to part-time job.", category: "commute", locked: false },
+            { id: "s10", start: "19:00", end: "23:00", title: "Part-Time Work", desc: "Evening shift.", category: "work", locked: true },
+            { id: "s11", start: "23:15", end: "00:00", title: "Night Bodybuilding Session", desc: "Hit the gym for targeted hypertrophy (Pull, Push, or Legs).", category: "gym", locked: false },
+            { id: "s12", start: "00:00", end: "00:30", title: "Post-Workout Meal & Wind Down", desc: "Late meal/protein, shower, sleep.", category: "prep", locked: false },
+            { id: "s13", start: "00:30", end: "06:30", title: "Sleep & CNS Recovery", desc: "Deep sleep window (NON-NEGOTIABLE).", category: "sleep", locked: true }
+        ];
+
+        // Thursday: late college finish (8:30 AM – 2:00 PM)
+        const THURSDAY_SCHEDULE = [
+            { id: "s1", start: "07:30", end: "08:10", title: "Wake Up, Breakfast & Commute", desc: "Wake up, breakfast, commute to college.", category: "prep", locked: false },
+            { id: "s2", start: "08:30", end: "14:00", title: "College Classes", desc: "Late college finish; keep a protein snack/shake handy.", category: "college", locked: true },
+            { id: "s3", start: "14:00", end: "14:20", title: "Commute Home", desc: "Return home.", category: "commute", locked: false },
+            { id: "s4", start: "14:20", end: "15:30", title: "Lunch & Digest", desc: "Carbs + Protein meal; relax/digest.", category: "meal", locked: false },
+            { id: "s5", start: "15:30", end: "16:15", title: "Ironman Cardio Session", desc: "Zone 2 Run or Bike Spin (per daily plan).", category: "cardio", locked: false },
+            { id: "s6", start: "16:15", end: "17:00", title: "Shower & Post-Cardio Fuel", desc: "Protein shake + fruit; light meal prep.", category: "snack", locked: false },
+            { id: "s7", start: "17:00", end: "18:45", title: "Study / Projects / Sim Rig", desc: "High-focus cognitive window for coursework or projects.", category: "study", locked: false },
+            { id: "s8", start: "18:45", end: "19:00", title: "Commute to Work", desc: "Commute to part-time job.", category: "commute", locked: false },
+            { id: "s9", start: "19:00", end: "23:00", title: "Part-Time Work", desc: "Evening shift.", category: "work", locked: true },
+            { id: "s10", start: "23:15", end: "00:00", title: "Night Bodybuilding Session", desc: "Hit the gym for targeted hypertrophy (Pull, Push, or Legs).", category: "gym", locked: false },
+            { id: "s11", start: "00:00", end: "00:30", title: "Post-Workout Meal & Wind Down", desc: "Late meal/protein, shower, sleep.", category: "prep", locked: false },
+            { id: "s12", start: "00:30", end: "06:30", title: "Sleep & CNS Recovery", desc: "Deep sleep window (NON-NEGOTIABLE).", category: "sleep", locked: true }
+        ];
+
+        const SCHEDULE_TEMPLATES = { standard: STANDARD_SCHEDULE, thursday: THURSDAY_SCHEDULE };
+
+        function dateKey(d) { return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; }
+        function scheduleKeyForDate(d) { return d.getDay() === 4 ? 'thursday' : 'standard'; }
+        function getTodayScheduleTemplate() {
+            const now = new Date();
+            return JSON.parse(JSON.stringify(SCHEDULE_TEMPLATES[scheduleKeyForDate(now)]));
+        }
+        function scheduleDayLabel() {
+            const names = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return `${names[now.getDay()]} • ${time}${now.getDay() === 4 ? ' • LATE COLLEGE' : ''}`;
+        }
+        function updateScheduleDayLabel() {
+            const el = document.getElementById('schedule-day-label');
+            if (el) el.innerText = scheduleDayLabel();
+        }
+
         const APP_STATE = {
             activeTab: 'notifier',
             activeWeek: 1,
+            // Monday of Week 1 — the 4-week cycle auto-advances from this date
+            programStartDate: '2026-08-03',
             currentTime: new Date(),
             waterLoggedMl: 0,
             waterTargetMl: 4000,
@@ -1014,20 +1075,8 @@
             notificationsEnabled: false,
             lastNotifiedSlotId: null,
             customExerciseDetails: {},
-            masterSchedule: [
-                { id: "s1", start: "06:30", end: "07:10", title: "Morning Prep & Hydration", desc: "Black coffee/water, light meal assembly, commute to college.", category: "prep", locked: false },
-                { id: "s2", start: "07:30", end: "14:00", title: "College Classes", desc: "Stay hydrated; eat packed mid-day protein meal (e.g. oats/egg whites).", category: "college", locked: true },
-                { id: "s3", start: "14:00", end: "14:20", title: "Commute Home", desc: "Transition period.", category: "commute", locked: false },
-                { id: "s4", start: "14:20", end: "15:30", title: "Lunch & Digest", desc: "Carbs + Protein meal. 30 mins quiet rest or project review.", category: "meal", locked: false },
-                { id: "s5", start: "15:45", end: "16:30", title: "Ironman Cardio Session", desc: "Zone 2 Run or Bike Spin (per daily plan).", category: "cardio", locked: false },
-                { id: "s6", start: "16:30", end: "17:15", title: "Post-Cardio Shower & Snack", desc: "Protein shake + fruit; light meal prep for evening.", category: "snack", locked: false },
-                { id: "s7", start: "17:15", end: "18:45", title: "Study / Personal Projects / Sim Rig", desc: "High-focus cognitive window for engineering coursework or projects.", category: "study", locked: false },
-                { id: "s8", start: "18:45", end: "19:00", title: "Commute to Work", desc: "Travel to part-time work shift.", category: "commute", locked: false },
-                { id: "s9", start: "19:00", end: "23:00", title: "Part-Time Work Shift", desc: "Evening job shift.", category: "work", locked: true },
-                { id: "s10", start: "23:15", end: "00:00", title: "Night Bodybuilding Session", desc: "Hit the gym for targeted hypertrophy (Pull, Push, or Legs).", category: "gym", locked: false },
-                { id: "s11", start: "00:00", end: "00:30", title: "Shower, Night Meal, Wind Down", desc: "Post-workout meal, prep gear for tomorrow.", category: "prep", locked: false },
-                { id: "s12", start: "00:30", end: "06:30", title: "Sleep & CNS Recovery", desc: "Deep sleep window (NON-NEGOTIABLE).", category: "sleep", locked: true }
-            ],
+            masterSchedule: getTodayScheduleTemplate(),
+            lastScheduleDateKey: null,
             // Exercise Checklist State across 4 Weeks
             checklistState: {}
         };
@@ -1039,86 +1088,79 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "RUN/WALK INTERVALS",
-                        cardioDesc: "2.5 km total (1 min jog @ 7.0–7.5 km/h / 1 min walk @ 5.0 km/h) ~20 mins.",
-                        liftingTitle: "PULL A + LOWER ABS",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL A — UPPER LATS & BICEPS",
                         exercises: [
                             { id: "w1_m1", name: "Neutral Grip Lat Pulldown", sets: "2 sets × 8–12 reps (25 kg)" },
-                            { id: "w1_m2", name: "Chest-Supported Wide Row", sets: "2 sets × 10–12 reps (15–20 kg)" },
-                            { id: "w1_m3", name: "Straight-Arm Cable Pulldown", sets: "2 sets × 12–15 reps (20 kg)" },
-                            { id: "w1_m4", name: "Incline DB Bicep Curls", sets: "2 sets × 10–12 reps (4–5 kg)" },
-                            { id: "w1_m5", name: "Face Pulls (Hands High)", sets: "2 sets × 15 reps" },
-                            { id: "w1_m6", name: "Hanging Leg/Knee Raises", sets: "3 sets × 12–15 reps" }
-                        ],
-                        finisher: "Cable Lateral Raises — 2 sets × 15 reps (5 kg)"
+                            { id: "w1_m2", name: "Chest-Supported Wide Cable Row", sets: "2 sets × 10–12 reps (15–20 kg)" },
+                            { id: "w1_m3", name: "Dumbbell Pullover", sets: "2 sets × 12–15 reps (10 kg)" },
+                            { id: "w1_m4", name: "Incline Dumbbell Bicep Curls", sets: "2 sets × 10–12 reps (4–5 kg)" },
+                            { id: "w1_m5", name: "Captain's Chair Knee Raises", sets: "3 sets × 12–15 reps (BW)" }
+                        ]
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "EASY BIKE SPIN",
-                        cardioDesc: "10–12 km @ 20–22 km/h (Light resistance) ~30 mins.",
-                        liftingTitle: "PUSH A - CHEST & DELTS + UPPER ABS",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
                         exercises: [
-                            { id: "w1_t1", name: "Incline DB Chest Press", sets: "3 sets × 8–10 reps (5 kg)" },
+                            { id: "w1_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (5 kg)" },
                             { id: "w1_t2", name: "Pec Deck / Cable Flyes", sets: "3 sets × 12–15 reps (15–20 kg)" },
-                            { id: "w1_t3", name: "Seated DB Shoulder Press", sets: "2 sets × 8–10 reps (5 kg)" },
-                            { id: "w1_t4", name: "Lean-Away Cable Lateral Raises", sets: "3 sets × 12–15 reps (5 kg)" },
-                            { id: "w1_t5", name: "Overhead Tricep Extensions", sets: "2 sets × 12–15 reps" },
-                            { id: "w1_t6", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps" }
-                        ],
-                        finisher: "Incline Push-ups — 2 sets to failure"
+                            { id: "w1_t3", name: "Seated Dumbbell Shoulder Press", sets: "2 sets × 8–10 reps (5 kg)" },
+                            { id: "w1_t4", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 12–15 reps (4 kg)" },
+                            { id: "w1_t5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (20 kg)" }
+                        ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO (Leg Recovery Day)",
-                        cardioDesc: "Zero cardio impact to maximize quad recovery.",
-                        liftingTitle: "LEGS - ANTI-GLUTE + LOWER ABS",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 session per daily schedule; legs day stays glute-free.",
+                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
                         exercises: [
-                            { id: "w1_w1", name: "Leg Press (Low Foot Placement)", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
-                            { id: "w1_w2", name: "Lying/Seated Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
+                            { id: "w1_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
+                            { id: "w1_w2", name: "Seated or Lying Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
                             { id: "w1_w3", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
-                            { id: "w1_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" },
-                            { id: "w1_w5", name: "Bodyweight Plank", sets: "3 sets × 45–60 sec holds" }
+                            { id: "w1_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" }
                         ]
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "EASY BIKE SPIN",
-                        cardioDesc: "10–12 km @ 20–22 km/h ~30 mins.",
-                        liftingTitle: "PUSH B - UPPER CHEST & DELT OVERLOAD",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
                         exercises: [
-                            { id: "w1_th1", name: "Standing DB Lateral Raises", sets: "3 sets × 10–12 reps (4–5 kg)" },
-                            { id: "w1_th2", name: "Machine Lateral Raises / Wide Upright Rows", sets: "2 sets × 12–15 reps" },
-                            { id: "w1_th3", name: "Low-to-High Cable Flyes", sets: "3 sets × 10–12 reps" },
+                            { id: "w1_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (4–5 kg)" },
+                            { id: "w1_th2", name: "Machine Lateral Raises", sets: "2 sets × 12–15 reps" },
+                            { id: "w1_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "3 sets × 10–12 reps (4–5 kg)" },
                             { id: "w1_th4", name: "Tricep Rope Pushdowns", sets: "2 sets × 12 reps" },
-                            { id: "w1_th5", name: "Ab Wheel Rollouts", sets: "3 sets × 12 reps" }
-                        ],
-                        finisher: "DB Lateral Raise Drop-set — 1 set to failure"
+                            { id: "w1_th5", name: "Bodyweight Planks", sets: "3 sets × 45–60 sec holds" }
+                        ]
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Rest legs for weekend long cardio output.",
-                        liftingTitle: "PULL B - BACK WIDTH + UPPER ABS",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
                         exercises: [
                             { id: "w1_f1", name: "Wide-Grip Lat Pulldown", sets: "2 sets × 8–10 reps (25 kg)" },
-                            { id: "w1_f2", name: "Single-Arm DB Rows", sets: "2 sets × 10–12 reps" },
-                            { id: "w1_f3", name: "Cable Rear Delt Flyes", sets: "2 sets × 15 reps" },
-                            { id: "w1_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps" },
-                            { id: "w1_f5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps" }
-                        ],
-                        finisher: "Straight-Arm Cable Pulldown — 2 sets × 15 reps"
+                            { id: "w1_f2", name: "Single-Arm Dumbbell Rows", sets: "2 sets × 10–12 reps (10–12 kg)" },
+                            { id: "w1_f3", name: "Reverse Pec Deck Flyes", sets: "2 sets × 15 reps" },
+                            { id: "w1_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps (8–10 kg)" },
+                            { id: "w1_f5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (20 kg)" }
+                        ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG BIKE SPIN",
-                        cardioDesc: "13–15 km @ 21–23 km/h ~35–40 mins.",
-                        liftingTitle: "NO LIFTING",
+                        cardioTitle: "LONG CARDIO: ZONE 2 BIKE",
+                        cardioDesc: "Long Zone 2 Bike — 14 km (~40–45 mins). No weights; upper body rests completely.",
+                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
                     {
                         day: "Sunday",
-                        cardioTitle: "FULL REST & RECOVERY",
-                        cardioDesc: "Rest completely & hydrate.",
+                        cardioTitle: "FULL REST DAY",
+                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
@@ -1129,84 +1171,79 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "RUN/WALK INTERVALS",
-                        cardioDesc: "2.8–3.0 km total (2 min jog @ 7.5–8.0 km/h / 1 min walk @ 5 km/h)",
-                        liftingTitle: "PULL A + FINISHER",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL A — UPPER LATS & BICEPS",
                         exercises: [
-                            { id: "w2_m1", name: "Lat Pulldown", sets: "2 sets × 10–12 reps" },
-                            { id: "w2_m2", name: "Wide Row", sets: "2 sets × 10–12 reps" },
-                            { id: "w2_m3", name: "Straight-Arm Pulldown", sets: "2 sets × 15 reps" },
-                            { id: "w2_m4", name: "Incline Curl", sets: "2 sets × 10–12 reps" },
-                            { id: "w2_m5", name: "Face Pulls", sets: "2 sets × 15 reps" },
-                            { id: "w2_m6", name: "Hanging Leg Raises", sets: "3 sets × 15 reps" }
-                        ],
-                        finisher: "Cable Lat Pushdowns — 2 sets × 15 reps"
+                            { id: "w2_m1", name: "Neutral Grip Lat Pulldown", sets: "3 sets × 8–12 reps (27.5 kg)" },
+                            { id: "w2_m2", name: "Chest-Supported Wide Cable Row", sets: "3 sets × 10–12 reps (20 kg)" },
+                            { id: "w2_m3", name: "Dumbbell Pullover", sets: "3 sets × 12–15 reps (12.5 kg)" },
+                            { id: "w2_m4", name: "Incline Dumbbell Bicep Curls", sets: "2 sets × 10–12 reps (5 kg)" },
+                            { id: "w2_m5", name: "Captain's Chair Knee Raises", sets: "3 sets × 12–15 reps (BW)" }
+                        ]
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "BIKE SPIN",
-                        cardioDesc: "10–12 km Zone 2 Spin @ 20–22 km/h",
-                        liftingTitle: "PUSH A + CHEST & DELTS",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
                         exercises: [
-                            { id: "w2_t1", name: "Incline DB Press", sets: "3 sets × 8–10 reps (Try 7.5 kg if clean)" },
-                            { id: "w2_t2", name: "Pec Deck Flyes", sets: "3 sets × 12–15 reps" },
-                            { id: "w2_t3", name: "Seated DB Press", sets: "2 sets × 8–10 reps" },
-                            { id: "w2_t4", name: "Cable Lateral Raises", sets: "3 sets × 12–15 reps" },
-                            { id: "w2_t5", name: "Overhead Tricep Ext", sets: "2 sets × 12–15 reps" },
-                            { id: "w2_t6", name: "Cable Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w2_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (7.5 kg)" },
+                            { id: "w2_t2", name: "Pec Deck / Cable Flyes", sets: "3 sets × 12–15 reps (20 kg)" },
+                            { id: "w2_t3", name: "Seated Dumbbell Shoulder Press", sets: "3 sets × 8–10 reps (7.5 kg)" },
+                            { id: "w2_t4", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 12–15 reps (5 kg)" },
+                            { id: "w2_t5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (25 kg)" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Leg recovery day",
-                        liftingTitle: "LEGS - ANTI-GLUTE",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 session per daily schedule; legs day stays glute-free.",
+                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
                         exercises: [
-                            { id: "w2_w1", name: "Leg Press [Low Foot]", sets: "3 sets × 8–10 reps" },
-                            { id: "w2_w2", name: "Leg Curls", sets: "3 sets × 12–15 reps" },
-                            { id: "w2_w3", name: "Calf Raises", sets: "3 sets × 15 reps" },
-                            { id: "w2_w4", name: "Reverse Crunches", sets: "3 sets × 15 reps" },
-                            { id: "w2_w5", name: "Planks", sets: "3 sets × 60s holds" }
+                            { id: "w2_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
+                            { id: "w2_w2", name: "Seated or Lying Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
+                            { id: "w2_w3", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
+                            { id: "w2_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" }
                         ]
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "BIKE SPIN",
-                        cardioDesc: "10–12 km Zone 2 Spin @ 20–22 km/h",
-                        liftingTitle: "PUSH B - DELT OVERLOAD",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
                         exercises: [
-                            { id: "w2_th1", name: "Standing DB Lateral Raises", sets: "3 sets × 10–12 reps" },
-                            { id: "w2_th2", name: "Machine Lateral Raises", sets: "2 sets × 12–15 reps" },
-                            { id: "w2_th3", name: "Low-to-High Cable Flyes", sets: "3 sets × 10–12 reps" },
-                            { id: "w2_th4", name: "Tricep Rope Pushdowns", sets: "2 sets × 12 reps" },
-                            { id: "w2_th5", name: "Ab Rollouts", sets: "3 sets × 12 reps" }
-                        ],
-                        finisher: "DB Lateral Raise Drop-Set to failure"
+                            { id: "w2_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (5 kg)" },
+                            { id: "w2_th2", name: "Machine Lateral Raises", sets: "3 sets × 12–15 reps" },
+                            { id: "w2_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "3 sets × 10–12 reps (5 kg)" },
+                            { id: "w2_th4", name: "Tricep Rope Pushdowns", sets: "3 sets × 12 reps" },
+                            { id: "w2_th5", name: "Bodyweight Planks", sets: "3 sets × 45–60 sec holds" }
+                        ]
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Rest before long Saturday run",
-                        liftingTitle: "PULL B - BACK WIDTH",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
                         exercises: [
-                            { id: "w2_f1", name: "Wide Lat Pulldown", sets: "2 sets × 8–10 reps" },
-                            { id: "w2_f2", name: "Single-Arm DB Row", sets: "2 sets × 10–12 reps" },
-                            { id: "w2_f3", name: "Rear Delt Flyes", sets: "2 sets × 15 reps" },
-                            { id: "w2_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps" },
-                            { id: "w2_f5", name: "Cable Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w2_f1", name: "Wide-Grip Lat Pulldown", sets: "3 sets × 8–10 reps (27.5 kg)" },
+                            { id: "w2_f2", name: "Single-Arm Dumbbell Rows", sets: "3 sets × 10–12 reps (12.5 kg)" },
+                            { id: "w2_f3", name: "Reverse Pec Deck Flyes", sets: "3 sets × 15 reps" },
+                            { id: "w2_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps (10 kg)" },
+                            { id: "w2_f5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (25 kg)" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG CARDIO RUN",
-                        cardioDesc: "Long Run/Walk — 3.0–3.5 km @ 8:00 min/km (~25 mins)",
-                        liftingTitle: "NO LIFTING",
+                        cardioTitle: "LONG CARDIO: ZONE 2 RUN",
+                        cardioDesc: "Long Zone 2 Run — 4.5 km (~45 mins). No weights; upper body rests completely.",
+                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
                     {
                         day: "Sunday",
-                        cardioTitle: "FULL REST",
-                        cardioDesc: "Rest completely",
+                        cardioTitle: "FULL REST DAY",
+                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
@@ -1217,82 +1254,79 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "RUN INTERVALS",
-                        cardioDesc: "3.0–3.5 km total (2 min jog @ 8.0 km/h / 1 min walk @ 5 km/h)",
-                        liftingTitle: "PULL A - PEAK VOLUME",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL A — UPPER LATS & BICEPS",
                         exercises: [
-                            { id: "w3_m1", name: "Lat Pulldown", sets: "3 sets × 8–12 reps" },
-                            { id: "w3_m2", name: "Wide Row", sets: "3 sets × 10–12 reps" },
-                            { id: "w3_m3", name: "Straight-Arm Pulldown", sets: "2 sets × 15 reps" },
-                            { id: "w3_m4", name: "Incline Curl", sets: "2 sets × 10–12 reps" },
-                            { id: "w3_m5", name: "Face Pulls", sets: "2 sets × 15 reps" },
-                            { id: "w3_m6", name: "Hanging Leg Raises", sets: "3 sets × 15 reps" }
+                            { id: "w3_m1", name: "Neutral Grip Lat Pulldown", sets: "3 sets × 8–12 reps (30 kg)" },
+                            { id: "w3_m2", name: "Chest-Supported Wide Cable Row", sets: "3 sets × 10–12 reps (22.5 kg)" },
+                            { id: "w3_m3", name: "Dumbbell Pullover", sets: "3 sets × 12–15 reps (15 kg)" },
+                            { id: "w3_m4", name: "Incline Dumbbell Bicep Curls", sets: "3 sets × 10–12 reps (6 kg)" },
+                            { id: "w3_m5", name: "Captain's Chair Knee Raises", sets: "3 sets × 15 reps (BW)" }
                         ]
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "BIKE SPIN",
-                        cardioDesc: "12–15 km Zone 2 Spin @ 21–23 km/h",
-                        liftingTitle: "PUSH A - PEAK VOLUME",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
                         exercises: [
-                            { id: "w3_t1", name: "Incline DB Press", sets: "3 sets × 8–10 reps" },
-                            { id: "w3_t2", name: "Pec Deck Flyes", sets: "3 sets × 12–15 reps" },
-                            { id: "w3_t3", name: "Seated DB Press", sets: "3 sets × 8–10 reps" },
-                            { id: "w3_t4", name: "Cable Lateral Raises", sets: "4 sets × 12–15 reps" },
-                            { id: "w3_t5", name: "Overhead Tricep Ext", sets: "2 sets × 12–15 reps" },
-                            { id: "w3_t6", name: "Cable Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w3_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (10 kg)" },
+                            { id: "w3_t2", name: "Pec Deck / Cable Flyes", sets: "3 sets × 12–15 reps (22.5 kg)" },
+                            { id: "w3_t3", name: "Seated Dumbbell Shoulder Press", sets: "3 sets × 8–10 reps (10 kg)" },
+                            { id: "w3_t4", name: "Seated Dumbbell Lateral Raises", sets: "4 sets × 12–15 reps (5 kg)" },
+                            { id: "w3_t5", name: "Heavy Cable Crunches", sets: "3 sets × 15 reps (30 kg)" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Leg recovery",
-                        liftingTitle: "LEGS - ANTI-GLUTE",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 session per daily schedule; legs day stays glute-free.",
+                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
                         exercises: [
-                            { id: "w3_w1", name: "Leg Press [Low Foot]", sets: "3 sets × 8–10 reps" },
-                            { id: "w3_w2", name: "Leg Curls", sets: "3 sets × 12–15 reps" },
-                            { id: "w3_w3", name: "Calf Raises", sets: "3 sets × 15 reps" },
-                            { id: "w3_w4", name: "Reverse Crunches", sets: "3 sets × 15 reps" },
-                            { id: "w3_w5", name: "Planks", sets: "3 sets × 60s holds" }
+                            { id: "w3_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
+                            { id: "w3_w2", name: "Seated or Lying Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
+                            { id: "w3_w3", name: "Standing Calf Raises", sets: "4 sets × 15 reps" },
+                            { id: "w3_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" }
                         ]
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "BIKE SPIN",
-                        cardioDesc: "12–15 km Zone 2 Spin @ 21–23 km/h",
-                        liftingTitle: "PUSH B - PEAK VOLUME",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
                         exercises: [
-                            { id: "w3_th1", name: "Standing DB Lateral Raises", sets: "3 sets × 10–12 reps" },
+                            { id: "w3_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (6 kg)" },
                             { id: "w3_th2", name: "Machine Lateral Raises", sets: "3 sets × 12–15 reps" },
-                            { id: "w3_th3", name: "Low-to-High Cable Flyes", sets: "3 sets × 10–12 reps" },
+                            { id: "w3_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "3 sets × 10–12 reps (6 kg)" },
                             { id: "w3_th4", name: "Tricep Rope Pushdowns", sets: "3 sets × 12 reps" },
-                            { id: "w3_th5", name: "Ab Rollouts", sets: "3 sets × 15 reps" }
+                            { id: "w3_th5", name: "Bodyweight Planks", sets: "3 sets × 60 sec holds" }
                         ]
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Rest before long bike session",
-                        liftingTitle: "PULL B - PEAK VOLUME",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
                         exercises: [
-                            { id: "w3_f1", name: "Wide Lat Pulldown", sets: "3 sets × 8–10 reps" },
-                            { id: "w3_f2", name: "Single-Arm DB Row", sets: "3 sets × 10–12 reps" },
-                            { id: "w3_f3", name: "Rear Delt Flyes", sets: "3 sets × 15 reps" },
-                            { id: "w3_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps" },
-                            { id: "w3_f5", name: "Cable Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w3_f1", name: "Wide-Grip Lat Pulldown", sets: "3 sets × 8–10 reps (30 kg)" },
+                            { id: "w3_f2", name: "Single-Arm Dumbbell Rows", sets: "3 sets × 10–12 reps (15 kg)" },
+                            { id: "w3_f3", name: "Reverse Pec Deck Flyes", sets: "3 sets × 15 reps" },
+                            { id: "w3_f4", name: "Hammer Curls", sets: "3 sets × 10–12 reps (12.5 kg)" },
+                            { id: "w3_f5", name: "Heavy Cable Crunches", sets: "3 sets × 15 reps (30 kg)" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG BIKE SPIN",
-                        cardioDesc: "15–18 km @ 22–24 km/h (~40 mins)",
-                        liftingTitle: "NO LIFTING",
+                        cardioTitle: "LONG CARDIO: ZONE 2 BIKE",
+                        cardioDesc: "Long Zone 2 Bike — 16 km (~45–50 mins). No weights; upper body rests completely.",
+                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
                     {
                         day: "Sunday",
-                        cardioTitle: "FULL REST",
-                        cardioDesc: "Rest completely",
+                        cardioTitle: "FULL REST DAY",
+                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
@@ -1303,72 +1337,79 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "EASY RUN/WALK",
-                        cardioDesc: "2.0 km easy jog/walk @ 7.0 km/h",
-                        liftingTitle: "PULL A - DELOAD (2 SETS ONLY)",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL A — UPPER LATS & BICEPS (DELOAD)",
                         exercises: [
-                            { id: "w4_m1", name: "Lat Pulldown", sets: "2 sets × 10 reps" },
-                            { id: "w4_m2", name: "Wide Row", sets: "2 sets × 10 reps" },
-                            { id: "w4_m3", name: "Face Pulls", sets: "2 sets × 15 reps" },
-                            { id: "w4_m4", name: "Hanging Leg Raises", sets: "2 sets × 12 reps" }
+                            { id: "w4_m1", name: "Neutral Grip Lat Pulldown", sets: "2 sets × 8–10 reps (20 kg)" },
+                            { id: "w4_m2", name: "Chest-Supported Wide Cable Row", sets: "2 sets × 10 reps (15 kg)" },
+                            { id: "w4_m3", name: "Dumbbell Pullover", sets: "2 sets × 12 reps (10 kg)" },
+                            { id: "w4_m4", name: "Incline Dumbbell Bicep Curls", sets: "2 sets × 10 reps (4 kg)" },
+                            { id: "w4_m5", name: "Captain's Chair Knee Raises", sets: "2 sets × 12 reps (BW)" }
                         ]
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "EASY BIKE SPIN",
-                        cardioDesc: "8–10 km easy spin @ 18–20 km/h",
-                        liftingTitle: "PUSH A - DELOAD (2 SETS ONLY)",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS (DELOAD)",
                         exercises: [
-                            { id: "w4_t1", name: "Incline DB Press", sets: "2 sets × 8 reps" },
-                            { id: "w4_t2", name: "Pec Deck Flyes", sets: "2 sets × 12 reps" },
-                            { id: "w4_t3", name: "Cable Lateral Raises", sets: "2 sets × 12 reps" },
-                            { id: "w4_t4", name: "Cable Crunches", sets: "2 sets × 12 reps" }
+                            { id: "w4_t1", name: "Incline Dumbbell Chest Press", sets: "2 sets × 8 reps (5 kg)" },
+                            { id: "w4_t2", name: "Pec Deck / Cable Flyes", sets: "2 sets × 12 reps (15 kg)" },
+                            { id: "w4_t3", name: "Seated Dumbbell Shoulder Press", sets: "2 sets × 8 reps (5 kg)" },
+                            { id: "w4_t4", name: "Seated Dumbbell Lateral Raises", sets: "2 sets × 12 reps (4 kg)" },
+                            { id: "w4_t5", name: "Heavy Cable Crunches", sets: "2 sets × 12 reps (15 kg)" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Leg recovery",
-                        liftingTitle: "LEGS - DELOAD",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (DELOAD)",
                         exercises: [
-                            { id: "w4_w1", name: "Leg Press [Low Foot]", sets: "2 sets × 8 reps" },
-                            { id: "w4_w2", name: "Leg Curls", sets: "2 sets × 12 reps" },
-                            { id: "w4_w3", name: "Calf Raises", sets: "2 sets × 12 reps" }
+                            { id: "w4_w1", name: "Leg Press [Low Foot Placement]", sets: "2 sets × 8 reps (Quads only, zero glute)" },
+                            { id: "w4_w2", name: "Seated or Lying Leg Curls", sets: "2 sets × 12 reps (Hamstring isolation)" },
+                            { id: "w4_w3", name: "Standing Calf Raises", sets: "2 sets × 12 reps" },
+                            { id: "w4_w4", name: "Bench Reverse Crunches", sets: "2 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "EASY BIKE SPIN",
-                        cardioDesc: "8–10 km easy spin @ 18–20 km/h",
-                        liftingTitle: "PUSH B - DELOAD",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF (DELOAD)",
                         exercises: [
-                            { id: "w4_th1", name: "Standing DB Lateral Raises", sets: "2 sets × 10 reps" },
-                            { id: "w4_th2", name: "Low-to-High Flyes", sets: "2 sets × 10 reps" },
-                            { id: "w4_th3", name: "Tricep Pushdowns", sets: "2 sets × 12 reps" }
+                            { id: "w4_th1", name: "Seated Dumbbell Lateral Raises", sets: "2 sets × 10 reps (4 kg)" },
+                            { id: "w4_th2", name: "Machine Lateral Raises", sets: "2 sets × 12 reps" },
+                            { id: "w4_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "2 sets × 10 reps (4 kg)" },
+                            { id: "w4_th4", name: "Tricep Rope Pushdowns", sets: "2 sets × 10 reps" },
+                            { id: "w4_th5", name: "Bodyweight Planks", sets: "2 sets × 45 sec holds" }
                         ]
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "NO CARDIO",
-                        cardioDesc: "Rest day",
-                        liftingTitle: "PULL B - DELOAD",
+                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
+                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS (DELOAD)",
                         exercises: [
-                            { id: "w4_f1", name: "Wide Lat Pulldown", sets: "2 sets × 8 reps" },
-                            { id: "w4_f2", name: "Rear Delt Flyes", sets: "2 sets × 12 reps" },
-                            { id: "w4_f3", name: "Hammer Curls", sets: "2 sets × 10 reps" }
+                            { id: "w4_f1", name: "Wide-Grip Lat Pulldown", sets: "2 sets × 8 reps (20 kg)" },
+                            { id: "w4_f2", name: "Single-Arm Dumbbell Rows", sets: "2 sets × 10 reps (10 kg)" },
+                            { id: "w4_f3", name: "Reverse Pec Deck Flyes", sets: "2 sets × 12 reps" },
+                            { id: "w4_f4", name: "Hammer Curls", sets: "2 sets × 10 reps (8 kg)" },
+                            { id: "w4_f5", name: "Heavy Cable Crunches", sets: "2 sets × 12 reps (15 kg)" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG CARDIO",
-                        cardioDesc: "Easy 2.5 km Run/Walk",
-                        liftingTitle: "NO LIFTING",
+                        cardioTitle: "LONG CARDIO: ZONE 2 RUN",
+                        cardioDesc: "Long Zone 2 Run — 3.5 km (~30–35 mins, deload pace). No weights; upper body rests completely.",
+                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
                     {
                         day: "Sunday",
-                        cardioTitle: "FULL REST",
-                        cardioDesc: "Rest completely",
+                        cardioTitle: "FULL REST DAY",
+                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
@@ -1379,8 +1420,12 @@
         // --- CORE APPLICATION INITIALIZATION ---
         window.addEventListener('DOMContentLoaded', () => {
             loadLocalState();
+            APP_STATE.lastScheduleDateKey = dateKey(new Date());
+            APP_STATE.masterSchedule = getTodayScheduleTemplate();
+            updateScheduleDayLabel();
             setupClockNotifier();
             renderScheduleTimeline();
+            syncRoutineToToday();
             renderWorkoutsTab();
             renderLoggedMeals();
             updateProfileUI();
@@ -1427,13 +1472,27 @@
             const mins = String(now.getMinutes()).padStart(2, '0');
             const secs = String(now.getSeconds()).padStart(2, '0');
             
+            // Roll over to the correct day's schedule template at midnight
+            const todayKey = dateKey(now);
+            if (APP_STATE.lastScheduleDateKey !== todayKey) {
+                APP_STATE.lastScheduleDateKey = todayKey;
+                APP_STATE.masterSchedule = getTodayScheduleTemplate();
+                currentActiveSlotId = null;
+                renderScheduleTimeline();
+                updateScheduleDayLabel();
+            }
+            
             const clockEl = document.getElementById('header-clock');
             if (clockEl) clockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-            // Highlight Active Master Slot
+            // Keep the schedule day label's live clock current
+            updateScheduleDayLabel();
+
+            // Highlight Active Master Slot — only when a slot genuinely matches the current
+            // time (never fall back to the first slot, which showed phantom "active" entries)
             const currentMins = now.getHours() * 60 + now.getMinutes();
-            let activeSlot = APP_STATE.masterSchedule[0];
-            let nextSlot = APP_STATE.masterSchedule[1];
+            let activeSlot = null;
+            let nextSlot = null;
 
             for (let i = 0; i < APP_STATE.masterSchedule.length; i++) {
                 const s = APP_STATE.masterSchedule[i];
@@ -1456,7 +1515,7 @@
             // Check Automated Sunday 11:59 PM Export Trigger
             checkSundayAutoExport(now);
 
-            if (activeSlot) {
+            if (activeSlot && nextSlot) {
                 if (currentActiveSlotId !== activeSlot.id) {
                     currentActiveSlotId = activeSlot.id;
                     renderScheduleTimeline();
@@ -1519,6 +1578,8 @@
             if (restTimerWidget) {
                 if (tabName === 'workouts') {
                     restTimerWidget.classList.remove('hidden');
+                    // Always land on today's routine so the page matches the real day
+                    syncRoutineToToday();
                     renderWorkoutsTab();
                 } else {
                     restTimerWidget.classList.add('hidden');
@@ -1636,7 +1697,7 @@
                     s = eventEnd + 15; // 15 min breather after the event
                     e = s + (defaultEnd - defaultStart);
                 }
-                if (e > 1435) return null; // can't fit before midnight → skip this session
+                if (e > 1440) return null; // can't fit before midnight → skip this session
                 return { id, start: fmtTime(s), end: fmtTime(e), title: blockTitle, desc, category, locked: false };
             };
 
@@ -1644,11 +1705,11 @@
 
             // The event itself IS the workout → no extra night gym block
             if (type !== 'workout') {
-                const gym = placeBlock('s10_adj', 'Night Bodybuilding Session', 'Hit gym for targeted hypertrophy (Pull, Push, or Legs).', 'gym', 1380, 1425);
+                const gym = placeBlock('s10_adj', 'Night Bodybuilding Session', 'Hit gym for targeted hypertrophy (Pull, Push, or Legs).', 'gym', 1395, 1440);
                 if (gym) blocks.push(gym);
             }
 
-            const cardio = placeBlock('s5_adj', 'Ironman Cardio Session', 'Zone 2 Run or Bike Spin (per daily plan).', 'cardio', 960, 1005);
+            const cardio = placeBlock('s5_adj', 'Ironman Cardio Session', 'Zone 2 Run or Bike Spin (per daily plan).', 'cardio', 930, 975);
             if (cardio) blocks.push(cardio);
 
             APP_STATE.masterSchedule.push(newEvent, ...blocks);
@@ -1662,20 +1723,8 @@
         }
 
         function resetToMasterSchedule() {
-            APP_STATE.masterSchedule = [
-                { id: "s1", start: "06:30", end: "07:10", title: "Morning Prep & Hydration", desc: "Black coffee/water, light meal assembly, commute to college.", category: "prep", locked: false },
-                { id: "s2", start: "07:30", end: "14:00", title: "College Classes", desc: "Stay hydrated; eat packed mid-day protein meal (e.g. oats/egg whites).", category: "college", locked: true },
-                { id: "s3", start: "14:00", end: "14:20", title: "Commute Home", desc: "Transition period.", category: "commute", locked: false },
-                { id: "s4", start: "14:20", end: "15:30", title: "Lunch & Digest", desc: "Carbs + Protein meal. 30 mins quiet rest or project review.", category: "meal", locked: false },
-                { id: "s5", start: "15:45", end: "16:30", title: "Ironman Cardio Session", desc: "Zone 2 Run or Bike Spin (per daily plan).", category: "cardio", locked: false },
-                { id: "s6", start: "16:30", end: "17:15", title: "Post-Cardio Shower & Snack", desc: "Protein shake + fruit; light meal prep for evening.", category: "snack", locked: false },
-                { id: "s7", start: "17:15", end: "18:45", title: "Study / Personal Projects / Sim Rig", desc: "High-focus cognitive window for engineering coursework or projects.", category: "study", locked: false },
-                { id: "s8", start: "18:45", end: "19:00", title: "Commute to Work", desc: "Travel to part-time work shift.", category: "commute", locked: false },
-                { id: "s9", start: "19:00", end: "23:00", title: "Part-Time Work Shift", desc: "Evening job shift.", category: "work", locked: true },
-                { id: "s10", start: "23:15", end: "00:00", title: "Night Bodybuilding Session", desc: "Hit the gym for targeted hypertrophy (Pull, Push, or Legs).", category: "gym", locked: false },
-                { id: "s11", start: "00:00", end: "00:30", title: "Shower, Night Meal, Wind Down", desc: "Post-workout meal, prep gear for tomorrow.", category: "prep", locked: false },
-                { id: "s12", start: "00:30", end: "06:30", title: "Sleep & CNS Recovery", desc: "Deep sleep window (NON-NEGOTIABLE).", category: "sleep", locked: true }
-            ];
+            // Reset to today's official schedule template (standard or Thursday)
+            APP_STATE.masterSchedule = getTodayScheduleTemplate();
             renderScheduleTimeline();
             saveLocalState();
         }
@@ -1752,15 +1801,64 @@
             pushCloudState();
         }
 
+        // Pulls a clean numeric weight (kg) out of a weight string like "15–20 kg" or "27.5 kg"
+        function extractWeightNum(weightStr) {
+            if (!weightStr) return null;
+            const m = weightStr.match(/(\d+(?:\.\d+)?)\s*kg/i);
+            return m ? parseFloat(m[1]) : null;
+        }
+
         function adjustExerciseReps(exId, deltaReps) {
             if (!APP_STATE.customExerciseDetails) APP_STATE.customExerciseDetails = {};
             const ex = findExerciseById(exId);
             if (!ex) return;
             const current = getExerciseDetails(ex);
             
+            // Store a clean numeric rep target so the input field stays readable
+            const newReps = Math.max(1, parseAvgReps(current.reps) + deltaReps);
             APP_STATE.customExerciseDetails[exId] = {
                 setsCount: current.setsCount,
-                reps: `${current.reps} (+${deltaReps})`,
+                reps: `${newReps}`,
+                weight: current.weight
+            };
+
+            renderWorkoutsTab();
+            pushCloudState();
+        }
+
+        // Direct weight entry (kg) — typed straight into the workout card
+        function setExerciseWeight(exId, value) {
+            if (!APP_STATE.customExerciseDetails) APP_STATE.customExerciseDetails = {};
+            const ex = findExerciseById(exId);
+            if (!ex) return;
+            const current = getExerciseDetails(ex);
+
+            const kg = parseFloat(value);
+            if (isNaN(kg) || kg < 0) { renderWorkoutsTab(); return; } // invalid → revert to previous
+
+            APP_STATE.customExerciseDetails[exId] = {
+                setsCount: current.setsCount,
+                reps: current.reps,
+                weight: `${kg} kg`
+            };
+
+            renderWorkoutsTab();
+            pushCloudState();
+        }
+
+        // Direct rep entry — typed straight into the workout card
+        function setExerciseReps(exId, value) {
+            if (!APP_STATE.customExerciseDetails) APP_STATE.customExerciseDetails = {};
+            const ex = findExerciseById(exId);
+            if (!ex) return;
+            const current = getExerciseDetails(ex);
+
+            const reps = parseInt(value, 10);
+            if (isNaN(reps) || reps < 1) { renderWorkoutsTab(); return; } // invalid → revert to previous
+
+            APP_STATE.customExerciseDetails[exId] = {
+                setsCount: current.setsCount,
+                reps: `${reps}`,
                 weight: current.weight
             };
 
@@ -1797,9 +1895,39 @@
             renderWorkoutsTab();
         }
 
+        // Current week of the 4-week cycle, derived from the program start date
+        // (week 1 = the start week; the cycle repeats W1→W2→W3→W4 every 4 weeks)
+        function currentProgramWeek() {
+            const start = new Date((APP_STATE.programStartDate || '2026-08-03') + 'T00:00:00');
+            if (isNaN(start.getTime())) return 1;
+            const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+            const elapsed = Math.floor((Date.now() - start.getTime()) / msPerWeek);
+            if (elapsed < 0) return 1;
+            return (elapsed % 4) + 1;
+        }
+
+        function setProgramStartDate(value) {
+            if (!value) return;
+            APP_STATE.programStartDate = value;
+            APP_STATE.activeWeek = currentProgramWeek();
+            saveLocalState();
+            pushCloudState();
+            renderWorkoutsTab();
+        }
+
+        // Routine tab should open TODAY's exact workout — the correct program week
+        // (derived from the start date) AND the correct day — so it always matches reality
+        function syncRoutineToToday() {
+            APP_STATE.activeDayIndex = (new Date().getDay() + 6) % 7; // Sun=0 → 6, Mon=1 → 0, ...
+            APP_STATE.activeWeek = currentProgramWeek();
+        }
+
         function renderWorkoutsTab() {
             if (!APP_STATE.activeWeek) APP_STATE.activeWeek = 1;
             if (APP_STATE.activeDayIndex === undefined) APP_STATE.activeDayIndex = 0;
+
+            // Mon=0 .. Sun=6 → today's index (JS getDay(): Sun=0 .. Sat=6)
+            const todayIdx = (new Date().getDay() + 6) % 7;
 
             // Highlight active week tab pill
             document.querySelectorAll('.week-tab-btn').forEach((btn, idx) => {
@@ -1808,11 +1936,14 @@
                     : "week-tab-btn px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white";
             });
 
-            // Highlight active day tab pill
+            // Highlight active day tab pill (+ green dot on today)
             document.querySelectorAll('.day-tab-btn').forEach((btn, idx) => {
                 btn.className = (idx === APP_STATE.activeDayIndex)
                     ? "day-tab-btn active px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-cyan-400 bg-cyan-400 text-black"
                     : "day-tab-btn px-2.5 py-1 text-[11px] font-mono font-bold uppercase rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-400 hover:text-white";
+                const isToday = idx === todayIdx;
+                const baseLabel = btn.textContent.replace(/\s*●$/, '');
+                btn.innerHTML = `${baseLabel}${isToday ? '<span style="color:#34d399;font-size:8px;vertical-align:top;margin-left:2px;">●</span>' : ''}`;
             });
 
             const data = MONTH_WORKOUTS[APP_STATE.activeWeek];
@@ -1821,6 +1952,10 @@
             const grid = document.getElementById('workouts-grid');
             if (!grid) return;
             grid.innerHTML = '';
+
+            // Keep the program start-date picker in sync with state
+            const startDateInput = document.getElementById('program-start-date');
+            if (startDateInput) startDateInput.value = APP_STATE.programStartDate;
 
             const dayObj = data.days[APP_STATE.activeDayIndex] || data.days[0];
             if (!dayObj) return;
@@ -1840,6 +1975,8 @@
                 dayObj.exercises.forEach(ex => {
                     const isChecked = APP_STATE.checklistState[ex.id] || false;
                     const details = getExerciseDetails(ex);
+                    const weightInputVal = extractWeightNum(details.weight);
+                    const repInputVal = parseAvgReps(details.reps);
 
                     exercisesHtml += `
                         <div class="group p-3 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 space-y-2 rounded-lg transition-all">
@@ -1862,8 +1999,22 @@
                                 </div>
                             </div>
 
-                            <!-- Micro Quick Adjusters -->
-                            <div class="${details.hasCustom ? 'flex' : 'hidden group-hover:flex'} items-center gap-1.5 text-[10px] font-mono text-zinc-400 pt-1.5 border-t border-zinc-800/60">
+                            <!-- Weight & Rep Inputs -->
+                            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[10px] font-mono text-zinc-400 pt-1.5 border-t border-zinc-800/60">
+                                <label class="flex items-center gap-1" title="Enter weight in kg">
+                                    <span class="font-bold text-purple-300">KG</span>
+                                    <input type="number" min="0" step="0.5" value="${weightInputVal === null ? '' : weightInputVal}" placeholder="—"
+                                        onchange="setExerciseWeight('${ex.id}', this.value)"
+                                        onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
+                                        class="w-14 bg-zinc-950 border border-zinc-700 text-white px-1.5 py-0.5 rounded text-[11px] font-mono focus:border-purple-400 focus:outline-none">
+                                </label>
+                                <label class="flex items-center gap-1" title="Enter target reps">
+                                    <span class="font-bold text-cyan-300">REPS</span>
+                                    <input type="number" min="1" step="1" value="${repInputVal}"
+                                        onchange="setExerciseReps('${ex.id}', this.value)"
+                                        onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
+                                        class="w-14 bg-zinc-950 border border-zinc-700 text-white px-1.5 py-0.5 rounded text-[11px] font-mono focus:border-cyan-400 focus:outline-none">
+                                </label>
                                 <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">+2.5kg</button>
                                 <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-2 py-0.5 bg-zinc-800 hover:bg-purple-900 hover:text-purple-300 text-zinc-300 border border-zinc-700 rounded">-2.5kg</button>
                                 <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-2 py-0.5 bg-zinc-800 hover:bg-cyan-900 hover:text-cyan-300 text-zinc-300 border border-zinc-700 rounded">+1 Rep</button>
@@ -1881,8 +2032,8 @@
             dayCard.innerHTML = `
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                     <div>
-                        <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase">${dayObj.day} • ${dayObj.liftingTitle}</span>
-                        <h3 class="font-outfit font-black text-base text-white uppercase">${dayObj.cardioTitle || 'CARDIO SESSION'}</h3>
+                        <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase">${dayObj.day}${APP_STATE.activeDayIndex === todayIdx ? ' • <span style="color:#34d399;">TODAY</span>' : ''} • ${dayObj.cardioTitle || 'CARDIO SESSION'}</span>
+                        <h3 class="font-outfit font-black text-base text-white uppercase">${dayObj.liftingTitle || 'WORKOUT'}</h3>
                     </div>
                     <span class="text-xs font-mono text-zinc-400">${dayObj.cardioDesc || ''}</span>
                 </div>
@@ -2378,27 +2529,28 @@ Keep crushing the daily plan! 💪⚡`;
                             totalVolumeKg += exVol;
                             weeklyVolume[w] += exVol;
 
-                            // Muscle group attribution
+                            // Muscle group attribution — priority order legs → abs → pull → push
+                            // so "leg press" counts as legs, "calf raises" as legs, and
+                            // "lateral raises" as delts instead of abs.
                             const lowerName = ex.name.toLowerCase();
-                            if (lowerName.includes('lat') || lowerName.includes('row') || lowerName.includes('bicep') || lowerName.includes('pull')) {
-                                muscleSets.pull += sets;
-                            } else if (lowerName.includes('chest') || lowerName.includes('press') || lowerName.includes('delt') || lowerName.includes('tricep') || lowerName.includes('push') || lowerName.includes('incline')) {
-                                muscleSets.push += sets;
-                            } else if (lowerName.includes('raise') || lowerName.includes('abs') || lowerName.includes('core') || lowerName.includes('leg/knee')) {
-                                muscleSets.abs += sets;
-                            } else if (lowerName.includes('squat') || lowerName.includes('quad') || lowerName.includes('calf') || lowerName.includes('hamstring') || lowerName.includes('leg')) {
+                            if (/leg press|leg curl|calf|hamstring|squat|quad|thigh|adductor|abductor/.test(lowerName)) {
                                 muscleSets.legs += sets;
+                            } else if (/crunch|plank|rollout|knee raise|leg raise|hanging|toe touch|v-up|situp|sit-up|ab wheel|abs|core|captain/.test(lowerName)) {
+                                muscleSets.abs += sets;
+                            } else if (/lat|row|bicep|curl|pull|rear|reverse|face pull|straight-arm|shrug/.test(lowerName)) {
+                                muscleSets.pull += sets;
+                            } else if (/chest|press|delt|lateral|tricep|pushdown|push|fly|bench|shoulder|incline|overhead/.test(lowerName)) {
+                                muscleSets.push += sets;
                             } else {
                                 muscleSets.pull += sets;
                             }
                         }
                     });
 
-                    // Daily Water check count
-                    totalItems++;
+                    // Daily Water check — marks the day complete for streak/heatmap,
+                    // but is NOT counted as a logged session in completion stats
                     const waterId = `w${w}_${dayObj.day.toLowerCase()}_water`;
                     if (APP_STATE.checklistState[waterId]) {
-                        checkedItems++;
                         dayAnyChecked = true;
                     }
 
@@ -2739,8 +2891,8 @@ Keep crushing the daily plan! 💪⚡`;
                 waterLoggedMl: APP_STATE.waterLoggedMl || 0,
                 userProfile: APP_STATE.userProfile || { height: 166, weight: 70, age: 21, bmr: 1600, tdee: 2450, targetCal: 2025 },
                 loggedMeals: APP_STATE.loggedMeals || [],
-                masterSchedule: APP_STATE.masterSchedule || [],
                 historicalArchive: APP_STATE.historicalArchive || {},
+                programStartDate: APP_STATE.programStartDate || '2026-08-03',
                 updatedAt: new Date().toISOString()
             };
 
@@ -2834,13 +2986,17 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
-                if (cloudData.masterSchedule && JSON.stringify(cloudData.masterSchedule) !== JSON.stringify(APP_STATE.masterSchedule)) {
-                    APP_STATE.masterSchedule = cloudData.masterSchedule;
-                    updated = true;
-                }
+                // NOTE: masterSchedule is deliberately excluded from cloud sync — the daily
+                // timeline is derived from the day-of-week templates + same-device custom
+                // events, so a stale cloud snapshot can never clobber today's schedule.
 
                 if (cloudData.historicalArchive && JSON.stringify(cloudData.historicalArchive) !== JSON.stringify(APP_STATE.historicalArchive)) {
                     APP_STATE.historicalArchive = cloudData.historicalArchive;
+                    updated = true;
+                }
+
+                if (cloudData.programStartDate && cloudData.programStartDate !== APP_STATE.programStartDate) {
+                    APP_STATE.programStartDate = cloudData.programStartDate;
                     updated = true;
                 }
 
@@ -2898,6 +3054,7 @@ Keep crushing the daily plan! 💪⚡`;
                     userProfile: APP_STATE.userProfile,
                     loggedMeals: APP_STATE.loggedMeals,
                     historicalArchive: APP_STATE.historicalArchive || {},
+                    programStartDate: APP_STATE.programStartDate,
                     lastUpdatedAt: APP_STATE.lastUpdatedAt
                 }));
             } catch(e) {}
@@ -2913,6 +3070,7 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.userProfile) APP_STATE.userProfile = parsed.userProfile;
                     if (parsed.loggedMeals) APP_STATE.loggedMeals = parsed.loggedMeals;
                     if (parsed.historicalArchive) APP_STATE.historicalArchive = parsed.historicalArchive;
+                    if (parsed.programStartDate) APP_STATE.programStartDate = parsed.programStartDate;
                     if (parsed.lastUpdatedAt) APP_STATE.lastUpdatedAt = parsed.lastUpdatedAt;
                 }
             } catch(e) {}
@@ -2923,8 +3081,8 @@ Keep crushing the daily plan! 💪⚡`;
         function showActiveSlotToast() {
             const toast = document.getElementById('active-slot-toast');
             if (!toast) return;
-            const slot = APP_STATE.currentActiveSlot || (APP_STATE.masterSchedule && APP_STATE.masterSchedule[0]);
-            if (!slot) return;
+            const slot = APP_STATE.currentActiveSlot;
+            if (!slot) return; // never show a stale/phantom slot as the "current" plan
 
             const titleEl = document.getElementById('toast-slot-title');
             const timeEl = document.getElementById('toast-slot-time');
@@ -2965,6 +3123,7 @@ Keep crushing the daily plan! 💪⚡`;
                 if (btn) btn.innerText = "PAUSE";
                 restTimerInterval = setInterval(() => {
                     restTimerSeconds--;
+                    if (restTimerSeconds < 0) restTimerSeconds = 0;
                     updateRestTimerDisplay();
                     if (restTimerSeconds <= 0) {
                         clearInterval(restTimerInterval);

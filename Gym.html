@@ -1497,134 +1497,120 @@ CREATE TABLE cardio_logs (
 
         // --- WEEK TARGETS & DETAILS ---
         const WEEK_PROGRESSIONS = {
-            1: { run: 6.0, bike: 35.0, lifting_sets: 2, focus: "Focus on movement form and establishing daily habits." },
-            2: { run: 6.5, bike: 25.0, lifting_sets: 2, focus: "Introducing 2 min jog / 1 min walk intervals on run days." },
-            3: { run: 7.5, bike: 38.0, lifting_sets: 2.5, focus: "Increasing continuous running interval duration. 2-3 Working Sets." },
-            4: { run: 5.0, bike: 20.0, lifting_sets: 2, focus: "DELOAD WEEK: Cut cardio & weight volume by 30% to clear fatigue." }
+            1: { run: 0, bike: 14.0, lifting_sets: 2, focus: "Movement form + daily habits. Saturday long cardio starts easy." },
+            2: { run: 4.5, bike: 0, lifting_sets: 2.5, focus: "Volume bump: most lifts move to 3 working sets." },
+            3: { run: 0, bike: 16.0, lifting_sets: 3, focus: "Peak volume phase: 3 working sets across all compounds." },
+            4: { run: 3.5, bike: 0, lifting_sets: 2, focus: "DELOAD WEEK: Cut cardio & lifting volume by 30% to clear fatigue." }
         };
 
         // --- SEED/DEFAULT WORKOUT TEMPLATES FOR ALL 4 WEEKS ---
+        // UPDATED PLAN: Mon-Fri lifting (night gym session), Sat long cardio, Sun full rest.
         const WORKOUT_TEMPLATES = {
             1: [
-                { id: "w1_d1", day: "Monday", name: "Monday Run + Pull A", status: "PENDING", details: [
-                    { type: "cardio", name: "Interval Run", target: "2.5km - 3.0km (~20 mins)", desc: "Pace 8:00 - 8:30 min/km | 1 min jog / 1 min walk. Zone 2 HR." },
-                    { type: "lifting", name: "Pull A (Lat Dominant)", target: "Neutral Lat Pulldown (2x8-12), Chest-Supported Cable Row (2x10-12), Straight-Arm Pushdown (2x12-15), Incline DB Curl (2x10-12), Face Pull (2x15)" }
+                { id: "w1_d1", day: "Monday", name: "Monday Pull A — Upper Lats & Biceps", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull A (Upper Lats & Biceps)", target: "Neutral Grip Lat Pulldown (2x8-12), Chest-Supported Wide Cable Row (2x10-12), Dumbbell Pullover (2x12-15), Incline DB Bicep Curls (2x10-12), Captain's Chair Knee Raises (3x12-15)", desc: "Soreness: under armpits (lats), inner elbows/biceps, lower belly." }
                 ]},
-                { id: "w1_d2", day: "Tuesday", name: "Tuesday Bike + Push A", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "10km - 12km (~30 mins)", desc: "Speed 20 - 22 km/h. Light resistance." },
-                    { type: "lifting", name: "Push A (Shoulders & Upper)", target: "Seated DB Shoulder Press (2x8-10), Lean-Away Cable Lateral Raise (3x12-15), Incline DB Chest Press (2x8-10), Pec Deck Flyes (2x12-15), Tricep Overhead Extension (2x12-15)" }
+                { id: "w1_d2", day: "Tuesday", name: "Tuesday Push A — Upper Chest, Side Delts & Triceps", status: "PENDING", details: [
+                    { type: "lifting", name: "Push A (Upper Chest, Side Delts & Triceps)", target: "Incline DB Chest Press (3x8-10), Pec Deck / Cable Flyes (3x12-15), Seated DB Shoulder Press (2x8-10), Seated DB Lateral Raises (3x12-15), Heavy Cable Crunches (3x12-15)", desc: "Soreness: below collarbone, outer shoulder caps, back of arms, upper stomach." }
                 ]},
-                { id: "w1_d3", day: "Wednesday", name: "Wednesday Legs & Core", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth" },
-                    { type: "lifting", name: "Legs & Toji Core (Anti-Glute)", target: "Leg Press Low Foot Placement (2x8-10), Seated/Lying Leg Curl (3x12-15), Standing Calf Raise (2x15), Hanging Leg Raise / Heavy Cable Crunch (3x12-15)" }
+                { id: "w1_d3", day: "Wednesday", name: "Wednesday Legs & Core — Zero Glute", status: "PENDING", details: [
+                    { type: "lifting", name: "Legs & Core (Quads, Hamstrings & Calves)", target: "Leg Press Low Foot Placement (3x8-10), Seated/Lying Leg Curls (3x12-15), Standing Calf Raises (3x15), Bench Reverse Crunches (3x15)", desc: "Soreness: front of thighs above knees, back of legs, lower calves. Zero glute soreness." }
                 ]},
-                { id: "w1_d4", day: "Thursday", name: "Thursday Bike + Push B", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "10km - 12km (~30 mins)", desc: "Speed 20 - 22 km/h." },
-                    { type: "lifting", name: "Push B (Delt Overload)", target: "Standing DB Lateral Raise (3x10-12), Machine Lateral Raise / Wide Row (2x12-15), Low-to-High Cable Fly (2x10-12), Tricep Rope Pushdown (2x12)" }
+                { id: "w1_d4", day: "Thursday", name: "Thursday Push B — Side Delt Overload & Upper Chest Shelf", status: "PENDING", details: [
+                    { type: "lifting", name: "Push B (Side Delt Overload & Upper Chest)", target: "Seated DB Lateral Raises (3x10-12), Machine Lateral Raises (2x12-15), Incline DB Flyes 30° (3x10-12), Tricep Rope Pushdowns (2x12), Bodyweight Planks (3x45-60s)", desc: "Soreness: outer shoulder caps, collarbone line, back of arms." }
                 ]},
-                { id: "w1_d5", day: "Friday", name: "Friday Pull B", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Upper body recovery focus" },
-                    { type: "lifting", name: "Pull B (Upper Back Width)", target: "Wide-Grip Lat Pulldown (2x8-10), Single-Arm DB Row (2x10-12), Cable Rear Delt Fly (2x15), Hammer Curl (2x10-12)" }
+                { id: "w1_d5", day: "Friday", name: "Friday Pull B — Upper Back Width & Rear Delts", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (2x8-10), Single-Arm DB Rows (2x10-12), Reverse Pec Deck Flyes (2x15), Hammer Curls (2x10-12), Heavy Cable Crunches (3x12-15)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
-                { id: "w1_d6", day: "Saturday", name: "Saturday Long Cardio", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Bike", target: "13km - 15km @ 21-23 km/h (~35-40 mins)", desc: "Zone 2 pace." },
-                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day" }
+                { id: "w1_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights)", status: "PENDING", details: [
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Bike — 14 km (~40-45 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w1_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
-                    { type: "rest", name: "Full Rest & Recovery", target: "Sleep, hydrate, and meal prep." }
+                    { type: "rest", name: "Full Rest & Recovery", target: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep." }
                 ]}
             ],
             2: [
-                { id: "w2_d1", day: "Monday", name: "Monday Run + Pull A", status: "PENDING", details: [
-                    { type: "cardio", name: "Interval Run", target: "2.5km - 3.0km (~20 mins)", desc: "Pace 8:00 - 8:30 min/km | 2 min jog / 1 min walk. Zone 2 HR." },
-                    { type: "lifting", name: "Pull A (Lat Dominant)", target: "Neutral Lat Pulldown (2x8-12), Chest Supported Cable Row (2x10-12), Straight-Arm Pushdown (2x12-15), Incline DB Curl (2x10-12), Face Pull (2x15)" }
+                { id: "w2_d1", day: "Monday", name: "Monday Pull A — Upper Lats & Biceps (Volume Bump)", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull A (Upper Lats & Biceps)", target: "Neutral Grip Lat Pulldown (3x8-12), Chest-Supported Wide Cable Row (3x10-12), Dumbbell Pullover (3x12-15), Incline DB Bicep Curls (2x10-12), Captain's Chair Knee Raises (3x12-15)", desc: "Soreness: under armpits (lats), inner elbows/biceps, lower belly." }
                 ]},
-                { id: "w2_d2", day: "Tuesday", name: "Tuesday Bike + Push A", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "10km - 12km (~30 mins)", desc: "Speed 20 - 22 km/h. Light resistance." },
-                    { type: "lifting", name: "Push A (Shoulders & Upper)", target: "Seated DB Shoulder Press (2x8-10), Lean-Away Cable Lateral Raise (3x12-15), Incline DB Chest Press (2x8-10), Pec Deck Flyes (2x12-15), Tricep Overhead Extension (2x12-15)" }
+                { id: "w2_d2", day: "Tuesday", name: "Tuesday Push A — Upper Chest, Side Delts & Triceps (Volume Bump)", status: "PENDING", details: [
+                    { type: "lifting", name: "Push A (Upper Chest, Side Delts & Triceps)", target: "Incline DB Chest Press (3x8-10), Pec Deck / Cable Flyes (3x12-15), Seated DB Shoulder Press (3x8-10), Seated DB Lateral Raises (3x12-15), Heavy Cable Crunches (3x12-15)", desc: "Soreness: below collarbone, outer shoulder caps, back of arms, upper stomach." }
                 ]},
-                { id: "w2_d3", day: "Wednesday", name: "Wednesday Legs & Core", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth" },
-                    { type: "lifting", name: "Legs & Toji Core (Anti-Glute)", target: "Leg Press Low Foot Placement (2x8-10), Seated/Lying Leg Curl (3x12-15), Standing Calf Raise (2x15), Hanging Leg Raise / Heavy Cable Crunch (3x12-15)" }
+                { id: "w2_d3", day: "Wednesday", name: "Wednesday Legs & Core — Zero Glute (Volume Bump)", status: "PENDING", details: [
+                    { type: "lifting", name: "Legs & Core (Quads, Hamstrings & Calves)", target: "Leg Press Low Foot Placement (3x8-10), Seated/Lying Leg Curls (3x12-15), Standing Calf Raises (3x15), Bench Reverse Crunches (3x15)", desc: "Soreness: front of thighs above knees, back of legs, lower calves. Zero glute soreness." }
                 ]},
-                { id: "w2_d4", day: "Thursday", name: "Thursday Bike + Push B", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "10km - 12km (~30 mins)", desc: "Speed 20 - 22 km/h." },
-                    { type: "lifting", name: "Push B (Delt Overload)", target: "Standing DB Lateral Raise (3x10-12), Machine Lateral Raise / Wide Row (2x12-15), Low-to-High Cable Fly (2x10-12), Tricep Rope Pushdown (2x12)" }
+                { id: "w2_d4", day: "Thursday", name: "Thursday Push B — Side Delt Overload & Upper Chest Shelf (Volume Bump)", status: "PENDING", details: [
+                    { type: "lifting", name: "Push B (Side Delt Overload & Upper Chest)", target: "Seated DB Lateral Raises (3x10-12), Machine Lateral Raises (3x12-15), Incline DB Flyes 30° (3x10-12), Tricep Rope Pushdowns (3x12), Bodyweight Planks (3x45-60s)", desc: "Soreness: outer shoulder caps, collarbone line, back of arms." }
                 ]},
-                { id: "w2_d5", day: "Friday", name: "Friday Pull B", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Upper body recovery focus" },
-                    { type: "lifting", name: "Pull B (Upper Back Width)", target: "Wide-Grip Lat Pulldown (2x8-10), Single-Arm DB Row (2x10-12), Cable Rear Delt Fly (2x15), Hammer Curl (2x10-12)" }
+                { id: "w2_d5", day: "Friday", name: "Friday Pull B — Upper Back Width & Rear Delts (Volume Bump)", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (3x8-10), Single-Arm DB Rows (3x10-12), Reverse Pec Deck Flyes (3x15), Hammer Curls (2x10-12), Heavy Cable Crunches (3x12-15)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
-                { id: "w2_d6", day: "Saturday", name: "Saturday Long Cardio", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Run/Walk", target: "3.0km - 3.5km @ 8:00-8:30 min/km (~25 mins)", desc: "Zone 2 pace." },
-                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day" }
+                { id: "w2_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights)", status: "PENDING", details: [
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Run — 4.5 km (~45 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w2_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
-                    { type: "rest", name: "Full Rest & Recovery", target: "Sleep, hydrate, and meal prep." }
+                    { type: "rest", name: "Full Rest & Recovery", target: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep." }
                 ]}
             ],
             3: [
-                { id: "w3_d1", day: "Monday", name: "Monday Run + Pull A", status: "PENDING", details: [
-                    { type: "cardio", name: "Interval Run", target: "2.5km - 3.0km (~20 mins)", desc: "Pace 8:00 - 8:30 min/km | Increased jogging intervals. Zone 2 HR." },
-                    { type: "lifting", name: "Pull A (Lat Dominant)", target: "Neutral Lat Pulldown (2-3x8-12), Chest Supported Cable Row (2-3x10-12), Straight-Arm Pushdown (2-3x12-15), Incline DB Curl (2x10-12), Face Pull (2x15)" }
+                { id: "w3_d1", day: "Monday", name: "Monday Pull A — Upper Lats & Biceps (Peak Volume)", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull A (Upper Lats & Biceps)", target: "Neutral Grip Lat Pulldown (3x8-12), Chest-Supported Wide Cable Row (3x10-12), Dumbbell Pullover (3x12-15), Incline DB Bicep Curls (3x10-12), Captain's Chair Knee Raises (3x15)", desc: "Soreness: under armpits (lats), inner elbows/biceps, lower belly." }
                 ]},
-                { id: "w3_d2", day: "Tuesday", name: "Tuesday Bike + Push A", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "10km - 12km (~30 mins)", desc: "Speed 20 - 22 km/h. Light resistance." },
-                    { type: "lifting", name: "Push A (Shoulders & Upper)", target: "Seated DB Shoulder Press (2-3x8-10), Lean-Away Cable Lateral Raise (3x12-15), Incline DB Chest Press (2-3x8-10), Pec Deck Flyes (2x12-15), Tricep Overhead Extension (2x12-15)" }
+                { id: "w3_d2", day: "Tuesday", name: "Tuesday Push A — Upper Chest, Side Delts & Triceps (Peak Volume)", status: "PENDING", details: [
+                    { type: "lifting", name: "Push A (Upper Chest, Side Delts & Triceps)", target: "Incline DB Chest Press (3x8-10), Pec Deck / Cable Flyes (3x12-15), Seated DB Shoulder Press (3x8-10), Seated DB Lateral Raises (4x12-15), Heavy Cable Crunches (3x15)", desc: "Soreness: below collarbone, outer shoulder caps, back of arms, upper stomach." }
                 ]},
-                { id: "w3_d3", day: "Wednesday", name: "Wednesday Legs & Core", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Lower body rest to prioritize quad and core growth" },
-                    { type: "lifting", name: "Legs & Toji Core (Anti-Glute)", target: "Leg Press Low Foot Placement (2-3x8-10), Seated/Lying Leg Curl (3x12-15), Standing Calf Raise (2x15), Hanging Leg Raise / Heavy Cable Crunch (3x12-15)" }
+                { id: "w3_d3", day: "Wednesday", name: "Wednesday Legs & Core — Zero Glute (Peak Volume)", status: "PENDING", details: [
+                    { type: "lifting", name: "Legs & Core (Quads, Hamstrings & Calves)", target: "Leg Press Low Foot Placement (3x8-10), Seated/Lying Leg Curls (3x12-15), Standing Calf Raises (4x15), Bench Reverse Crunches (3x15)", desc: "Soreness: front of thighs above knees, back of legs, lower calves. Zero glute soreness." }
                 ]},
-                { id: "w3_d4", day: "Thursday", name: "Thursday Bike + Push B", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "10km - 12km (~30 mins)", desc: "Speed 20 - 22 km/h." },
-                    { type: "lifting", name: "Push B (Delt Overload)", target: "Standing DB Lateral Raise (3x10-12), Machine Lateral Raise / Wide Row (2x12-15), Low-to-High Cable Fly (2x10-12), Tricep Rope Pushdown (2x12)" }
+                { id: "w3_d4", day: "Thursday", name: "Thursday Push B — Side Delt Overload & Upper Chest Shelf (Peak Volume)", status: "PENDING", details: [
+                    { type: "lifting", name: "Push B (Side Delt Overload & Upper Chest)", target: "Seated DB Lateral Raises (3x10-12), Machine Lateral Raises (3x12-15), Incline DB Flyes 30° (3x10-12), Tricep Rope Pushdowns (3x12), Bodyweight Planks (3x60s)", desc: "Soreness: outer shoulder caps, collarbone line, back of arms." }
                 ]},
-                { id: "w3_d5", day: "Friday", name: "Friday Pull B", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Upper body recovery focus" },
-                    { type: "lifting", name: "Pull B (Upper Back Width)", target: "Wide-Grip Lat Pulldown (2x8-10), Single-Arm DB Row (2x10-12), Cable Rear Delt Fly (2x15), Hammer Curl (2x10-12)" }
+                { id: "w3_d5", day: "Friday", name: "Friday Pull B — Upper Back Width & Rear Delts (Peak Volume)", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (3x8-10), Single-Arm DB Rows (3x10-12), Reverse Pec Deck Flyes (3x15), Hammer Curls (3x10-12), Heavy Cable Crunches (3x15)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
-                { id: "w3_d6", day: "Saturday", name: "Saturday Long Cardio", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Bike", target: "13km - 15km @ 21-23 km/h (~35-40 mins)", desc: "Zone 2 pace." },
-                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day" }
+                { id: "w3_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights)", status: "PENDING", details: [
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Bike — 16 km (~45-50 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w3_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
-                    { type: "rest", name: "Full Rest & Recovery", target: "Sleep, hydrate, and meal prep." }
+                    { type: "rest", name: "Full Rest & Recovery", target: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep." }
                 ]}
             ],
             4: [
-                { id: "w4_d1", day: "Monday", name: "Monday Run + Pull A (Deload)", status: "PENDING", details: [
-                    { type: "cardio", name: "Interval Run", target: "1.7km - 2.1km (~15 mins)", desc: "30% volume cut. Zone 2 HR." },
-                    { type: "lifting", name: "Pull A (Lat Dominant)", target: "Neutral Lat Pulldown (1-2x8-12), Chest Supported Cable Row (1-2x10-12), Straight-Arm Pushdown (1-2x12-15), Incline DB Curl (1-2x10-12), Face Pull (1x15)" }
+                { id: "w4_d1", day: "Monday", name: "Monday Pull A — Upper Lats & Biceps (Deload)", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull A (Upper Lats & Biceps)", target: "Neutral Grip Lat Pulldown (2x8-10), Chest-Supported Wide Cable Row (2x10), Dumbbell Pullover (2x12), Incline DB Bicep Curls (2x10), Captain's Chair Knee Raises (2x12)", desc: "Soreness: under armpits (lats), inner elbows/biceps, lower belly." }
                 ]},
-                { id: "w4_d2", day: "Tuesday", name: "Tuesday Bike + Push A (Deload)", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "7km - 8km (~20 mins)", desc: "30% volume cut." },
-                    { type: "lifting", name: "Push A (Shoulders & Upper)", target: "Seated DB Shoulder Press (1-2x8-10), Lean-Away Cable Lateral Raise (2x12-15), Incline DB Chest Press (1-2x8-10), Pec Deck Flyes (1-2x12-15), Tricep Overhead Extension (1-2x12-15)" }
+                { id: "w4_d2", day: "Tuesday", name: "Tuesday Push A — Upper Chest, Side Delts & Triceps (Deload)", status: "PENDING", details: [
+                    { type: "lifting", name: "Push A (Upper Chest, Side Delts & Triceps)", target: "Incline DB Chest Press (2x8), Pec Deck / Cable Flyes (2x12), Seated DB Shoulder Press (2x8), Seated DB Lateral Raises (2x12), Heavy Cable Crunches (2x12)", desc: "Soreness: below collarbone, outer shoulder caps, back of arms, upper stomach." }
                 ]},
-                { id: "w4_d3", day: "Wednesday", name: "Wednesday Legs & Core (Deload)", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Lower body rest" },
-                    { type: "lifting", name: "Legs & Toji Core (Anti-Glute)", target: "Leg Press Low Foot Placement (1-2x8-10), Seated/Lying Leg Curl (2x12-15), Standing Calf Raise (1x15), Hanging Leg Raise (2x12)" }
+                { id: "w4_d3", day: "Wednesday", name: "Wednesday Legs & Core — Zero Glute (Deload)", status: "PENDING", details: [
+                    { type: "lifting", name: "Legs & Core (Quads, Hamstrings & Calves)", target: "Leg Press Low Foot Placement (2x8), Seated/Lying Leg Curls (2x12), Standing Calf Raises (2x12), Bench Reverse Crunches (2x12)", desc: "Soreness: front of thighs above knees, back of legs, lower calves. Zero glute soreness." }
                 ]},
-                { id: "w4_d4", day: "Thursday", name: "Thursday Bike + Push B (Deload)", status: "PENDING", details: [
-                    { type: "cardio", name: "Zone 2 Bike Spin", target: "7km - 8km (~20 mins)", desc: "30% volume cut." },
-                    { type: "lifting", name: "Push B (Delt Overload)", target: "Standing DB Lateral Raise (2x10-12), Machine Lateral Raise (1-2x12-15), Low-to-High Cable Fly (1-2x10-12), Tricep Rope Pushdown (1-2x12)" }
+                { id: "w4_d4", day: "Thursday", name: "Thursday Push B — Side Delt Overload & Upper Chest Shelf (Deload)", status: "PENDING", details: [
+                    { type: "lifting", name: "Push B (Side Delt Overload & Upper Chest)", target: "Seated DB Lateral Raises (2x10), Machine Lateral Raises (2x12), Incline DB Flyes 30° (2x10), Tricep Rope Pushdowns (2x10), Bodyweight Planks (2x45s)", desc: "Soreness: outer shoulder caps, collarbone line, back of arms." }
                 ]},
-                { id: "w4_d5", day: "Friday", name: "Friday Pull B (Deload)", status: "PENDING", details: [
-                    { type: "rest", name: "No Cardio Today", target: "Upper body recovery focus" },
-                    { type: "lifting", name: "Pull B (Upper Back Width)", target: "Wide-Grip Lat Pulldown (1-2x8-10), Single-Arm DB Row (1-2x10-12), Cable Rear Delt Fly (1-2x15), Hammer Curl (1-2x10-12)" }
+                { id: "w4_d5", day: "Friday", name: "Friday Pull B — Upper Back Width & Rear Delts (Deload)", status: "PENDING", details: [
+                    { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (2x8), Single-Arm DB Rows (2x10), Reverse Pec Deck Flyes (2x12), Hammer Curls (2x10), Heavy Cable Crunches (2x12)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
-                { id: "w4_d6", day: "Saturday", name: "Saturday Long Cardio (Deload)", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Run/Walk", target: "2.1km - 2.5km @ 8:00-8:30 min/km (~18 mins)", desc: "Deload pace." },
-                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day" }
+                { id: "w4_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights) (Deload)", status: "PENDING", details: [
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Run — 3.5 km (~30-35 mins, deload pace)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w4_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
-                    { type: "rest", name: "Full Rest & Recovery", target: "Sleep, hydrate, and meal prep." }
+                    { type: "rest", name: "Full Rest & Recovery", target: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep." }
                 ]}
             ]
         };
 
         // --- CORE APPLICATION STATE ---
+        // Bump STATE_SCHEMA_VERSION whenever workout templates change, so stored
+        // localStorage snapshots get re-seeded instead of keeping the old plan forever.
+        const STATE_SCHEMA_VERSION = 2;
+
         let STATE = {
+            schemaVersion: STATE_SCHEMA_VERSION,
             activeWeek: 1,
             isOnline: true,
             userProfile: {
@@ -1651,7 +1637,30 @@ CREATE TABLE cardio_logs (
                     const parsed = JSON.parse(localDb);
                     // Verify structure exists
                     if (parsed.workouts && parsed.userProfile) {
-                        STATE = parsed;
+                        if (parsed.schemaVersion !== STATE_SCHEMA_VERSION) {
+                            // Re-seed workout templates from the updated plan while preserving
+                            // each day's logged status (w1_d1..w4_d7 ids are stable across versions)
+                            const oldStatuses = {};
+                            Object.keys(parsed.workouts || {}).forEach(wk => {
+                                (parsed.workouts[wk] || []).forEach(d => {
+                                    if (d && d.id) oldStatuses[d.id] = d.status;
+                                });
+                            });
+                            STATE = {
+                                ...parsed,
+                                workouts: JSON.parse(JSON.stringify(WORKOUT_TEMPLATES)),
+                                schemaVersion: STATE_SCHEMA_VERSION
+                            };
+                            Object.keys(STATE.workouts).forEach(wk => {
+                                STATE.workouts[wk].forEach(d => {
+                                    if (oldStatuses[d.id]) d.status = oldStatuses[d.id];
+                                });
+                            });
+                            saveStateLocal();
+                            writeToTerminal("[System] State schema upgraded — workout templates re-seeded (day statuses preserved).");
+                        } else {
+                            STATE = parsed;
+                        }
                     }
                 } catch (e) {
                     writeToTerminal("[Error] Failed to read database from localStorage, resetting schemas.", true);
@@ -2225,7 +2234,7 @@ CREATE TABLE cardio_logs (
                 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
                     <div>
                         <strong style="color: var(--accent-purple);">Week ${STATE.activeWeek} Targets:</strong> 
-                        🏃 Run: ${target.run} km | 🚴 Bike: ${target.bike} km | 💪 Lifting: ${target.lifting_sets} Working Sets
+                        🏃 Run: ${target.run > 0 ? target.run + ' km' : '—'} | 🚴 Bike: ${target.bike > 0 ? target.bike + ' km' : '—'} | 💪 Lifting: ${target.lifting_sets} Working Sets
                     </div>
                     <div style="color: var(--text-secondary); font-style: italic;">
                         ${target.focus}
@@ -2425,10 +2434,16 @@ CREATE TABLE cardio_logs (
                 const cHr = document.getElementById('cardio-hr');
                 const cZ2 = document.getElementById('cardio-zone2');
 
+                // Detect RUN vs BIKE from the actual cardio detail of this session — session
+                // ids like "w1_d1" never contain 'run', so the old check always logged BIKE
+                const sessionForCardio = STATE.workouts[STATE.activeWeek].find(d => d.id === activeLoggingSessionId);
+                const cardioDetail = sessionForCardio ? sessionForCardio.details.find(det => det.type === 'cardio') : null;
+                const cardioName = cardioDetail ? `${cardioDetail.name} ${cardioDetail.target}` : '';
+
                 executeMutation("insert", "cardio_logs", {
                     id: crypto.randomUUID(),
                     session_id: activeLoggingSessionId,
-                    cardio_type: activeLoggingSessionId.includes('run') ? 'RUN' : 'BIKE',
+                    cardio_type: /run/i.test(cardioName) ? 'RUN' : 'BIKE',
                     distance_km: parseFloat(cDist.value),
                     duration_seconds: parseInt(cDur.value) * 60,
                     avg_heart_rate: parseInt(cHr.value),
@@ -2504,6 +2519,7 @@ CREATE TABLE cardio_logs (
                 STATE.exercise_logs = {};
                 STATE.cardio_logs = {};
                 STATE.pending_sync_queue = [];
+                STATE.schemaVersion = STATE_SCHEMA_VERSION;
                 saveStateLocal();
                 recalculateMetrics();
                 renderSchedule();
