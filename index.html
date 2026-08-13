@@ -1074,13 +1074,33 @@
         function scheduleKeyForDate(d) { return d.getDay() === 4 ? 'thursday' : 'standard'; }
         function getTodayScheduleTemplate() {
             const now = new Date();
-            return JSON.parse(JSON.stringify(SCHEDULE_TEMPLATES[scheduleKeyForDate(now)]));
+            const template = JSON.parse(JSON.stringify(SCHEDULE_TEMPLATES[scheduleKeyForDate(now)]));
+
+            // Cardio plan: Run Mon · Bike Tue & Thu · Long Sat · none Wed/Fri/Sun
+            const dayIdx = now.getDay(); // 0=Sun .. 6=Sat
+            const cardioSlot = template.find(s => s.category === 'cardio');
+            if (cardioSlot) {
+                if (dayIdx === 1) { // Monday
+                    cardioSlot.title = "Ironman Cardio — Zone 2 Run Intervals";
+                    cardioSlot.desc = "Late-afternoon run intervals: 2.5–3.0 km.";
+                } else if (dayIdx === 2 || dayIdx === 4) { // Tuesday / Thursday
+                    cardioSlot.title = "Ironman Cardio — Zone 2 Bike Spin";
+                    cardioSlot.desc = "Late-afternoon easy Zone 2 spin: 10–12 km.";
+                } else if (dayIdx === 6) { // Saturday
+                    cardioSlot.title = "Long Zone 2 Cardio";
+                    cardioSlot.desc = "13–15 km bike spin OR 3.0–3.5 km run (morning/daytime window).";
+                } else { // Wednesday / Friday / Sunday → NO cardio
+                    return template.filter(s => s.id !== cardioSlot.id);
+                }
+            }
+            return template;
         }
         function scheduleDayLabel() {
             const names = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
             const now = new Date();
             const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return `${names[now.getDay()]} • ${time}${now.getDay() === 4 ? ' • LATE COLLEGE' : ''}`;
+            const dateStr = now.toLocaleDateString([], { day: 'numeric', month: 'short' }).toUpperCase();
+            return `${names[now.getDay()]} • ${dateStr} • ${time}`;
         }
         function updateScheduleDayLabel() {
             const el = document.getElementById('schedule-day-label');
@@ -1114,8 +1134,8 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
                         liftingTitle: "PULL A — UPPER LATS & BICEPS",
                         exercises: [
                             { id: "w1_m1", name: "Neutral Grip Lat Pulldown", sets: "2 sets × 8–12 reps (25 kg)" },
@@ -1127,8 +1147,8 @@
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
                         liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
                         exercises: [
                             { id: "w1_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (5 kg)" },
@@ -1140,8 +1160,8 @@
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 session per daily schedule; legs day stays glute-free.",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
+                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
                         liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
                         exercises: [
                             { id: "w1_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
@@ -1152,8 +1172,8 @@
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
                         liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
                         exercises: [
                             { id: "w1_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (4–5 kg)" },
@@ -1165,8 +1185,8 @@
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
+                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
                         liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
                         exercises: [
                             { id: "w1_f1", name: "Wide-Grip Lat Pulldown", sets: "2 sets × 8–10 reps (25 kg)" },
@@ -1179,7 +1199,7 @@
                     {
                         day: "Saturday",
                         cardioTitle: "LONG CARDIO: ZONE 2 BIKE",
-                        cardioDesc: "Long Zone 2 Bike — 14 km (~40–45 mins). No weights; upper body rests completely.",
+                        cardioDesc: "Long Zone 2 Bike — 13–15 km (~45–60 mins). No weights; upper body rests completely.",
                         liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
@@ -1197,8 +1217,8 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
                         liftingTitle: "PULL A — UPPER LATS & BICEPS",
                         exercises: [
                             { id: "w2_m1", name: "Neutral Grip Lat Pulldown", sets: "3 sets × 8–12 reps (27.5 kg)" },
@@ -1210,8 +1230,8 @@
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
                         liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
                         exercises: [
                             { id: "w2_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (7.5 kg)" },
@@ -1223,8 +1243,8 @@
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 session per daily schedule; legs day stays glute-free.",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
+                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
                         liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
                         exercises: [
                             { id: "w2_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
@@ -1235,8 +1255,8 @@
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
                         liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
                         exercises: [
                             { id: "w2_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (5 kg)" },
@@ -1248,8 +1268,8 @@
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
+                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
                         liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
                         exercises: [
                             { id: "w2_f1", name: "Wide-Grip Lat Pulldown", sets: "3 sets × 8–10 reps (27.5 kg)" },
@@ -1262,7 +1282,7 @@
                     {
                         day: "Saturday",
                         cardioTitle: "LONG CARDIO: ZONE 2 RUN",
-                        cardioDesc: "Long Zone 2 Run — 4.5 km (~45 mins). No weights; upper body rests completely.",
+                        cardioDesc: "Long Zone 2 Run — 3.0–3.5 km (~30–40 mins). No weights; upper body rests completely.",
                         liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
@@ -1280,8 +1300,8 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
                         liftingTitle: "PULL A — UPPER LATS & BICEPS",
                         exercises: [
                             { id: "w3_m1", name: "Neutral Grip Lat Pulldown", sets: "3 sets × 8–12 reps (30 kg)" },
@@ -1293,8 +1313,8 @@
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
                         liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
                         exercises: [
                             { id: "w3_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (10 kg)" },
@@ -1306,8 +1326,8 @@
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 session per daily schedule; legs day stays glute-free.",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
+                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
                         liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
                         exercises: [
                             { id: "w3_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
@@ -1318,8 +1338,8 @@
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
                         liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
                         exercises: [
                             { id: "w3_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (6 kg)" },
@@ -1331,8 +1351,8 @@
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min Zone 2 Run or Bike per daily schedule (see Schedule tab).",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
+                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
                         liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
                         exercises: [
                             { id: "w3_f1", name: "Wide-Grip Lat Pulldown", sets: "3 sets × 8–10 reps (30 kg)" },
@@ -1345,7 +1365,7 @@
                     {
                         day: "Saturday",
                         cardioTitle: "LONG CARDIO: ZONE 2 BIKE",
-                        cardioDesc: "Long Zone 2 Bike — 16 km (~45–50 mins). No weights; upper body rests completely.",
+                        cardioDesc: "Long Zone 2 Bike — 13–15 km (~45–60 mins). No weights; upper body rests completely.",
                         liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
@@ -1363,8 +1383,8 @@
                 days: [
                     {
                         day: "Monday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km (deload pace).",
                         liftingTitle: "PULL A — UPPER LATS & BICEPS (DELOAD)",
                         exercises: [
                             { id: "w4_m1", name: "Neutral Grip Lat Pulldown", sets: "2 sets × 8–10 reps (20 kg)" },
@@ -1376,8 +1396,8 @@
                     },
                     {
                         day: "Tuesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km (deload pace).",
                         liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS (DELOAD)",
                         exercises: [
                             { id: "w4_t1", name: "Incline Dumbbell Chest Press", sets: "2 sets × 8 reps (5 kg)" },
@@ -1389,8 +1409,8 @@
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
+                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
                         liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (DELOAD)",
                         exercises: [
                             { id: "w4_w1", name: "Leg Press [Low Foot Placement]", sets: "2 sets × 8 reps (Quads only, zero glute)" },
@@ -1401,8 +1421,8 @@
                     },
                     {
                         day: "Thursday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km (deload pace).",
                         liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF (DELOAD)",
                         exercises: [
                             { id: "w4_th1", name: "Seated Dumbbell Lateral Raises", sets: "2 sets × 10 reps (4 kg)" },
@@ -1414,8 +1434,8 @@
                     },
                     {
                         day: "Friday",
-                        cardioTitle: "CARDIO: ZONE 2 RUN/BIKE — 3:30 PM SLOT",
-                        cardioDesc: "45-min easy Zone 2 session per daily schedule (see Schedule tab).",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
+                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
                         liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS (DELOAD)",
                         exercises: [
                             { id: "w4_f1", name: "Wide-Grip Lat Pulldown", sets: "2 sets × 8 reps (20 kg)" },
@@ -1428,7 +1448,7 @@
                     {
                         day: "Saturday",
                         cardioTitle: "LONG CARDIO: ZONE 2 RUN",
-                        cardioDesc: "Long Zone 2 Run — 3.5 km (~30–35 mins, deload pace). No weights; upper body rests completely.",
+                        cardioDesc: "Long Zone 2 Run — 3.0–3.5 km (~30–40 mins, deload pace). No weights; upper body rests completely.",
                         liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
                         exercises: []
                     },
@@ -2066,10 +2086,10 @@
             const waterId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_water`;
             const isWaterChecked = APP_STATE.checklistState[waterId] || false;
 
-            // Cardio DONE button + KM input (hidden on full-rest days)
+            // Cardio DONE button + KM input (hidden on full-rest AND no-cardio days)
             let cardioHtml = '';
-            const isFullRest = /full rest/i.test(dayObj.cardioTitle || '');
-            if (!isFullRest) {
+            const isNoCardioDay = /full rest|no cardio/i.test(dayObj.cardioTitle || '');
+            if (!isNoCardioDay) {
                 const cardioId = `w${APP_STATE.activeWeek}_${dayObj.day.toLowerCase()}_cardio`;
                 const cardioSt = getCardioState(cardioId);
                 const kmVal = (cardioSt.km !== null && cardioSt.km !== undefined && !isNaN(cardioSt.km)) ? cardioSt.km : '';
@@ -3222,7 +3242,7 @@ Keep crushing the daily plan! 💪⚡`;
 
         function saveLocalState() {
             try {
-                localStorage.setItem('growth_app_state', JSON.stringify({
+                const payload = {
                     checklistState: APP_STATE.checklistState,
                     cardioState: APP_STATE.cardioState || {},
                     customExerciseDetails: APP_STATE.customExerciseDetails || {},
@@ -3232,14 +3252,46 @@ Keep crushing the daily plan! 💪⚡`;
                     historicalArchive: APP_STATE.historicalArchive || {},
                     programStartDate: APP_STATE.programStartDate,
                     lastUpdatedAt: APP_STATE.lastUpdatedAt
-                }));
+                };
+                localStorage.setItem('growth_app_state', JSON.stringify(payload));
+                // Redundant copy: if any stale/buggy code path (e.g. the pre-fix cached page
+                // running once right after a deploy) wipes the primary key, this backup lets
+                // the next load restore the stored workouts instead of starting from zero.
+                localStorage.setItem('growth_app_state_backup', JSON.stringify(payload));
             } catch(e) {}
         }
         function loadLocalState() {
             try {
-                const saved = localStorage.getItem('growth_app_state');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
+                const primary = localStorage.getItem('growth_app_state');
+                const backup = localStorage.getItem('growth_app_state_backup');
+                let raw = primary;
+
+                const hasWorkoutData = (p) => !!(
+                    (p.checklistState && Object.keys(p.checklistState).length) ||
+                    (p.cardioState && Object.keys(p.cardioState).length) ||
+                    (p.customExerciseDetails && Object.keys(p.customExerciseDetails).length) ||
+                    (p.loggedMeals && p.loggedMeals.length) ||
+                    (p.historicalArchive && Object.keys(p.historicalArchive).length)
+                );
+
+                if (primary) {
+                    try {
+                        const p = JSON.parse(primary);
+                        // Primary was clobbered to zero (stale sync / deploy wipe) but the
+                        // backup still holds real workouts/macros → restore from the backup.
+                        if (!hasWorkoutData(p) && backup) {
+                            const b = JSON.parse(backup);
+                            if (hasWorkoutData(b)) raw = backup;
+                        }
+                    } catch (e) {
+                        raw = backup; // primary corrupt → fall back to backup
+                    }
+                } else if (backup) {
+                    raw = backup;
+                }
+
+                if (raw) {
+                    const parsed = JSON.parse(raw);
                     if (parsed.checklistState) APP_STATE.checklistState = parsed.checklistState;
                     if (parsed.cardioState) APP_STATE.cardioState = parsed.cardioState;
                     if (parsed.customExerciseDetails) APP_STATE.customExerciseDetails = parsed.customExerciseDetails;

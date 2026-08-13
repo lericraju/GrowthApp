@@ -1497,10 +1497,10 @@ CREATE TABLE cardio_logs (
 
         // --- WEEK TARGETS & DETAILS ---
         const WEEK_PROGRESSIONS = {
-            1: { run: 0, bike: 14.0, lifting_sets: 2, focus: "Movement form + daily habits. Saturday long cardio starts easy." },
-            2: { run: 4.5, bike: 0, lifting_sets: 2.5, focus: "Volume bump: most lifts move to 3 working sets." },
-            3: { run: 0, bike: 16.0, lifting_sets: 3, focus: "Peak volume phase: 3 working sets across all compounds." },
-            4: { run: 3.5, bike: 0, lifting_sets: 2, focus: "DELOAD WEEK: Cut cardio & lifting volume by 30% to clear fatigue." }
+            1: { run: 0, bike: 14.0, lifting_sets: 2, focus: "Movement form + daily habits. Saturday long cardio starts easy (13–15 km bike)." },
+            2: { run: 3.25, bike: 0, lifting_sets: 2.5, focus: "Volume bump: most lifts move to 3 working sets." },
+            3: { run: 0, bike: 14.0, lifting_sets: 3, focus: "Peak volume phase: 3 working sets across all compounds." },
+            4: { run: 3.25, bike: 0, lifting_sets: 2, focus: "DELOAD WEEK: Cut cardio & lifting volume by 30% to clear fatigue." }
         };
 
         // --- SEED/DEFAULT WORKOUT TEMPLATES FOR ALL 4 WEEKS ---
@@ -1523,7 +1523,7 @@ CREATE TABLE cardio_logs (
                     { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (2x8-10), Single-Arm DB Rows (2x10-12), Reverse Pec Deck Flyes (2x15), Hammer Curls (2x10-12), Heavy Cable Crunches (3x12-15)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
                 { id: "w1_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights)", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Bike — 14 km (~40-45 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Bike — 13–15 km (~45-60 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
                     { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w1_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
@@ -1547,7 +1547,7 @@ CREATE TABLE cardio_logs (
                     { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (3x8-10), Single-Arm DB Rows (3x10-12), Reverse Pec Deck Flyes (3x15), Hammer Curls (2x10-12), Heavy Cable Crunches (3x12-15)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
                 { id: "w2_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights)", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Run — 4.5 km (~45 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Run — 3.0–3.5 km (~30-40 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
                     { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w2_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
@@ -1571,7 +1571,7 @@ CREATE TABLE cardio_logs (
                     { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (3x8-10), Single-Arm DB Rows (3x10-12), Reverse Pec Deck Flyes (3x15), Hammer Curls (3x10-12), Heavy Cable Crunches (3x15)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
                 { id: "w3_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights)", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Bike — 16 km (~45-50 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Bike — 13–15 km (~45-60 mins)", desc: "Zero lifting. Lets your upper body rest completely." },
                     { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w3_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
@@ -1595,7 +1595,7 @@ CREATE TABLE cardio_logs (
                     { type: "lifting", name: "Pull B (Upper Back Width & Rear Delts)", target: "Wide-Grip Lat Pulldown (2x8), Single-Arm DB Rows (2x10), Reverse Pec Deck Flyes (2x12), Hammer Curls (2x10), Heavy Cable Crunches (2x12)", desc: "Soreness: upper back between shoulder blades, back of shoulders, forearms." }
                 ]},
                 { id: "w4_d6", day: "Saturday", name: "Saturday Long Cardio (No Weights) (Deload)", status: "PENDING", details: [
-                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Run — 3.5 km (~30-35 mins, deload pace)", desc: "Zero lifting. Lets your upper body rest completely." },
+                    { type: "cardio", name: "Long Zone 2 Cardio", target: "Zone 2 Run — 3.0–3.5 km (~30-40 mins, deload pace)", desc: "Zero lifting. Lets your upper body rest completely." },
                     { type: "rest", name: "No Lifting Today", target: "CNS Reset Day — full upper body rest" }
                 ]},
                 { id: "w4_d7", day: "Sunday", name: "Sunday Full Rest", status: "PENDING", details: [
