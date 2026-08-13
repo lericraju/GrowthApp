@@ -50,12 +50,14 @@ export default async function handler(req, res) {
       // The client always sends complete snapshots, so replace (not merge) the stored state.
       // Merging would prevent deletions (e.g. unchecking a workout) from ever reaching other devices.
       if (data.checklistState) serverState.checklistState = data.checklistState;
+      if (data.cardioState) serverState.cardioState = data.cardioState;
       if (data.customExerciseDetails) serverState.customExerciseDetails = data.customExerciseDetails;
       if (data.waterLoggedMl !== undefined) serverState.waterLoggedMl = data.waterLoggedMl;
       if (data.userProfile) serverState.userProfile = data.userProfile;
       if (data.loggedMeals) serverState.loggedMeals = data.loggedMeals;
       if (data.masterSchedule) serverState.masterSchedule = data.masterSchedule;
       if (data.historicalArchive) serverState.historicalArchive = data.historicalArchive;
+      if (data.programStartDate) serverState.programStartDate = data.programStartDate;
       serverState.updatedAt = new Date().toISOString();
 
       if (kvUrl && kvToken) {

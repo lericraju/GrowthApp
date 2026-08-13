@@ -3059,6 +3059,42 @@ Keep crushing the daily plan! 💪⚡`;
             }
 
             if (cloudData) {
+                // ---- DATA-LOSS GUARD -------------------------------------------------
+                // A freshly redeployed server (or an empty KV) answers with an EMPTY snapshot
+                // stamped with a brand-new timestamp. Without protection that empty snapshot
+                // would overwrite real local data (meals, checklists, cardio, water) and write
+                // the emptiness back into localStorage — so a deploy would "reset everything
+                // to 0". Two rules fix this:
+                //   1. Empty cloud fields never overwrite non-empty local fields.
+                //   2. If the server lost its snapshot entirely, re-upload the local state to
+                //      heal it (instead of pulling the emptiness down).
+                const isEmptyField = (v) =>
+                    v === undefined || v === null || v === '' ||
+                    (Array.isArray(v) ? v.length === 0 : false) ||
+                    (typeof v === 'object' ? Object.keys(v).length === 0 : false);
+
+                const localHasData = !isEmptyField(APP_STATE.checklistState) ||
+                    !isEmptyField(APP_STATE.cardioState) ||
+                    !isEmptyField(APP_STATE.customExerciseDetails) ||
+                    !isEmptyField(APP_STATE.loggedMeals) ||
+                    !isEmptyField(APP_STATE.historicalArchive) ||
+                    (APP_STATE.waterLoggedMl || 0) > 0;
+
+                const cloudIsEmpty = isEmptyField(cloudData.checklistState) &&
+                    isEmptyField(cloudData.cardioState) &&
+                    isEmptyField(cloudData.customExerciseDetails) &&
+                    isEmptyField(cloudData.loggedMeals) &&
+                    isEmptyField(cloudData.historicalArchive) &&
+                    !(cloudData.waterLoggedMl > 0);
+
+                if (cloudIsEmpty && localHasData) {
+                    // Server lost its snapshot (fresh deploy / cold KV) — push local back up.
+                    pushCloudState();
+                    updateSyncUIStatus(true, "SERVER RESTORED");
+                    return;
+                }
+                // ---------------------------------------------------------------------
+
                 // Only apply cloud state when it is genuinely newer than our last local update.
                 // This stops a stale server snapshot from clobbering fresh local edits.
                 const cloudTs = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : null;
@@ -3068,34 +3104,44 @@ Keep crushing the daily plan! 💪⚡`;
                     return;
                 }
 
+                // Apply a cloud field only when it differs AND it is non-empty (or the local
+                // side is empty too) — an empty remote field can never wipe real local data.
+                const shouldApply = (cloudVal, localVal) => {
+                    if (JSON.stringify(cloudVal) === JSON.stringify(localVal)) return false;
+                    if (isEmptyField(cloudVal) && !isEmptyField(localVal)) return false;
+                    return true;
+                };
+
                 let updated = false;
 
-                if (cloudData.checklistState && JSON.stringify(cloudData.checklistState) !== JSON.stringify(APP_STATE.checklistState)) {
+                if (cloudData.checklistState && shouldApply(cloudData.checklistState, APP_STATE.checklistState)) {
                     APP_STATE.checklistState = cloudData.checklistState;
                     updated = true;
                 }
 
-                if (cloudData.cardioState && JSON.stringify(cloudData.cardioState) !== JSON.stringify(APP_STATE.cardioState || {})) {
+                if (cloudData.cardioState && shouldApply(cloudData.cardioState, APP_STATE.cardioState || {})) {
                     APP_STATE.cardioState = cloudData.cardioState;
                     updated = true;
                 }
 
-                if (cloudData.customExerciseDetails && JSON.stringify(cloudData.customExerciseDetails) !== JSON.stringify(APP_STATE.customExerciseDetails)) {
+                if (cloudData.customExerciseDetails && shouldApply(cloudData.customExerciseDetails, APP_STATE.customExerciseDetails)) {
                     APP_STATE.customExerciseDetails = cloudData.customExerciseDetails;
                     updated = true;
                 }
 
                 if (cloudData.waterLoggedMl !== undefined && cloudData.waterLoggedMl !== APP_STATE.waterLoggedMl) {
-                    APP_STATE.waterLoggedMl = cloudData.waterLoggedMl;
-                    updated = true;
+                    if ((cloudData.waterLoggedMl > 0) || !(APP_STATE.waterLoggedMl > 0)) {
+                        APP_STATE.waterLoggedMl = cloudData.waterLoggedMl;
+                        updated = true;
+                    }
                 }
 
-                if (cloudData.userProfile && JSON.stringify(cloudData.userProfile) !== JSON.stringify(APP_STATE.userProfile)) {
+                if (cloudData.userProfile && shouldApply(cloudData.userProfile, APP_STATE.userProfile)) {
                     APP_STATE.userProfile = cloudData.userProfile;
                     updated = true;
                 }
 
-                if (cloudData.loggedMeals && JSON.stringify(cloudData.loggedMeals) !== JSON.stringify(APP_STATE.loggedMeals)) {
+                if (cloudData.loggedMeals && shouldApply(cloudData.loggedMeals, APP_STATE.loggedMeals)) {
                     APP_STATE.loggedMeals = cloudData.loggedMeals;
                     updated = true;
                 }
@@ -3104,7 +3150,7 @@ Keep crushing the daily plan! 💪⚡`;
                 // timeline is derived from the day-of-week templates + same-device custom
                 // events, so a stale cloud snapshot can never clobber today's schedule.
 
-                if (cloudData.historicalArchive && JSON.stringify(cloudData.historicalArchive) !== JSON.stringify(APP_STATE.historicalArchive)) {
+                if (cloudData.historicalArchive && shouldApply(cloudData.historicalArchive, APP_STATE.historicalArchive)) {
                     APP_STATE.historicalArchive = cloudData.historicalArchive;
                     updated = true;
                 }
