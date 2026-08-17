@@ -74,12 +74,51 @@
                 radial-gradient(at 50% 100%, rgba(52, 211, 147, 0.03) 0px, transparent 50%);
         }
 
+        /* ---- GLASSMORPHISM: ambient color orbs drifting behind the frosted UI ---- */
+        .glass-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .glass-orbs .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            will-change: transform;
+        }
+        .orb-1 { width: 520px; height: 520px; top: -140px; left: -140px; opacity: 0.38; background: radial-gradient(circle, rgba(0, 240, 255, 0.55), transparent 70%); animation: orbDrift1 26s ease-in-out infinite alternate; }
+        .orb-2 { width: 460px; height: 460px; top: 22%; right: -160px; opacity: 0.32; background: radial-gradient(circle, rgba(192, 132, 252, 0.5), transparent 70%); animation: orbDrift2 34s ease-in-out infinite alternate; }
+        .orb-3 { width: 420px; height: 420px; bottom: -140px; left: 28%; opacity: 0.30; background: radial-gradient(circle, rgba(52, 211, 147, 0.45), transparent 70%); animation: orbDrift3 40s ease-in-out infinite alternate; }
+        .orb-4 { width: 320px; height: 320px; bottom: 18%; right: 8%; opacity: 0.26; background: radial-gradient(circle, rgba(250, 204, 21, 0.4), transparent 70%); animation: orbDrift2 30s ease-in-out infinite alternate-reverse; }
+
+        @keyframes orbDrift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(130px, 90px) scale(1.18); } }
+        @keyframes orbDrift2 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-110px, 70px) scale(1.12); } }
+        @keyframes orbDrift3 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-70px, -90px) scale(1.22); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glass-orbs .orb { animation: none !important; }
+        }
+
+        /* Frosted inputs inside glass cards */
+        .brutal-card input[type="text"],
+        .brutal-card input[type="number"],
+        .brutal-card input[type="date"],
+        .brutal-card input[type="search"],
+        .brutal-card select,
+        .brutal-card textarea {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            backdrop-filter: blur(10px) saturate(160%);
+            -webkit-backdrop-filter: blur(10px) saturate(160%);
+        }
+
         /* Bitkit / Neo-Brutalist Hard Shadows */
         /* LIQUID GLASS & NEOMORPHISM DESIGN SYSTEM */
         .brutal-card, .bento-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 18, 24, 0.75) 100%) !important;
-            backdrop-filter: blur(16px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(18, 18, 24, 0.45) 100%) !important;
+            backdrop-filter: blur(28px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
             border: 1px solid rgba(255, 255, 255, 0.12) !important;
             border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
             border-left: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -352,12 +391,20 @@
 </head>
 <body class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
 
+    <!-- Glassmorphism ambient background orbs -->
+    <div class="glass-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+
     <!-- AURORA ORBS -->
     <div class="aurora-orb-1"></div>
     <div class="aurora-orb-2"></div>
 
     <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-50 bg-[#09090b]/90 backdrop-blur-md border-b-2 border-zinc-800 px-4 lg:px-8 py-3">
+    <header class="sticky top-0 z-50 bg-[#0a0a0e]/70 backdrop-blur-xl border-b-2 border-white/10 px-4 lg:px-8 py-3">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             
             <!-- Brand & Live Notifier Badge -->
@@ -401,7 +448,7 @@
     </header>
 
     <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#09090b]/95 backdrop-blur-lg border-t-2 border-zinc-800 px-2 py-2 flex items-center justify-around">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0e]/80 backdrop-blur-xl border-t-2 border-white/10 px-2 py-2 flex items-center justify-around">
         <button onclick="switchTab('notifier')" id="mob-nav-notifier" class="mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1">
             <i data-lucide="calendar" class="w-5 h-5"></i>
             <span class="text-[10px] font-outfit uppercase">Schedule</span>
@@ -443,7 +490,7 @@
     </div>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6">
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6 relative z-[1]">
 
         <!-- ================= TAB 1: SCHEDULE & LIFE NOTIFIER ================= -->
         <div id="tab-notifier" class="tab-content space-y-6">
@@ -740,20 +787,20 @@
                             
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="text-[10px] font-mono text-zinc-400 block">CALORIES (kcal)</label>
-                                    <input type="number" id="meal-cal-input" placeholder="400" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
+                                    <label class="text-[10px] font-mono text-amber-400 block font-bold">CALORIES (kcal)</label>
+                                    <input type="number" id="meal-cal-input" placeholder="400" class="w-full bg-zinc-900 border border-amber-500/50 text-white text-xs p-2 font-mono focus:border-amber-400 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-mono text-zinc-400 block">PROTEIN (g)</label>
-                                    <input type="number" id="meal-prot-input" placeholder="35" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
+                                    <label class="text-[10px] font-mono text-purple-400 block font-bold">PROTEIN (g)</label>
+                                    <input type="number" id="meal-prot-input" placeholder="35" class="w-full bg-zinc-900 border border-purple-500/50 text-white text-xs p-2 font-mono focus:border-purple-400 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-mono text-zinc-400 block">CARBS (g)</label>
-                                    <input type="number" id="meal-carbs-input" placeholder="45" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
+                                    <label class="text-[10px] font-mono text-cyan-400 block font-bold">CARBS (g)</label>
+                                    <input type="number" id="meal-carbs-input" placeholder="45" class="w-full bg-zinc-900 border border-cyan-500/50 text-white text-xs p-2 font-mono focus:border-cyan-400 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-mono text-zinc-400 block">FATS (g)</label>
-                                    <input type="number" id="meal-fats-input" placeholder="10" class="w-full bg-zinc-900 border border-zinc-700 text-white text-xs p-2 font-mono">
+                                    <label class="text-[10px] font-mono text-emerald-400 block font-bold">FATS (g)</label>
+                                    <input type="number" id="meal-fats-input" placeholder="10" class="w-full bg-zinc-900 border border-emerald-500/50 text-white text-xs p-2 font-mono focus:border-emerald-400 focus:outline-none">
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-mono text-pink-400 block font-bold">SUGAR (g)</label>
@@ -2403,6 +2450,12 @@ Keep crushing the daily plan! 💪⚡`;
             updateMacroScales();
         }
 
+        // Rounds to at most 2 decimals for display (kills float artifacts like 48.59999999999994)
+        function fmt2(v) {
+            const n = Number(v) || 0;
+            return Math.round(n * 100) / 100;
+        }
+
         function updateMacroScales() {
             let totalCal = 0, totalProt = 0, totalCarbs = 0, totalFats = 0, totalSugar = 0, totalSodium = 0;
             
@@ -2425,35 +2478,35 @@ Keep crushing the daily plan! 💪⚡`;
 
             // Updates Scale Text & Bars
             const calText = document.getElementById('scale-calories-text');
-            if (calText) calText.innerText = `${totalCal} / ${targetCal} kcal`;
+            if (calText) calText.innerText = `${fmt2(totalCal)} / ${fmt2(targetCal)} kcal`;
             const calRem = document.getElementById('scale-calories-rem');
-            if (calRem) calRem.innerText = `${Math.max(0, targetCal - totalCal)} kcal left`;
+            if (calRem) calRem.innerText = `${fmt2(Math.max(0, targetCal - totalCal))} kcal left`;
             const calBar = document.getElementById('scale-calories-bar');
             if (calBar) calBar.style.width = `${Math.min(100, (totalCal / targetCal) * 100)}%`;
 
             const protText = document.getElementById('scale-protein-text');
-            if (protText) protText.innerText = `${totalProt} / ${targetProt} g`;
+            if (protText) protText.innerText = `${fmt2(totalProt)} / ${fmt2(targetProt)} g`;
             const protRem = document.getElementById('scale-protein-rem');
-            if (protRem) protRem.innerText = `${Math.max(0, targetProt - totalProt)} g left`;
+            if (protRem) protRem.innerText = `${fmt2(Math.max(0, targetProt - totalProt))} g left`;
             const protBar = document.getElementById('scale-protein-bar');
             if (protBar) protBar.style.width = `${Math.min(100, (totalProt / targetProt) * 100)}%`;
 
             const carbsText = document.getElementById('scale-carbs-text');
-            if (carbsText) carbsText.innerText = `${totalCarbs} / ${targetCarbs} g`;
+            if (carbsText) carbsText.innerText = `${fmt2(totalCarbs)} / ${fmt2(targetCarbs)} g`;
             const carbsRem = document.getElementById('scale-carbs-rem');
-            if (carbsRem) carbsRem.innerText = `${Math.max(0, targetCarbs - totalCarbs)} g left`;
+            if (carbsRem) carbsRem.innerText = `${fmt2(Math.max(0, targetCarbs - totalCarbs))} g left`;
             const carbsBar = document.getElementById('scale-carbs-bar');
             if (carbsBar) carbsBar.style.width = `${Math.min(100, (totalCarbs / targetCarbs) * 100)}%`;
 
             const fatsText = document.getElementById('scale-fats-text');
-            if (fatsText) fatsText.innerText = `${totalFats} / ${targetFats} g`;
+            if (fatsText) fatsText.innerText = `${fmt2(totalFats)} / ${fmt2(targetFats)} g`;
             const fatsRem = document.getElementById('scale-fats-rem');
-            if (fatsRem) fatsRem.innerText = `${Math.max(0, targetFats - totalFats)} g left`;
+            if (fatsRem) fatsRem.innerText = `${fmt2(Math.max(0, targetFats - totalFats))} g left`;
             const fatsBar = document.getElementById('scale-fats-bar');
             if (fatsBar) fatsBar.style.width = `${Math.min(100, (totalFats / targetFats) * 100)}%`;
 
             const sugarText = document.getElementById('scale-sugar-text');
-            if (sugarText) sugarText.innerText = `${totalSugar} / ${maxSugar} g`;
+            if (sugarText) sugarText.innerText = `${fmt2(totalSugar)} / ${fmt2(maxSugar)} g`;
             const sugarBar = document.getElementById('scale-sugar-bar');
             if (sugarBar) sugarBar.style.width = `${Math.min(100, (totalSugar / maxSugar) * 100)}%`;
             
@@ -2472,7 +2525,7 @@ Keep crushing the daily plan! 💪⚡`;
             const sodiumText = document.getElementById('scale-sodium-text');
             const sodiumBar = document.getElementById('scale-sodium-bar');
             const sodiumStatus = document.getElementById('scale-sodium-status');
-            if (sodiumText) sodiumText.innerText = `${totalSodium} / ${targetSodium} mg`;
+            if (sodiumText) sodiumText.innerText = `${fmt2(totalSodium)} / ${fmt2(targetSodium)} mg`;
             if (sodiumBar) sodiumBar.style.width = `${Math.min(100, (totalSodium / targetSodium) * 100)}%`;
             if (sodiumStatus) {
                 if (totalSodium > targetSodium) {
@@ -2483,6 +2536,20 @@ Keep crushing the daily plan! 💪⚡`;
                     sodiumStatus.className = "text-emerald-400 font-bold";
                 }
             }
+
+            // ---- Rows that cross their limit turn red ----------------
+            const setRow = (over, valueId, valueCls, remId, remCls) => {
+                const v = document.getElementById(valueId);
+                if (v) v.className = over ? 'text-red-400 font-bold' : valueCls;
+                const r = remId ? document.getElementById(remId) : null;
+                if (r) r.className = over ? 'text-red-400 font-bold' : remCls;
+            };
+            setRow(totalCal > targetCal, 'scale-calories-text', 'text-amber-400', 'scale-calories-rem', 'text-zinc-400 font-bold');
+            setRow(totalProt > targetProt, 'scale-protein-text', 'text-purple-400', 'scale-protein-rem', 'text-purple-300 font-bold');
+            setRow(totalCarbs > targetCarbs, 'scale-carbs-text', 'text-cyan-400', 'scale-carbs-rem', 'text-cyan-300 font-bold');
+            setRow(totalFats > targetFats, 'scale-fats-text', 'text-emerald-400', 'scale-fats-rem', 'text-emerald-300 font-bold');
+            setRow(totalSugar > maxSugar, 'scale-sugar-text', 'text-white', null, null);
+            setRow(totalSodium > targetSodium, 'scale-sodium-text', 'text-white', null, null);
 
             // Update Water Target (4.00 Liters)
             const targetWater = APP_STATE.waterTargetMl || 4000;
@@ -2687,7 +2754,7 @@ Keep crushing the daily plan! 💪⚡`;
                 div.innerHTML = `
                     <div>
                         <span class="text-white font-bold block">${m.name}</span>
-                        <span class="text-[10px] text-zinc-400">${m.cal} kcal | ${m.prot}g P | ${m.carbs}g C | ${m.fats}g F | <span class="text-pink-400">${m.sugar || 0}g Sugar</span> | <span class="text-cyan-400">${m.sodium || 0}mg Na</span></span>
+                        <span class="text-[10px] text-zinc-400">${fmt2(m.cal)} kcal | ${fmt2(m.prot)}g P | ${fmt2(m.carbs)}g C | ${fmt2(m.fats)}g F | <span class="text-pink-400">${fmt2(m.sugar || 0)}g Sugar</span> | <span class="text-cyan-400">${fmt2(m.sodium || 0)}mg Na</span></span>
                     </div>
                     <button onclick="removeMeal(${m.id})" class="text-red-400 hover:text-red-300 font-bold px-1">✕</button>
                 `;
