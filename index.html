@@ -101,6 +101,93 @@
             .glass-orbs .orb { animation: none !important; }
         }
 
+        /* ---- Per-tab orb color schemes ---- */
+        .glass-orbs .orb { transition: background 1.8s ease, opacity 1.8s ease; }
+
+        [data-active-tab="notifier"] .orb-1 { background: radial-gradient(circle, rgba(0, 240, 255, 0.55), transparent 70%); }
+        [data-active-tab="notifier"] .orb-2 { background: radial-gradient(circle, rgba(0, 160, 255, 0.40), transparent 70%); }
+        [data-active-tab="notifier"] .orb-3 { background: radial-gradient(circle, rgba(0, 200, 220, 0.30), transparent 70%); }
+        [data-active-tab="notifier"] .orb-4 { background: radial-gradient(circle, rgba(0, 180, 255, 0.25), transparent 70%); }
+
+        [data-active-tab="workouts"] .orb-1 { background: radial-gradient(circle, rgba(192, 132, 252, 0.55), transparent 70%); }
+        [data-active-tab="workouts"] .orb-2 { background: radial-gradient(circle, rgba(168, 85, 247, 0.45), transparent 70%); }
+        [data-active-tab="workouts"] .orb-3 { background: radial-gradient(circle, rgba(236, 72, 153, 0.30), transparent 70%); }
+        [data-active-tab="workouts"] .orb-4 { background: radial-gradient(circle, rgba(168, 85, 247, 0.25), transparent 70%); }
+
+        [data-active-tab="calories"] .orb-1 { background: radial-gradient(circle, rgba(250, 204, 21, 0.50), transparent 70%); }
+        [data-active-tab="calories"] .orb-2 { background: radial-gradient(circle, rgba(245, 158, 11, 0.40), transparent 70%); }
+        [data-active-tab="calories"] .orb-3 { background: radial-gradient(circle, rgba(252, 211, 77, 0.30), transparent 70%); }
+        [data-active-tab="calories"] .orb-4 { background: radial-gradient(circle, rgba(244, 114, 182, 0.25), transparent 70%); }
+
+        [data-active-tab="analytics"] .orb-1 { background: radial-gradient(circle, rgba(52, 211, 147, 0.55), transparent 70%); }
+        [data-active-tab="analytics"] .orb-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.40), transparent 70%); }
+        [data-active-tab="analytics"] .orb-3 { background: radial-gradient(circle, rgba(0, 240, 255, 0.30), transparent 70%); }
+        [data-active-tab="analytics"] .orb-4 { background: radial-gradient(circle, rgba(52, 211, 147, 0.25), transparent 70%); }
+
+        /* ---- Glass section divider (used between major sections in a tab) ---- */
+        .glass-divider {
+            height: 1px;
+            border: none;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.12) 80%, transparent 100%);
+            margin: 0.5rem 0;
+            position: relative;
+        }
+        .glass-divider::after {
+            content: '';
+            position: absolute;
+            inset: -2px 20% -2px 20%;
+            background: inherit;
+            filter: blur(4px);
+            opacity: 0.4;
+        }
+
+        /* ---- Per-tab background tint (subtle gradient wash behind content) ---- */
+        .tab-bg-tint {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.25rem;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.06;
+            transition: opacity 1.5s ease;
+        }
+        [data-active-tab="notifier"] .tab-bg-tint { background: radial-gradient(ellipse at 30% 20%, rgba(0, 240, 255, 0.7) 0%, transparent 70%); }
+        [data-active-tab="workouts"] .tab-bg-tint { background: radial-gradient(ellipse at 70% 30%, rgba(192, 132, 252, 0.7) 0%, transparent 70%); }
+        [data-active-tab="calories"] .tab-bg-tint { background: radial-gradient(ellipse at 50% 60%, rgba(250, 204, 21, 0.7) 0%, transparent 70%); }
+        [data-active-tab="analytics"] .tab-bg-tint { background: radial-gradient(ellipse at 40% 40%, rgba(52, 211, 147, 0.7) 0%, transparent 70%); }
+
+        /* ---- Tab content inner glow ring (subtle border highlight on the content area) ---- */
+        .tab-glow-panel {
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            transition: border-color 1.5s ease;
+        }
+        [data-active-tab="notifier"] .tab-glow-panel { border-color: rgba(0, 240, 255, 0.12); }
+        [data-active-tab="workouts"] .tab-glow-panel { border-color: rgba(192, 132, 252, 0.12); }
+        [data-active-tab="calories"] .tab-glow-panel { border-color: rgba(250, 204, 21, 0.12); }
+        [data-active-tab="analytics"] .tab-glow-panel { border-color: rgba(52, 211, 147, 0.12); }
+
+        /* ---- Desktop tab button glass look ---- */
+        .tab-btn {
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tab-btn.active::before { opacity: 1; }
+
         /* Frosted inputs inside glass cards */
         .brutal-card input[type="text"],
         .brutal-card input[type="number"],
@@ -389,7 +476,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
+<body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
 
     <!-- Glassmorphism ambient background orbs -->
     <div class="glass-orbs" aria-hidden="true">
@@ -493,7 +580,8 @@
     <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6 relative z-[1]">
 
         <!-- ================= TAB 1: SCHEDULE & LIFE NOTIFIER ================= -->
-        <div id="tab-notifier" class="tab-content space-y-6">
+        <div id="tab-notifier" class="tab-content tab-glow-panel space-y-6">
+            <div class="tab-bg-tint"></div>
 
             <!-- Full Width Interactive Timeline Breakdown -->
             <div class="brutal-card p-4 space-y-3">
@@ -524,7 +612,8 @@
         </div>
 
         <!-- ================= TAB 2: EXERCISE ROUTINE ================= -->
-        <div id="tab-workouts" class="tab-content hidden space-y-4">
+        <div id="tab-workouts" class="tab-content tab-glow-panel hidden space-y-4">
+            <div class="tab-bg-tint"></div>
 
             <!-- Minimalist Horizontal Week & Day Selector Bar -->
             <div class="brutal-card p-3 space-y-2.5">
@@ -560,7 +649,8 @@
         </div>
 
         <!-- ================= TAB 3: CALORIE & MACRO TRACKER ================= -->
-        <div id="tab-calories" class="tab-content hidden space-y-5">
+        <div id="tab-calories" class="tab-content tab-glow-panel hidden space-y-5">
+            <div class="tab-bg-tint"></div>
 
             <!-- Profile & Deficit Strategy Header -->
             <div class="brutal-card p-4 bg-gradient-to-r from-zinc-900 via-zinc-900 to-amber-950/30 space-y-3">
@@ -614,7 +704,8 @@
 
                 <!-- Left Column: Live Visual Macro Scales (1c) -->
                 <div class="lg:col-span-2 space-y-5">
-                    
+                    <hr class="glass-divider">
+
                     <!-- Macro Scales Bento Card -->
                     <div class="brutal-card p-4 space-y-4">
                         <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
@@ -705,6 +796,8 @@
 
                     </div>
 
+                    <hr class="glass-divider">
+
                     <!-- Water Hydration Card (4.0 Liters Target) -->
                     <div class="brutal-card brutal-cyan p-4 space-y-3">
                         <div class="flex items-center justify-between">
@@ -733,7 +826,8 @@
 
                 <!-- Right Column: Meal Logger & Presets -->
                 <div class="space-y-6 lg:col-span-1">
-                    
+                    <hr class="glass-divider">
+
                     <!-- Meal Logger Bento Card -->
                     <div class="brutal-card p-5 space-y-4">
                         <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
@@ -819,6 +913,8 @@
 
                     </div>
 
+                    <hr class="glass-divider">
+
                     <!-- Logged Meals List -->
                     <div class="brutal-card p-4 space-y-3">
                         <h4 class="font-outfit font-bold text-xs uppercase text-zinc-400">TODAY'S LOGGED MEALS</h4>
@@ -834,7 +930,8 @@
         </div>
 
         <!-- ================= TAB 4: ANALYTICS & V-TAPER ================= -->
-        <div id="tab-analytics" class="tab-content hidden space-y-6">
+        <div id="tab-analytics" class="tab-content tab-glow-panel hidden space-y-6">
+            <div class="tab-bg-tint"></div>
 
             <!-- Stats Baseline Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -859,6 +956,8 @@
                     <span class="text-[9px] text-amber-400 block mt-0.5">Consistency count</span>
                 </div>
             </div>
+
+            <hr class="glass-divider">
 
             <!-- Human Joint Skeleton Body Structure & V-Taper Ratio Diagram (FRONT AND CENTER) -->
             <div class="brutal-card brutal-purple p-4 space-y-3 bg-zinc-950">
@@ -945,6 +1044,8 @@
                 </div>
             </div>
 
+            <hr class="glass-divider">
+
             <!-- Bento Charts Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -1005,6 +1106,8 @@
                         <!-- Rendered by JS -->
                     </div>
                 </div>
+
+            <hr class="glass-divider">
 
                 <!-- 5. Permanent Historical Archive + Start New Week -->
                 <div class="brutal-card p-4 space-y-3 lg:col-span-2">
@@ -1669,19 +1772,30 @@
         }
 
         // TAB SWITCHING ENGINE
+        const TAB_ACCENT = {
+            notifier:  { desk: 'border-cyan-400 bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#00f0ff]', mob: 'text-cyan-400' },
+            workouts:  { desk: 'border-purple-400 bg-purple-400 text-black shadow-[2px_2px_0px_0px_#c084fc]', mob: 'text-purple-400' },
+            calories:  { desk: 'border-amber-400 bg-amber-400 text-black shadow-[2px_2px_0px_0px_#facc15]', mob: 'text-amber-400' },
+            analytics: { desk: 'border-emerald-400 bg-emerald-400 text-black shadow-[2px_2px_0px_0px_#34d399]', mob: 'text-emerald-400' }
+        };
+
         function switchTab(tabName) {
             APP_STATE.activeTab = tabName;
-            
+
+            // Shift ambient orb colours + per-tab glow
+            document.body.setAttribute('data-active-tab', tabName);
+
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
 
             // Desktop Navigation Buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-purple-400 hover:text-white whitespace-nowrap transition-all";
+                btn.className = "tab-btn px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white whitespace-nowrap transition-all";
             });
+            const accent = TAB_ACCENT[tabName] || TAB_ACCENT.notifier;
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
             if (activeBtn) {
-                activeBtn.className = "tab-btn active px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 border-cyan-400 bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#fff] whitespace-nowrap transition-all";
+                activeBtn.className = `tab-btn active px-3 py-1.5 text-xs font-outfit font-bold uppercase border-2 ${accent.desk} whitespace-nowrap transition-all`;
             }
 
             // Mobile Bottom Navigation Bar Buttons
@@ -1690,7 +1804,7 @@
             });
             const mobActiveBtn = document.getElementById(`mob-nav-${tabName}`);
             if (mobActiveBtn) {
-                mobActiveBtn.className = "mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1";
+                mobActiveBtn.className = `mob-nav-btn active flex flex-col items-center gap-0.5 ${accent.mob} font-bold p-1`;
             }
 
             // Show Rest Stopwatch ONLY in Workout Routine Tab & re-render workouts
