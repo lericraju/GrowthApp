@@ -3397,12 +3397,12 @@ Keep crushing the daily plan! 💪⚡`;
                 const res = await fetch(SERVER_SYNC_ENDPOINT);
                 if (res.ok) {
                     const result = await res.json();
+                    if (result && result.durable) cloudDurable = true;
                     if (result && result.data) {
                         cloudData = result.data;
-                        cloudDurable = !!(result.durable); // true when Upstash KV is configured server-side
                     }
                     if (result && result.kvError) kvDebugMsg = 'KV Error: ' + result.kvError;
-                    if (result && result.kvStatus) kvDebugMsg = 'KV Status: ' + result.kvStatus;
+                    if (result && result.kvStatus) kvDebugMsg = 'KV: ' + result.kvStatus;
                 } else {
                     kvDebugMsg = 'Server returned ' + res.status;
                 }
@@ -3428,6 +3428,19 @@ Keep crushing the daily plan! 💪⚡`;
                 syncIcon.title = cloudDurable
                     ? 'Server sync live — durable Upstash KV storage (survives redeploys)'
                     : 'Server sync live — memory only' + (kvDebugMsg ? ' — ' + kvDebugMsg : ' (add KV_REST_API_URL + KV_REST_API_TOKEN)');
+            }
+
+            // KV is connected but the key doesn't exist yet — push local state to seed it
+            if (!cloudData && cloudDurable) {
+                const localHasData = (APP_STATE.loggedMeals && APP_STATE.loggedMeals.length > 0)
+                    || (APP_STATE.waterLoggedMl || 0) > 0
+                    || (APP_STATE.checklistState && Object.keys(APP_STATE.checklistState).length > 0)
+                    || (APP_STATE.cardioState && Object.keys(APP_STATE.cardioState).length > 0);
+                if (localHasData) {
+                    pushCloudState();
+                    updateSyncUIStatus(true, "SERVER SEEDED");
+                    return;
+                }
             }
 
             if (cloudData) {
