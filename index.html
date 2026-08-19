@@ -85,17 +85,16 @@
         .glass-orbs .orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(90px);
-            will-change: transform;
+            filter: blur(60px);
         }
-        .orb-1 { width: 520px; height: 520px; top: -140px; left: -140px; opacity: 0.38; background: radial-gradient(circle, rgba(0, 240, 255, 0.55), transparent 70%); animation: orbDrift1 26s ease-in-out infinite alternate; }
-        .orb-2 { width: 460px; height: 460px; top: 22%; right: -160px; opacity: 0.32; background: radial-gradient(circle, rgba(192, 132, 252, 0.5), transparent 70%); animation: orbDrift2 34s ease-in-out infinite alternate; }
-        .orb-3 { width: 420px; height: 420px; bottom: -140px; left: 28%; opacity: 0.30; background: radial-gradient(circle, rgba(52, 211, 147, 0.45), transparent 70%); animation: orbDrift3 40s ease-in-out infinite alternate; }
-        .orb-4 { width: 320px; height: 320px; bottom: 18%; right: 8%; opacity: 0.26; background: radial-gradient(circle, rgba(250, 204, 21, 0.4), transparent 70%); animation: orbDrift2 30s ease-in-out infinite alternate-reverse; }
+        .orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; opacity: 0.30; background: radial-gradient(circle, rgba(0, 240, 255, 0.45), transparent 70%); animation: orbDrift1 26s ease-in-out infinite alternate; }
+        .orb-2 { width: 360px; height: 360px; top: 22%; right: -120px; opacity: 0.26; background: radial-gradient(circle, rgba(192, 132, 252, 0.4), transparent 70%); animation: orbDrift2 34s ease-in-out infinite alternate; }
+        .orb-3 { width: 320px; height: 320px; bottom: -100px; left: 28%; opacity: 0.22; background: radial-gradient(circle, rgba(52, 211, 147, 0.35), transparent 70%); animation: orbDrift3 40s ease-in-out infinite alternate; }
+        .orb-4 { width: 260px; height: 260px; bottom: 18%; right: 8%; opacity: 0.20; background: radial-gradient(circle, rgba(250, 204, 21, 0.3), transparent 70%); animation: orbDrift2 30s ease-in-out infinite alternate-reverse; }
 
-        @keyframes orbDrift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(130px, 90px) scale(1.18); } }
-        @keyframes orbDrift2 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-110px, 70px) scale(1.12); } }
-        @keyframes orbDrift3 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-70px, -90px) scale(1.22); } }
+        @keyframes orbDrift1 { from { transform: translate(0, 0); } to { transform: translate(80px, 60px); } }
+        @keyframes orbDrift2 { from { transform: translate(0, 0); } to { transform: translate(-70px, 50px); } }
+        @keyframes orbDrift3 { from { transform: translate(0, 0); } to { transform: translate(-50px, -60px); } }
 
         @media (prefers-reduced-motion: reduce) {
             .glass-orbs .orb { animation: none !important; }
@@ -195,17 +194,17 @@
         .brutal-card input[type="search"],
         .brutal-card select,
         .brutal-card textarea {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            backdrop-filter: blur(10px) saturate(160%);
-            -webkit-backdrop-filter: blur(10px) saturate(160%);
+            background-color: rgba(255, 255, 255, 0.04) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         /* Bitkit / Neo-Brutalist Hard Shadows */
         /* LIQUID GLASS & NEOMORPHISM DESIGN SYSTEM */
         .brutal-card, .bento-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(18, 18, 24, 0.45) 100%) !important;
-            backdrop-filter: blur(28px) saturate(200%) !important;
-            -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(18, 18, 24, 0.85) 100%) !important;
+            backdrop-filter: blur(12px) saturate(140%) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
             border: 1px solid rgba(255, 255, 255, 0.12) !important;
             border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
             border-left: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -412,48 +411,12 @@
             pointer-events: none;
         }
 
-        /* ReactBits Aurora Glow Orbs */
-        .aurora-orb-1 {
-            position: fixed;
-            top: -10%;
-            left: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -9;
-            animation: orbFloat1 18s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-
-        .aurora-orb-2 {
-            position: fixed;
-            bottom: -10%;
-            right: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(192, 132, 252, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
-            border-radius: 50%;
-            filter: blur(90px);
-            z-index: -9;
-            animation: orbFloat2 22s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes orbFloat1 {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(8vw, 12vh) scale(1.15); }
-        }
-
-        @keyframes orbFloat2 {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(-10vw, -8vh) scale(1.2); }
-        }
+        /* Aurora orbs removed — glass-orbs handle all ambient glow (perf fix) */
 
         /* ReactBits Micro Entrance Animations */
         .tab-content {
-            animation: reactBitsFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: reactBitsFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            contain: layout style;
         }
 
         @keyframes reactBitsFadeIn {
@@ -485,10 +448,6 @@
         <div class="orb orb-3"></div>
         <div class="orb orb-4"></div>
     </div>
-
-    <!-- AURORA ORBS -->
-    <div class="aurora-orb-1"></div>
-    <div class="aurora-orb-2"></div>
 
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-50 bg-[#0a0a0e]/70 backdrop-blur-xl border-b-2 border-white/10 px-4 lg:px-8 py-3">
