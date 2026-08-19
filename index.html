@@ -1639,7 +1639,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadLocalState();
             APP_STATE.lastScheduleDateKey = dateKey(new Date());
-            APP_STATE.masterSchedule = getTodayScheduleTemplate();
+            // Only generate fresh template if no saved schedule for today
+            if (!APP_STATE.masterSchedule || !APP_STATE.masterSchedule.length) {
+                APP_STATE.masterSchedule = getTodayScheduleTemplate();
+            }
             updateScheduleDayLabel();
             setupClockNotifier();
             renderScheduleTimeline();
@@ -3348,6 +3351,8 @@ Keep crushing the daily plan! 💪⚡`;
                 loggedMeals: APP_STATE.loggedMeals || [],
                 historicalArchive: APP_STATE.historicalArchive || {},
                 programStartDate: APP_STATE.programStartDate || '2026-08-03',
+                masterSchedule: APP_STATE.masterSchedule || null,
+                masterScheduleDateKey: APP_STATE.lastScheduleDateKey || null,
                 updatedAt: new Date().toISOString()
             };
 
@@ -3385,6 +3390,8 @@ Keep crushing the daily plan! 💪⚡`;
             let cloudData = null;
             let cloudDurable = false;
 
+            let kvDebugMsg = '';
+
             // 1. Try Vercel Serverless API first
             try {
                 const res = await fetch(SERVER_SYNC_ENDPOINT);
@@ -3394,8 +3401,12 @@ Keep crushing the daily plan! 💪⚡`;
                         cloudData = result.data;
                         cloudDurable = !!(result.durable); // true when Upstash KV is configured server-side
                     }
+                    if (result && result.kvError) kvDebugMsg = 'KV Error: ' + result.kvError;
+                    if (result && result.kvStatus) kvDebugMsg = 'KV Status: ' + result.kvStatus;
+                } else {
+                    kvDebugMsg = 'Server returned ' + res.status;
                 }
-            } catch(e) {}
+            } catch(e) { kvDebugMsg = 'Fetch failed: ' + e.message; }
 
             // 2. Fallback to Cloud Object endpoint
             if (!cloudData) {
@@ -3416,7 +3427,7 @@ Keep crushing the daily plan! 💪⚡`;
             if (syncIcon) {
                 syncIcon.title = cloudDurable
                     ? 'Server sync live — durable Upstash KV storage (survives redeploys)'
-                    : 'Server sync live — memory only (a redeploy resets it; add KV_REST_API_URL + KV_REST_API_TOKEN)';
+                    : 'Server sync live — memory only' + (kvDebugMsg ? ' — ' + kvDebugMsg : ' (add KV_REST_API_URL + KV_REST_API_TOKEN)');
             }
 
             if (cloudData) {
@@ -3521,6 +3532,19 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
+                // Restore masterSchedule from cloud only if it matches today's date key
+                if (cloudData.masterSchedule && cloudData.masterSchedule.length && cloudData.masterScheduleDateKey) {
+                    const todayKey = dateKey(new Date());
+                    if (cloudData.masterScheduleDateKey === todayKey) {
+                        const cloudHasCustom = cloudData.masterSchedule.some(s => s.id && s.id.startsWith('custom_'));
+                        const localHasCustom = (APP_STATE.masterSchedule || []).some(s => s.id && s.id.startsWith('custom_'));
+                        if (cloudHasCustom && !localHasCustom) {
+                            APP_STATE.masterSchedule = cloudData.masterSchedule;
+                            updated = true;
+                        }
+                    }
+                }
+
                 if (updated) {
                     saveLocalState();
                     renderScheduleTimeline();
@@ -3577,7 +3601,9 @@ Keep crushing the daily plan! 💪⚡`;
                     loggedMeals: APP_STATE.loggedMeals,
                     historicalArchive: APP_STATE.historicalArchive || {},
                     programStartDate: APP_STATE.programStartDate,
-                    lastUpdatedAt: APP_STATE.lastUpdatedAt
+                    lastUpdatedAt: APP_STATE.lastUpdatedAt,
+                    masterSchedule: APP_STATE.masterSchedule || null,
+                    masterScheduleDateKey: APP_STATE.lastScheduleDateKey || null
                 };
                 localStorage.setItem('growth_app_state', JSON.stringify(payload));
                 // Redundant copy: if any stale/buggy code path (e.g. the pre-fix cached page
@@ -3637,6 +3663,14 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.historicalArchive) APP_STATE.historicalArchive = parsed.historicalArchive;
                     if (parsed.programStartDate) APP_STATE.programStartDate = parsed.programStartDate;
                     if (parsed.lastUpdatedAt) APP_STATE.lastUpdatedAt = parsed.lastUpdatedAt;
+                    // Restore saved masterSchedule (custom events) if it matches today
+                    if (parsed.masterSchedule && parsed.masterScheduleDateKey) {
+                        const todayKey = dateKey(new Date());
+                        if (parsed.masterScheduleDateKey === todayKey && parsed.masterSchedule.length) {
+                            APP_STATE.masterSchedule = parsed.masterSchedule;
+                            APP_STATE.lastScheduleDateKey = todayKey;
+                        }
+                    }
                 }
             } catch(e) {}
         }

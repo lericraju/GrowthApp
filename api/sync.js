@@ -33,12 +33,16 @@ export default async function handler(req, res) {
         if (kvData && kvData.result) {
           const parsed = typeof kvData.result === 'string' ? JSON.parse(kvData.result) : kvData.result;
           return res.status(200).json({ success: true, source: 'vercel_kv', durable: true, data: parsed });
+        } else {
+          // KV reachable but key doesn't exist yet — still durable
+          return res.status(200).json({ success: true, source: 'vercel_kv', durable: true, data: null, kvStatus: 'empty_key' });
         }
       } catch (e) {
-        console.warn("Vercel KV fetch notice:", e);
+        // KV fetch failed — include error detail so client can debug
+        return res.status(200).json({ success: true, source: 'server_api', durable: false, data: serverState, kvError: e.message || String(e) });
       }
     }
-    return res.status(200).json({ success: true, source: 'server_api', durable: false, data: serverState });
+    return res.status(200).json({ success: true, source: 'server_api', durable: false, data: serverState, kvError: 'no_kv_env_vars' });
   }
 
   // POST Update Server State
