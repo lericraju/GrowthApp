@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/logo.png">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#09090b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
@@ -22,26 +22,21 @@
             theme: {
                 extend: {
                     colors: {
-                        surface: {
-                            0: '#000000',
-                            1: '#1c1c1e',
-                            2: '#2c2c2e',
-                            3: '#3a3a3c',
-                            4: '#48484a'
-                        },
-                            apple: {
-                            blue: '#0a84ff',
-                            green: '#30d158',
-                            orange: '#ff9f0a',
-                            red: '#ff453a',
-                            purple: '#bf5af2',
-                            cyan: '#64d2ff',
-                            pink: '#ff375f',
-                            teal: '#40c8e0'
+                        brutal: {
+                            bg: '#09090b',
+                            card: '#121215',
+                            border: '#27272a',
+                            cyan: '#00f0ff',
+                            purple: '#c084fc',
+                            pink: '#f472b6',
+                            green: '#34d399',
+                            amber: '#facc15',
+                            red: '#ff4d4d'
                         }
                     },
                     fontFamily: {
-                        sf: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace']
                     }
                 }
@@ -59,149 +54,281 @@
 
     <style>
         :root {
-            --bg: #000000;
-            --surface-1: #1c1c1e;
-            --surface-2: #2c2c2e;
-            --surface-3: #3a3a3c;
-            --border: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: #8e8e93;
-            --text-tertiary: #636366;
-            --blue: #0a84ff;
-            --green: #30d158;
-            --orange: #ff9f0a;
-            --red: #ff453a;
-            --purple: #bf5af2;
-            --cyan: #64d2ff;
-            --pink: #ff375f;
-            --teal: #40c8e0;
+            --bg-dark: #09090b;
+            --border-hard: #27272a;
+            --accent-cyan: #00f0ff;
+            --accent-purple: #c084fc;
+            --accent-green: #34d399;
+            --accent-amber: #facc15;
+            --accent-red: #ff4d4d;
         }
 
         body {
-            background-color: var(--bg);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--text-primary);
+            background-color: var(--bg-dark);
+            font-family: 'Inter', sans-serif;
+            color: #f4f4f5;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.04) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(192, 132, 252, 0.05) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(52, 211, 147, 0.03) 0px, transparent 50%);
         }
 
-        /* Glass orbs removed for Apple-style — clean solid backgrounds */
-        .glass-orbs { display: none; }
-
-        /* ---- Clean Apple-style dividers ---- */
-        .glass-divider {
-            height: 0.5px;
-            border: none;
-            background: var(--border);
-            margin: 0;
-        }
-
-        /* ---- Per-tab background tint (removed for clean Apple look) ---- */
-        .tab-bg-tint { display: none; }
-
-        /* ---- Tab content panel ---- */
-        .tab-glow-panel {
-            position: relative;
-            border-radius: 1.25rem;
+        /* ---- GLASSMORPHISM: ambient color orbs drifting behind the frosted UI ---- */
+        .glass-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
             overflow: hidden;
         }
+        .glass-orbs .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+        .orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; opacity: 0.30; background: radial-gradient(circle, rgba(0, 240, 255, 0.45), transparent 70%); animation: orbDrift1 26s ease-in-out infinite alternate; }
+        .orb-2 { width: 360px; height: 360px; top: 22%; right: -120px; opacity: 0.26; background: radial-gradient(circle, rgba(192, 132, 252, 0.4), transparent 70%); animation: orbDrift2 34s ease-in-out infinite alternate; }
+        .orb-3 { width: 320px; height: 320px; bottom: -100px; left: 28%; opacity: 0.22; background: radial-gradient(circle, rgba(52, 211, 147, 0.35), transparent 70%); animation: orbDrift3 40s ease-in-out infinite alternate; }
+        .orb-4 { width: 260px; height: 260px; bottom: 18%; right: 8%; opacity: 0.20; background: radial-gradient(circle, rgba(250, 204, 21, 0.3), transparent 70%); animation: orbDrift2 30s ease-in-out infinite alternate-reverse; }
 
-        /* ---- Desktop tab buttons ---- */
-        .tab-btn {
-            position: relative;
-            transition: all 0.2s ease;
+        @keyframes orbDrift1 { from { transform: translate(0, 0); } to { transform: translate(80px, 60px); } }
+        @keyframes orbDrift2 { from { transform: translate(0, 0); } to { transform: translate(-70px, 50px); } }
+        @keyframes orbDrift3 { from { transform: translate(0, 0); } to { transform: translate(-50px, -60px); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glass-orbs .orb { animation: none !important; }
         }
 
-        /* Apple-style inputs */
+        /* ---- Per-tab orb color schemes ---- */
+        .glass-orbs .orb { transition: background 1.8s ease, opacity 1.8s ease; }
+
+        [data-active-tab="notifier"] .orb-1 { background: radial-gradient(circle, rgba(0, 240, 255, 0.55), transparent 70%); }
+        [data-active-tab="notifier"] .orb-2 { background: radial-gradient(circle, rgba(0, 160, 255, 0.40), transparent 70%); }
+        [data-active-tab="notifier"] .orb-3 { background: radial-gradient(circle, rgba(0, 200, 220, 0.30), transparent 70%); }
+        [data-active-tab="notifier"] .orb-4 { background: radial-gradient(circle, rgba(0, 180, 255, 0.25), transparent 70%); }
+
+        [data-active-tab="workouts"] .orb-1 { background: radial-gradient(circle, rgba(192, 132, 252, 0.55), transparent 70%); }
+        [data-active-tab="workouts"] .orb-2 { background: radial-gradient(circle, rgba(168, 85, 247, 0.45), transparent 70%); }
+        [data-active-tab="workouts"] .orb-3 { background: radial-gradient(circle, rgba(236, 72, 153, 0.30), transparent 70%); }
+        [data-active-tab="workouts"] .orb-4 { background: radial-gradient(circle, rgba(168, 85, 247, 0.25), transparent 70%); }
+
+        [data-active-tab="calories"] .orb-1 { background: radial-gradient(circle, rgba(250, 204, 21, 0.50), transparent 70%); }
+        [data-active-tab="calories"] .orb-2 { background: radial-gradient(circle, rgba(245, 158, 11, 0.40), transparent 70%); }
+        [data-active-tab="calories"] .orb-3 { background: radial-gradient(circle, rgba(252, 211, 77, 0.30), transparent 70%); }
+        [data-active-tab="calories"] .orb-4 { background: radial-gradient(circle, rgba(244, 114, 182, 0.25), transparent 70%); }
+
+        [data-active-tab="analytics"] .orb-1 { background: radial-gradient(circle, rgba(52, 211, 147, 0.55), transparent 70%); }
+        [data-active-tab="analytics"] .orb-2 { background: radial-gradient(circle, rgba(16, 185, 129, 0.40), transparent 70%); }
+        [data-active-tab="analytics"] .orb-3 { background: radial-gradient(circle, rgba(0, 240, 255, 0.30), transparent 70%); }
+        [data-active-tab="analytics"] .orb-4 { background: radial-gradient(circle, rgba(52, 211, 147, 0.25), transparent 70%); }
+
+        /* ---- Glass section divider (used between major sections in a tab) ---- */
+        .glass-divider {
+            height: 1px;
+            border: none;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.12) 80%, transparent 100%);
+            margin: 0.5rem 0;
+            position: relative;
+        }
+        .glass-divider::after {
+            content: '';
+            position: absolute;
+            inset: -2px 20% -2px 20%;
+            background: inherit;
+            filter: blur(4px);
+            opacity: 0.4;
+        }
+
+        /* ---- Per-tab background tint (subtle gradient wash behind content) ---- */
+        .tab-bg-tint {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.25rem;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.06;
+            transition: opacity 1.5s ease;
+        }
+        [data-active-tab="notifier"] .tab-bg-tint { background: radial-gradient(ellipse at 30% 20%, rgba(0, 240, 255, 0.7) 0%, transparent 70%); }
+        [data-active-tab="workouts"] .tab-bg-tint { background: radial-gradient(ellipse at 70% 30%, rgba(192, 132, 252, 0.7) 0%, transparent 70%); }
+        [data-active-tab="calories"] .tab-bg-tint { background: radial-gradient(ellipse at 50% 60%, rgba(250, 204, 21, 0.7) 0%, transparent 70%); }
+        [data-active-tab="analytics"] .tab-bg-tint { background: radial-gradient(ellipse at 40% 40%, rgba(52, 211, 147, 0.7) 0%, transparent 70%); }
+
+        /* ---- Tab content inner glow ring (subtle border highlight on the content area) ---- */
+        .tab-glow-panel {
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            transition: border-color 1.5s ease;
+        }
+        [data-active-tab="notifier"] .tab-glow-panel { border-color: rgba(0, 240, 255, 0.12); }
+        [data-active-tab="workouts"] .tab-glow-panel { border-color: rgba(192, 132, 252, 0.12); }
+        [data-active-tab="calories"] .tab-glow-panel { border-color: rgba(250, 204, 21, 0.12); }
+        [data-active-tab="analytics"] .tab-glow-panel { border-color: rgba(52, 211, 147, 0.12); }
+
+        /* ---- Desktop tab button glass look ---- */
+        .tab-btn {
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tab-btn.active::before { opacity: 1; }
+
+        /* Frosted inputs inside glass cards */
         .brutal-card input[type="text"],
         .brutal-card input[type="number"],
         .brutal-card input[type="date"],
         .brutal-card input[type="search"],
         .brutal-card select,
         .brutal-card textarea {
-            background-color: var(--surface-2) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 10px !important;
-            transition: border-color 0.2s ease;
-        }
-        .brutal-card input:focus, .brutal-card select:focus, .brutal-card textarea:focus {
-            border-color: var(--blue) !important;
-            outline: none;
+            background-color: rgba(255, 255, 255, 0.04) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
-        /* Apple-style cards */
+        /* Bitkit / Neo-Brutalist Hard Shadows */
+        /* LIQUID GLASS & NEOMORPHISM DESIGN SYSTEM */
         .brutal-card, .bento-card {
-            background: var(--surface-1) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 16px !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(18, 18, 24, 0.85) 100%) !important;
+            backdrop-filter: blur(12px) saturate(140%) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 
+                8px 8px 24px rgba(0, 0, 0, 0.65), 
+                -3px -3px 12px rgba(255, 255, 255, 0.03),
+                inset 1px 1px 1px rgba(255, 255, 255, 0.15) !important;
+            border-radius: 1rem !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
             position: relative;
             overflow: hidden;
         }
-        .brutal-card::before { display: none; }
+
+        .brutal-card::before, .bento-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            pointer-events: none;
+        }
+
         .brutal-card:hover, .bento-card:hover {
-            border-color: rgba(255, 255, 255, 0.12) !important;
-            transform: none;
+            border-color: rgba(0, 240, 255, 0.35) !important;
+            box-shadow: 
+                12px 12px 32px rgba(0, 0, 0, 0.75), 
+                -4px -4px 16px rgba(0, 240, 255, 0.08),
+                inset 1px 1px 2px rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-3px);
         }
 
-        .brutal-cyan { border-color: rgba(100, 210, 255, 0.25) !important; }
-        .brutal-purple { border-color: rgba(191, 90, 242, 0.25) !important; }
-        .brutal-green { border-color: rgba(48, 209, 88, 0.25) !important; }
-        .brutal-amber { border-color: rgba(255, 159, 10, 0.25) !important; }
+        .brutal-cyan {
+            border-color: rgba(0, 240, 255, 0.4) !important;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
+        }
 
-        /* Apple-style buttons */
+        .brutal-purple {
+            border-color: rgba(192, 132, 252, 0.4) !important;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .brutal-green {
+            border-color: rgba(52, 211, 147, 0.4) !important;
+            box-shadow: 0 0 20px rgba(52, 211, 147, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .brutal-amber {
+            border-color: rgba(250, 204, 21, 0.4) !important;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.15), inset 1px 1px 1px rgba(255, 255, 255, 0.2) !important;
+        }
+
         .brutal-btn {
-            font-family: 'Inter', -apple-system, sans-serif;
-            font-weight: 600;
-            letter-spacing: 0;
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-            transition: all 0.15s ease;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            box-shadow: 
+                4px 4px 10px rgba(0, 0, 0, 0.5), 
+                -2px -2px 6px rgba(255, 255, 255, 0.04),
+                inset 1px 1px 1px rgba(255, 255, 255, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .brutal-btn:active {
-            transform: scale(0.97);
-            box-shadow: none;
+            box-shadow: 
+                inset 3px 3px 6px rgba(0, 0, 0, 0.7), 
+                inset -2px -2px 4px rgba(255, 255, 255, 0.05);
+            transform: translateY(1px);
         }
 
         .brutal-btn-cyan {
-            background: var(--blue);
-            color: #fff;
-        }
-        .brutal-btn-purple {
-            background: var(--purple);
-            color: #fff;
-        }
-        .brutal-btn-amber {
-            background: var(--orange);
-            color: #fff;
+            background: linear-gradient(135deg, #00f0ff 0%, #00a8ff 100%);
+            color: #000000;
+            border-color: #00f0ff;
         }
 
-        /* Apple-style checkbox */
+        .brutal-btn-purple {
+            background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+            color: #000000;
+            border-color: #c084fc;
+        }
+
+        .brutal-btn-amber {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000000;
+            border-color: #fbbf24;
+        }
+
+        /* Neomorphic Checkbox & Controls */
         .check-box-brutal {
             appearance: none;
-            width: 26px;
-            height: 26px;
-            min-width: 26px;
-            min-height: 26px;
-            border: 2px solid var(--surface-3);
-            background: transparent;
-            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            min-height: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(12, 12, 16, 0.9);
+            box-shadow: 
+                inset 3px 3px 6px rgba(0, 0, 0, 0.7), 
+                inset -2px -2px 4px rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
             cursor: pointer;
             display: inline-grid;
             place-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .check-box-brutal:checked {
-            background: var(--green);
-            border-color: var(--green);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-color: #34d399;
+            box-shadow: 
+                0 0 12px rgba(52, 211, 153, 0.6), 
+                inset 1px 1px 2px rgba(255, 255, 255, 0.5);
         }
+
         .check-box-brutal:checked::before {
             content: "✓";
-            font-weight: 700;
+            font-weight: 900;
             color: #000;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* Hide scrollbars globally across PC & Mobile */
@@ -215,60 +342,104 @@
             height: 0 !important;
         }
 
-        /* Live dot */
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--green);
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        /* Pulse animation for active notifier */
+        @keyframes brutalPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
         }
 
-        /* Water bar */
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-cyan);
+            border-radius: 50%;
+            display: inline-block;
+            animation: brutalPulse 2s infinite ease-in-out;
+        }
+
+        /* Pulse bar animation */
         .water-wave {
-            background: linear-gradient(180deg, var(--cyan), var(--blue));
-            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(0, 240, 255, 0.4) 0%, rgba(0, 240, 255, 0.9) 100%);
             transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Active schedule slot */
+        /* Active Time Plan Pure White Glint & Blur Styling */
+        @keyframes glintSweep {
+            0% { transform: translateX(-130%) rotate(25deg); }
+            45%, 100% { transform: translateX(230%) rotate(25deg); }
+        }
+
         .active-time-plan-white {
-            background-color: #fff !important;
-            color: #000 !important;
-            border: 2px solid #fff !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 12px rgba(255, 255, 255, 0.2) !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 3px solid #ffffff !important;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.85), 5px 5px 0px 0px #000000 !important;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .active-time-plan-white h4, .active-time-plan-white p { color: #000 !important; }
-        .active-time-plan-white .badge-active-time-black { background-color: #000 !important; color: #fff !important; border-radius: 6px !important; }
-        .active-time-plan-white .badge-active-time-black * { color: #fff !important; }
-        .active-time-plan-white::after { display: none; }
 
-        /* Tab entrance */
+        .active-time-plan-white h4,
+        .active-time-plan-white p {
+            color: #000000 !important;
+        }
+
+        .active-time-plan-white .badge-active-time-black {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        .active-time-plan-white .badge-active-time-black * {
+            color: #ffffff !important;
+        }
+
+        .active-time-plan-white::after {
+            content: '';
+            position: absolute;
+            top: -120%;
+            left: -120%;
+            width: 320%;
+            height: 320%;
+            background: linear-gradient(
+                75deg,
+                transparent 35%,
+                rgba(255, 255, 255, 0.95) 50%,
+                transparent 65%
+            );
+            animation: glintSweep 3.2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Aurora orbs removed — glass-orbs handle all ambient glow (perf fix) */
+
+        /* ReactBits Micro Entrance Animations */
         .tab-content {
-            animation: fadeUp 0.25s ease forwards;
+            animation: reactBitsFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             contain: layout style;
         }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        @keyframes reactBitsFadeIn {
+            0% { opacity: 0; transform: translateY(12px) scale(0.99); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* Active Plan Banner */
+        /* Hover Lift Micro-Animation */
+        .brutal-card {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease-out;
+        }
+        .brutal-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Active Plan Banner: keep it a clean horizontal strip on tiny phone screens */
         @media (max-width: 400px) {
             #toast-slot-countdown { display: none !important; }
             #active-slot-toast { gap: 0.5rem; }
         }
     </style>
 </head>
-<body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-16 bg-black text-white overflow-x-hidden relative">
+<body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-16 bg-[#09090b] text-white overflow-x-hidden relative">
 
     <!-- Glassmorphism ambient background orbs -->
     <div class="glass-orbs" aria-hidden="true">
@@ -279,7 +450,7 @@
     </div>
 
     <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-4 lg:px-8 py-3">
+    <header class="sticky top-0 z-50 bg-[#0a0a0e]/70 backdrop-blur-xl border-b-2 border-white/10 px-4 lg:px-8 py-3">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             
             <!-- Brand & Live Notifier Badge -->
@@ -323,7 +494,7 @@
     </header>
 
     <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1c1c1e]/90 backdrop-blur-xl border-t border-white/5 px-2 py-2 flex items-center justify-around">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0e]/80 backdrop-blur-xl border-t-2 border-white/10 px-2 py-2 flex items-center justify-around">
         <button onclick="switchTab('notifier')" id="mob-nav-notifier" class="mob-nav-btn active flex flex-col items-center gap-0.5 text-cyan-400 font-bold p-1">
             <i data-lucide="calendar" class="w-5 h-5"></i>
             <span class="text-[10px] font-outfit uppercase">Schedule</span>
