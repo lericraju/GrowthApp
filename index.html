@@ -1255,7 +1255,9 @@
             // Exercise Checklist State across 4 Weeks
             checklistState: {},
             // Cardio tracking per day: { 'w1_sat_cardio': { done: bool, km: number|null } }
-            cardioState: {}
+            cardioState: {},
+            // Tracks which calendar month the current checklist belongs to (YYYY-MM)
+            lastChecklistMonth: null
         };
 
         // MONTH 1 WORKOUT DATA (WEEKS 1 TO 4 COMPLETE)
@@ -1597,6 +1599,7 @@
         // --- CORE APPLICATION INITIALIZATION ---
         window.addEventListener('DOMContentLoaded', () => {
             loadLocalState();
+            checkMonthRollover();
             APP_STATE.lastScheduleDateKey = dateKey(new Date());
             // Only generate fresh template if no saved schedule for today
             if (!APP_STATE.masterSchedule || !APP_STATE.masterSchedule.length) {
@@ -2639,12 +2642,14 @@ Keep crushing the daily plan! 💪⚡`;
 
         function addWater(amountMl) {
             APP_STATE.waterLoggedMl = Math.min(6000, APP_STATE.waterLoggedMl + amountMl);
+            saveLocalState();
             updateMacroScales();
             pushCloudState();
         }
 
         function resetWater() {
             APP_STATE.waterLoggedMl = 0;
+            saveLocalState();
             updateMacroScales();
             pushCloudState();
         }
@@ -2655,6 +2660,7 @@ Keep crushing the daily plan! 💪⚡`;
             } else if (type === 'banana') {
                 APP_STATE.loggedMeals.push({ id: Date.now(), name: "🍌 1 Banana Robust", cal: 105, prot: 1, carbs: 27, fats: 0, sugar: 14, sodium: 1 });
             }
+            saveLocalState();
             renderLoggedMeals();
             updateMacroScales();
             pushCloudState();
@@ -2670,6 +2676,7 @@ Keep crushing the daily plan! 💪⚡`;
             const sodium = Number(document.getElementById('meal-sodium-input').value) || 0;
 
             APP_STATE.loggedMeals.push({ id: Date.now(), name, cal, prot, carbs, fats, sugar, sodium });
+            saveLocalState();
             renderLoggedMeals();
             updateMacroScales();
             pushCloudState();
@@ -2810,6 +2817,7 @@ Keep crushing the daily plan! 💪⚡`;
 
         function removeMeal(id) {
             APP_STATE.loggedMeals = APP_STATE.loggedMeals.filter(m => m.id !== id);
+            saveLocalState();
             renderLoggedMeals();
             updateMacroScales();
             pushCloudState();
@@ -3575,7 +3583,8 @@ Keep crushing the daily plan! 💪⚡`;
                     programStartDate: APP_STATE.programStartDate,
                     lastUpdatedAt: APP_STATE.lastUpdatedAt,
                     masterSchedule: APP_STATE.masterSchedule || null,
-                    masterScheduleDateKey: APP_STATE.lastScheduleDateKey || null
+                    masterScheduleDateKey: APP_STATE.lastScheduleDateKey || null,
+                    lastChecklistMonth: APP_STATE.lastChecklistMonth || null
                 };
                 localStorage.setItem('growth_app_state', JSON.stringify(payload));
                 // Redundant copy: if any stale/buggy code path (e.g. the pre-fix cached page
@@ -3592,6 +3601,71 @@ Keep crushing the daily plan! 💪⚡`;
                 profile.targetCal = 1750;
             }
             return profile;
+        }
+
+        // Detect calendar month rollover: archive previous month's checklist/cardio
+        // and start a fresh cycle for the new month.
+        function checkMonthRollover() {
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            if (APP_STATE.lastChecklistMonth === currentMonth) return; // same month, nothing to do
+
+            // There's old data from a previous month — archive it before clearing
+            const hasOldData = (APP_STATE.checklistState && Object.keys(APP_STATE.checklistState).length > 0)
+                || (APP_STATE.cardioState && Object.keys(APP_STATE.cardioState).length > 0)
+                || (APP_STATE.waterLoggedMl || 0) > 0;
+
+            if (hasOldData) {
+                if (!APP_STATE.historicalArchive) APP_STATE.historicalArchive = {};
+
+                // Calculate stats from the old month's checklist
+                let vol = 0, cardio = 0, checked = 0, total = 0;
+                [1, 2, 3, 4].forEach(w => {
+                    const wData = MONTH_WORKOUTS[w];
+                    if (!wData) return;
+                    wData.days.forEach(dayObj => {
+                        dayObj.exercises.forEach(ex => {
+                            total++;
+                            if (APP_STATE.checklistState[ex.id]) {
+                                checked++;
+                                const details = getExerciseDetails(ex);
+                                vol += (details.setsCount || 2) * parseAvgReps(details.reps) * parseWeightKg(details.weight);
+                            }
+                        });
+                        const cardioId = `w${w}_${dayObj.day.toLowerCase()}_cardio`;
+                        const cSt = APP_STATE.cardioState && APP_STATE.cardioState[cardioId];
+                        if (cSt && cSt.done) cardio += getCardioKm(cardioId, dayObj);
+                    });
+                });
+
+                const prevMonthLabel = APP_STATE.lastChecklistMonth || 'Previous Month';
+                APP_STATE.historicalArchive[`Month ${prevMonthLabel} (Auto-Archived)`] = {
+                    timestamp: new Date().toLocaleDateString(),
+                    volumeKg: Math.round(vol),
+                    cardioKm: parseFloat(cardio.toFixed(1)),
+                    completionPct: total > 0 ? ((checked / total) * 100).toFixed(1) : '0.0'
+                };
+            }
+
+            // Reset for the new month
+            APP_STATE.checklistState = {};
+            APP_STATE.cardioState = {};
+            APP_STATE.customExerciseDetails = {};
+            APP_STATE.waterLoggedMl = 0;
+            APP_STATE.lastChecklistMonth = currentMonth;
+
+            // Advance programStartDate to the Monday of the current week
+            const dayOfWeek = now.getDay(); // 0=Sun..6=Sat
+            const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            const monday = new Date(now);
+            monday.setDate(now.getDate() + mondayOffset);
+            APP_STATE.programStartDate = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
+
+            APP_STATE.activeWeek = currentProgramWeek();
+
+            saveLocalState();
+            pushCloudState();
         }
 
         function loadLocalState() {
@@ -3635,6 +3709,7 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.historicalArchive) APP_STATE.historicalArchive = parsed.historicalArchive;
                     if (parsed.programStartDate) APP_STATE.programStartDate = parsed.programStartDate;
                     if (parsed.lastUpdatedAt) APP_STATE.lastUpdatedAt = parsed.lastUpdatedAt;
+                    if (parsed.lastChecklistMonth) APP_STATE.lastChecklistMonth = parsed.lastChecklistMonth;
                     // Restore saved masterSchedule (custom events) if it matches today
                     if (parsed.masterSchedule && parsed.masterScheduleDateKey) {
                         const todayKey = dateKey(new Date());
