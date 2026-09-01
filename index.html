@@ -3512,6 +3512,11 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
+                if (cloudData.lastChecklistMonth && cloudData.lastChecklistMonth !== APP_STATE.lastChecklistMonth) {
+                    APP_STATE.lastChecklistMonth = cloudData.lastChecklistMonth;
+                    updated = true;
+                }
+
                 // Restore masterSchedule from cloud only if it matches today's date key
                 if (cloudData.masterSchedule && cloudData.masterSchedule.length && cloudData.masterScheduleDateKey) {
                     const todayKey = dateKey(new Date());
@@ -3610,6 +3615,19 @@ Keep crushing the daily plan! 💪⚡`;
             const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
             if (APP_STATE.lastChecklistMonth === currentMonth) return; // same month, nothing to do
+
+            // First launch on a fresh device: no saved month and no old data — nothing to
+            // archive, just stamp the current month and skip (cloud pull will sync later).
+            if (!APP_STATE.lastChecklistMonth) {
+                const hasAnyData = (APP_STATE.checklistState && Object.keys(APP_STATE.checklistState).length > 0)
+                    || (APP_STATE.cardioState && Object.keys(APP_STATE.cardioState).length > 0)
+                    || (APP_STATE.waterLoggedMl || 0) > 0;
+                if (!hasAnyData) {
+                    APP_STATE.lastChecklistMonth = currentMonth;
+                    saveLocalState();
+                    return;
+                }
+            }
 
             // There's old data from a previous month — archive it before clearing
             const hasOldData = (APP_STATE.checklistState && Object.keys(APP_STATE.checklistState).length > 0)
