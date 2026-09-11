@@ -1242,7 +1242,7 @@
             activeTab: 'notifier',
             activeWeek: 1,
             // Monday of Week 1 — the 4-week cycle auto-advances from this date
-            programStartDate: '2026-08-03',
+            programStartDate: '2026-09-13',
             currentTime: new Date(),
             waterLoggedMl: 0,
             waterTargetMl: 4000,
@@ -1263,83 +1263,86 @@
         // MONTH 1 WORKOUT DATA (WEEKS 1 TO 4 COMPLETE)
         const MONTH_WORKOUTS = {
             1: {
-                goalTitle: "WEEK 1: Onboarding & Baseline Alignment",
+                goalTitle: "WEEK 1: Learn Movement Patterns",
                 days: [
                     {
                         day: "Monday",
                         cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
-                        liftingTitle: "PULL A — UPPER LATS & BICEPS",
+                        liftingTitle: "PUSH A — MACHINE CHEST PRESS & SHOULDER PRESS",
                         exercises: [
-                            { id: "w1_m1", name: "Neutral Grip Lat Pulldown", sets: "2 sets × 8–12 reps (25 kg)" },
-                            { id: "w1_m2", name: "Chest-Supported Wide Cable Row", sets: "2 sets × 10–12 reps (15–20 kg)" },
-                            { id: "w1_m3", name: "Dumbbell Pullover", sets: "2 sets × 12–15 reps (10 kg)" },
-                            { id: "w1_m4", name: "Incline Dumbbell Bicep Curls", sets: "2 sets × 10–12 reps (4–5 kg)" },
-                            { id: "w1_m5", name: "Captain's Chair Knee Raises", sets: "3 sets × 12–15 reps (BW)" }
+                            { id: "w1_m1", name: "Machine Chest Press", sets: "3 sets × 12 reps" },
+                            { id: "w1_m2", name: "Machine Shoulder Press", sets: "3 sets × 12 reps" },
+                            { id: "w1_m3", name: "Lateral Raises (Light Dumbbells)", sets: "3 sets × 15 reps" },
+                            { id: "w1_m4", name: "Triceps Pushdown", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Tuesday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
-                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
+                        liftingTitle: "PULL A — ASSISTED PULL-UPS & CABLE ROW",
                         exercises: [
-                            { id: "w1_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (5 kg)" },
-                            { id: "w1_t2", name: "Pec Deck / Cable Flyes", sets: "3 sets × 12–15 reps (15–20 kg)" },
-                            { id: "w1_t3", name: "Seated Dumbbell Shoulder Press", sets: "2 sets × 8–10 reps (5 kg)" },
-                            { id: "w1_t4", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 12–15 reps (4 kg)" },
-                            { id: "w1_t5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (20 kg)" }
+                            { id: "w1_t1", name: "Assisted Pull-Up Machine (or Lat Pulldown)", sets: "3 sets × 12 reps" },
+                            { id: "w1_t2", name: "Seated Cable Row", sets: "3 sets × 12 reps" },
+                            { id: "w1_t3", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w1_t4", name: "Dumbbell Curls", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
-                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
-                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS",
+                        cardioDesc: "Legs day — focus on machine movements and form.",
+                        liftingTitle: "LEGS A — QUADS, HAMSTRINGS & CALVES",
                         exercises: [
-                            { id: "w1_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
-                            { id: "w1_w2", name: "Seated or Lying Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
-                            { id: "w1_w3", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
-                            { id: "w1_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w1_w1", name: "Leg Press", sets: "3 sets × 12 reps" },
+                            { id: "w1_w2", name: "Leg Curl Machine", sets: "3 sets × 12 reps" },
+                            { id: "w1_w3", name: "Leg Extension", sets: "3 sets × 12 reps" },
+                            { id: "w1_w4", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
+                            { id: "w1_w5", name: "Plank", sets: "3 sets × 30 sec holds" }
                         ]
                     },
                     {
                         day: "Thursday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
-                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
+                        liftingTitle: "PUSH B — MACHINE CHEST & SHOULDER (OVERLOAD)",
                         exercises: [
-                            { id: "w1_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (4–5 kg)" },
-                            { id: "w1_th2", name: "Machine Lateral Raises", sets: "2 sets × 12–15 reps" },
-                            { id: "w1_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "3 sets × 10–12 reps (4–5 kg)" },
-                            { id: "w1_th4", name: "Tricep Rope Pushdowns", sets: "2 sets × 12 reps" },
-                            { id: "w1_th5", name: "Bodyweight Planks", sets: "3 sets × 45–60 sec holds" }
+                            { id: "w1_th1", name: "Machine Chest Press", sets: "3 sets × 12 reps" },
+                            { id: "w1_th2", name: "Machine Shoulder Press", sets: "3 sets × 12 reps" },
+                            { id: "w1_th3", name: "Lateral Raises (Light Dumbbells)", sets: "3 sets × 15 reps" },
+                            { id: "w1_th4", name: "Triceps Pushdown", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Friday",
                         cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
-                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
-                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
+                        cardioDesc: "Pull day — same as Tuesday, build volume.",
+                        liftingTitle: "PULL B — ASSISTED PULL-UPS & CABLE ROW",
                         exercises: [
-                            { id: "w1_f1", name: "Wide-Grip Lat Pulldown", sets: "2 sets × 8–10 reps (25 kg)" },
-                            { id: "w1_f2", name: "Single-Arm Dumbbell Rows", sets: "2 sets × 10–12 reps (10–12 kg)" },
-                            { id: "w1_f3", name: "Reverse Pec Deck Flyes", sets: "2 sets × 15 reps" },
-                            { id: "w1_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps (8–10 kg)" },
-                            { id: "w1_f5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (20 kg)" }
+                            { id: "w1_f1", name: "Assisted Pull-Up Machine (or Lat Pulldown)", sets: "3 sets × 12 reps" },
+                            { id: "w1_f2", name: "Seated Cable Row", sets: "3 sets × 12 reps" },
+                            { id: "w1_f3", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w1_f4", name: "Dumbbell Curls", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG CARDIO: ZONE 2 BIKE",
-                        cardioDesc: "Long Zone 2 Bike — 13–15 km (~45–60 mins). No weights; upper body rests completely.",
-                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
-                        exercises: []
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS B",
+                        cardioDesc: "Legs day — second session of the week.",
+                        liftingTitle: "LEGS B — QUADS, HAMSTRINGS & CALVES",
+                        exercises: [
+                            { id: "w1_s1", name: "Leg Press", sets: "3 sets × 12 reps" },
+                            { id: "w1_s2", name: "Leg Curl Machine", sets: "3 sets × 12 reps" },
+                            { id: "w1_s3", name: "Leg Extension", sets: "3 sets × 12 reps" },
+                            { id: "w1_s4", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
+                            { id: "w1_s5", name: "Plank", sets: "3 sets × 30 sec holds" }
+                        ]
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST DAY",
-                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
+                        cardioDesc: "Complete rest. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
@@ -1352,243 +1355,261 @@
                         day: "Monday",
                         cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
-                        liftingTitle: "PULL A — UPPER LATS & BICEPS",
+                        liftingTitle: "PUSH A — INCREASED LOAD (OVERLOAD BEGINS)",
                         exercises: [
-                            { id: "w2_m1", name: "Neutral Grip Lat Pulldown", sets: "3 sets × 8–12 reps (27.5 kg)" },
-                            { id: "w2_m2", name: "Chest-Supported Wide Cable Row", sets: "3 sets × 10–12 reps (20 kg)" },
-                            { id: "w2_m3", name: "Dumbbell Pullover", sets: "3 sets × 12–15 reps (12.5 kg)" },
-                            { id: "w2_m4", name: "Incline Dumbbell Bicep Curls", sets: "2 sets × 10–12 reps (5 kg)" },
-                            { id: "w2_m5", name: "Captain's Chair Knee Raises", sets: "3 sets × 12–15 reps (BW)" }
+                            { id: "w2_m1", name: "Machine Chest Press", sets: "3 sets × 15 reps" },
+                            { id: "w2_m2", name: "Machine Shoulder Press", sets: "3 sets × 15 reps" },
+                            { id: "w2_m3", name: "Lateral Raises", sets: "3 sets × 15 reps" },
+                            { id: "w2_m4", name: "Incline Dumbbell Press (NEW)", sets: "3 sets × 12 reps" },
+                            { id: "w2_m5", name: "Triceps Pushdown", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Tuesday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
-                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
+                        liftingTitle: "PULL A — INCREASED LOAD",
                         exercises: [
-                            { id: "w2_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (7.5 kg)" },
-                            { id: "w2_t2", name: "Pec Deck / Cable Flyes", sets: "3 sets × 12–15 reps (20 kg)" },
-                            { id: "w2_t3", name: "Seated Dumbbell Shoulder Press", sets: "3 sets × 8–10 reps (7.5 kg)" },
-                            { id: "w2_t4", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 12–15 reps (5 kg)" },
-                            { id: "w2_t5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (25 kg)" }
+                            { id: "w2_t1", name: "Assisted Pull-Up Machine (or Lat Pulldown)", sets: "3 sets × 15 reps" },
+                            { id: "w2_t2", name: "Seated Cable Row", sets: "3 sets × 15 reps" },
+                            { id: "w2_t3", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w2_t4", name: "Dumbbell Curls", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
-                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
-                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS",
+                        cardioDesc: "Legs day — add weight, push reps to 15.",
+                        liftingTitle: "LEGS A — INCREASED LOAD",
                         exercises: [
-                            { id: "w2_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
-                            { id: "w2_w2", name: "Seated or Lying Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
-                            { id: "w2_w3", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
-                            { id: "w2_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w2_w1", name: "Leg Press", sets: "3 sets × 15 reps" },
+                            { id: "w2_w2", name: "Leg Curl Machine", sets: "3 sets × 15 reps" },
+                            { id: "w2_w3", name: "Leg Extension", sets: "3 sets × 15 reps" },
+                            { id: "w2_w4", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
+                            { id: "w2_w5", name: "Plank", sets: "3 sets × 45 sec holds" }
                         ]
                     },
                     {
                         day: "Thursday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
-                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
+                        liftingTitle: "PUSH B — INCREASED LOAD + INCLINE DB PRESS",
                         exercises: [
-                            { id: "w2_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (5 kg)" },
-                            { id: "w2_th2", name: "Machine Lateral Raises", sets: "3 sets × 12–15 reps" },
-                            { id: "w2_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "3 sets × 10–12 reps (5 kg)" },
-                            { id: "w2_th4", name: "Tricep Rope Pushdowns", sets: "3 sets × 12 reps" },
-                            { id: "w2_th5", name: "Bodyweight Planks", sets: "3 sets × 45–60 sec holds" }
+                            { id: "w2_th1", name: "Machine Chest Press", sets: "3 sets × 15 reps" },
+                            { id: "w2_th2", name: "Incline Dumbbell Press", sets: "3 sets × 12 reps" },
+                            { id: "w2_th3", name: "Lateral Raises", sets: "3 sets × 15 reps" },
+                            { id: "w2_th4", name: "Triceps Pushdown", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Friday",
                         cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
-                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
-                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
+                        cardioDesc: "Pull day — push reps higher.",
+                        liftingTitle: "PULL B — INCREASED LOAD",
                         exercises: [
-                            { id: "w2_f1", name: "Wide-Grip Lat Pulldown", sets: "3 sets × 8–10 reps (27.5 kg)" },
-                            { id: "w2_f2", name: "Single-Arm Dumbbell Rows", sets: "3 sets × 10–12 reps (12.5 kg)" },
-                            { id: "w2_f3", name: "Reverse Pec Deck Flyes", sets: "3 sets × 15 reps" },
-                            { id: "w2_f4", name: "Hammer Curls", sets: "2 sets × 10–12 reps (10 kg)" },
-                            { id: "w2_f5", name: "Heavy Cable Crunches", sets: "3 sets × 12–15 reps (25 kg)" }
+                            { id: "w2_f1", name: "Assisted Pull-Up Machine (or Lat Pulldown)", sets: "3 sets × 15 reps" },
+                            { id: "w2_f2", name: "Seated Cable Row", sets: "3 sets × 15 reps" },
+                            { id: "w2_f3", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w2_f4", name: "Dumbbell Curls", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG CARDIO: ZONE 2 RUN",
-                        cardioDesc: "Long Zone 2 Run — 3.0–3.5 km (~30–40 mins). No weights; upper body rests completely.",
-                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
-                        exercises: []
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS B",
+                        cardioDesc: "Legs day — second session.",
+                        liftingTitle: "LEGS B — INCREASED LOAD",
+                        exercises: [
+                            { id: "w2_s1", name: "Leg Press", sets: "3 sets × 15 reps" },
+                            { id: "w2_s2", name: "Leg Curl Machine", sets: "3 sets × 15 reps" },
+                            { id: "w2_s3", name: "Leg Extension", sets: "3 sets × 15 reps" },
+                            { id: "w2_s4", name: "Standing Calf Raises", sets: "3 sets × 15 reps" },
+                            { id: "w2_s5", name: "Plank", sets: "3 sets × 45 sec holds" }
+                        ]
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST DAY",
-                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
+                        cardioDesc: "Complete rest. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
                 ]
             },
             3: {
-                goalTitle: "WEEK 3: Peak Volume Phase 1",
+                goalTitle: "WEEK 3: Introduce Free Weights",
                 days: [
                     {
                         day: "Monday",
                         cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
-                        liftingTitle: "PULL A — UPPER LATS & BICEPS",
+                        liftingTitle: "PUSH A — BARBELL BENCH & DB SHOULDER PRESS",
                         exercises: [
-                            { id: "w3_m1", name: "Neutral Grip Lat Pulldown", sets: "3 sets × 8–12 reps (30 kg)" },
-                            { id: "w3_m2", name: "Chest-Supported Wide Cable Row", sets: "3 sets × 10–12 reps (22.5 kg)" },
-                            { id: "w3_m3", name: "Dumbbell Pullover", sets: "3 sets × 12–15 reps (15 kg)" },
-                            { id: "w3_m4", name: "Incline Dumbbell Bicep Curls", sets: "3 sets × 10–12 reps (6 kg)" },
-                            { id: "w3_m5", name: "Captain's Chair Knee Raises", sets: "3 sets × 15 reps (BW)" }
+                            { id: "w3_m1", name: "Barbell Bench Press (Light, Form Focus)", sets: "3 sets × 8 reps" },
+                            { id: "w3_m2", name: "Dumbbell Shoulder Press", sets: "3 sets × 10 reps" },
+                            { id: "w3_m3", name: "Lateral Raises", sets: "3 sets × 12 reps" },
+                            { id: "w3_m4", name: "Dips (Assisted if needed)", sets: "3 sets × 8 reps" },
+                            { id: "w3_m5", name: "Triceps Pushdown", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Tuesday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
-                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS",
+                        liftingTitle: "PULL A — BARBELL ROWS & LAT PULLDOWN",
                         exercises: [
-                            { id: "w3_t1", name: "Incline Dumbbell Chest Press", sets: "3 sets × 8–10 reps (10 kg)" },
-                            { id: "w3_t2", name: "Pec Deck / Cable Flyes", sets: "3 sets × 12–15 reps (22.5 kg)" },
-                            { id: "w3_t3", name: "Seated Dumbbell Shoulder Press", sets: "3 sets × 8–10 reps (10 kg)" },
-                            { id: "w3_t4", name: "Seated Dumbbell Lateral Raises", sets: "4 sets × 12–15 reps (5 kg)" },
-                            { id: "w3_t5", name: "Heavy Cable Crunches", sets: "3 sets × 15 reps (30 kg)" }
+                            { id: "w3_t1", name: "Barbell Rows (Light, Form Focus)", sets: "3 sets × 8 reps" },
+                            { id: "w3_t2", name: "Lat Pulldown", sets: "3 sets × 10 reps" },
+                            { id: "w3_t3", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w3_t4", name: "Barbell Curls", sets: "3 sets × 10 reps" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
-                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
-                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (ZERO GLUTE)",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS",
+                        cardioDesc: "Legs — introduce goblet squats and RDLs.",
+                        liftingTitle: "LEGS A — GOBLET SQUATS & ROMANIAN DEADLIFT",
                         exercises: [
-                            { id: "w3_w1", name: "Leg Press [Low Foot Placement]", sets: "3 sets × 8–10 reps (Quads only, zero glute)" },
-                            { id: "w3_w2", name: "Seated or Lying Leg Curls", sets: "3 sets × 12–15 reps (Hamstring isolation)" },
-                            { id: "w3_w3", name: "Standing Calf Raises", sets: "4 sets × 15 reps" },
-                            { id: "w3_w4", name: "Bench Reverse Crunches", sets: "3 sets × 15 reps" }
+                            { id: "w3_w1", name: "Bodyweight/Goblet Squats → Light Barbell Back Squat", sets: "3 sets × 8 reps" },
+                            { id: "w3_w2", name: "Romanian Deadlift (Light, Form Focus)", sets: "3 sets × 10 reps" },
+                            { id: "w3_w3", name: "Walking Lunges", sets: "3 sets × 10 reps/leg" },
+                            { id: "w3_w4", name: "Leg Curl", sets: "3 sets × 12 reps" },
+                            { id: "w3_w5", name: "Calf Raises", sets: "3 sets × 15 reps" }
                         ]
                     },
                     {
                         day: "Thursday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
                         cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
-                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF",
+                        liftingTitle: "PUSH B — INCLINE DB PRESS & DIPS",
                         exercises: [
-                            { id: "w3_th1", name: "Seated Dumbbell Lateral Raises", sets: "3 sets × 10–12 reps (6 kg)" },
-                            { id: "w3_th2", name: "Machine Lateral Raises", sets: "3 sets × 12–15 reps" },
-                            { id: "w3_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "3 sets × 10–12 reps (6 kg)" },
-                            { id: "w3_th4", name: "Tricep Rope Pushdowns", sets: "3 sets × 12 reps" },
-                            { id: "w3_th5", name: "Bodyweight Planks", sets: "3 sets × 60 sec holds" }
+                            { id: "w3_th1", name: "Incline Dumbbell Press", sets: "3 sets × 10 reps" },
+                            { id: "w3_th2", name: "Dumbbell Shoulder Press", sets: "3 sets × 10 reps" },
+                            { id: "w3_th3", name: "Lateral Raises", sets: "3 sets × 12 reps" },
+                            { id: "w3_th4", name: "Dips (Assisted if needed)", sets: "3 sets × 8 reps" },
+                            { id: "w3_th5", name: "Triceps Pushdown", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Friday",
                         cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
-                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
-                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS",
+                        cardioDesc: "Pull — barbell rows and curls.",
+                        liftingTitle: "PULL B — BARBELL ROWS & BARBELL CURLS",
                         exercises: [
-                            { id: "w3_f1", name: "Wide-Grip Lat Pulldown", sets: "3 sets × 8–10 reps (30 kg)" },
-                            { id: "w3_f2", name: "Single-Arm Dumbbell Rows", sets: "3 sets × 10–12 reps (15 kg)" },
-                            { id: "w3_f3", name: "Reverse Pec Deck Flyes", sets: "3 sets × 15 reps" },
-                            { id: "w3_f4", name: "Hammer Curls", sets: "3 sets × 10–12 reps (12.5 kg)" },
-                            { id: "w3_f5", name: "Heavy Cable Crunches", sets: "3 sets × 15 reps (30 kg)" }
+                            { id: "w3_f1", name: "Barbell Rows", sets: "3 sets × 8 reps" },
+                            { id: "w3_f2", name: "Lat Pulldown", sets: "3 sets × 10 reps" },
+                            { id: "w3_f3", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w3_f4", name: "Barbell Curls", sets: "3 sets × 10 reps" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG CARDIO: ZONE 2 BIKE",
-                        cardioDesc: "Long Zone 2 Bike — 13–15 km (~45–60 mins). No weights; upper body rests completely.",
-                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
-                        exercises: []
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS B",
+                        cardioDesc: "Legs — second session of the week.",
+                        liftingTitle: "LEGS B — GOBLET SQUATS & RDL",
+                        exercises: [
+                            { id: "w3_s1", name: "Bodyweight/Goblet Squats → Light Barbell Back Squat", sets: "3 sets × 8 reps" },
+                            { id: "w3_s2", name: "Romanian Deadlift (Light)", sets: "3 sets × 10 reps" },
+                            { id: "w3_s3", name: "Walking Lunges", sets: "3 sets × 10 reps/leg" },
+                            { id: "w3_s4", name: "Leg Curl", sets: "3 sets × 12 reps" },
+                            { id: "w3_s5", name: "Calf Raises", sets: "3 sets × 15 reps" }
+                        ]
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST DAY",
-                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
+                        cardioDesc: "Complete rest. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
                 ]
             },
             4: {
-                goalTitle: "WEEK 4: Deload Week (30% Volume Cut)",
+                goalTitle: "WEEK 4: Full Free-Weight Compounds",
                 days: [
                     {
                         day: "Monday",
                         cardioTitle: "CARDIO: ZONE 2 RUN — 3:30 PM SLOT",
-                        cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km (deload pace).",
-                        liftingTitle: "PULL A — UPPER LATS & BICEPS (DELOAD)",
+                        cardioDesc: "Late-afternoon Zone 2 run intervals — 2.5–3.0 km.",
+                        liftingTitle: "PUSH A — BB BENCH 4×6-8 & OVERHEAD PRESS",
                         exercises: [
-                            { id: "w4_m1", name: "Neutral Grip Lat Pulldown", sets: "2 sets × 8–10 reps (20 kg)" },
-                            { id: "w4_m2", name: "Chest-Supported Wide Cable Row", sets: "2 sets × 10 reps (15 kg)" },
-                            { id: "w4_m3", name: "Dumbbell Pullover", sets: "2 sets × 12 reps (10 kg)" },
-                            { id: "w4_m4", name: "Incline Dumbbell Bicep Curls", sets: "2 sets × 10 reps (4 kg)" },
-                            { id: "w4_m5", name: "Captain's Chair Knee Raises", sets: "2 sets × 12 reps (BW)" }
+                            { id: "w4_m1", name: "Barbell Bench Press", sets: "4 sets × 6–8 reps" },
+                            { id: "w4_m2", name: "Standing Overhead Press", sets: "3 sets × 8 reps" },
+                            { id: "w4_m3", name: "Lateral Raises", sets: "3 sets × 12 reps" },
+                            { id: "w4_m4", name: "Dips", sets: "3 sets × 8–10 reps" },
+                            { id: "w4_m5", name: "Overhead Triceps Extension", sets: "3 sets × 10 reps" }
                         ]
                     },
                     {
                         day: "Tuesday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
-                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km (deload pace).",
-                        liftingTitle: "PUSH A — UPPER CHEST, SIDE DELTS & TRICEPS (DELOAD)",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
+                        liftingTitle: "PULL A — PULL-UPS 4×6-8 & BARBELL ROWS",
                         exercises: [
-                            { id: "w4_t1", name: "Incline Dumbbell Chest Press", sets: "2 sets × 8 reps (5 kg)" },
-                            { id: "w4_t2", name: "Pec Deck / Cable Flyes", sets: "2 sets × 12 reps (15 kg)" },
-                            { id: "w4_t3", name: "Seated Dumbbell Shoulder Press", sets: "2 sets × 8 reps (5 kg)" },
-                            { id: "w4_t4", name: "Seated Dumbbell Lateral Raises", sets: "2 sets × 12 reps (4 kg)" },
-                            { id: "w4_t5", name: "Heavy Cable Crunches", sets: "2 sets × 12 reps (15 kg)" }
+                            { id: "w4_t1", name: "Pull-Ups (or Assisted)", sets: "4 sets × 6–8 reps" },
+                            { id: "w4_t2", name: "Barbell Rows", sets: "3 sets × 8 reps" },
+                            { id: "w4_t3", name: "Cable Rows", sets: "3 sets × 10 reps" },
+                            { id: "w4_t4", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w4_t5", name: "Hammer Curls", sets: "3 sets × 10 reps" }
                         ]
                     },
                     {
                         day: "Wednesday",
-                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS & CORE",
-                        cardioDesc: "No cardio today — legs & core night. Gives your cardio system and lower-body joints a break.",
-                        liftingTitle: "LEGS & CORE — QUADS, HAMSTRINGS & CALVES (DELOAD)",
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS",
+                        cardioDesc: "Legs — back squat and RDL as main lifts.",
+                        liftingTitle: "LEGS A — BACK SQUAT 4×6-8 & RDL",
                         exercises: [
-                            { id: "w4_w1", name: "Leg Press [Low Foot Placement]", sets: "2 sets × 8 reps (Quads only, zero glute)" },
-                            { id: "w4_w2", name: "Seated or Lying Leg Curls", sets: "2 sets × 12 reps (Hamstring isolation)" },
-                            { id: "w4_w3", name: "Standing Calf Raises", sets: "2 sets × 12 reps" },
-                            { id: "w4_w4", name: "Bench Reverse Crunches", sets: "2 sets × 12 reps" }
+                            { id: "w4_w1", name: "Back Squat", sets: "4 sets × 6–8 reps" },
+                            { id: "w4_w2", name: "Romanian Deadlift", sets: "3 sets × 8 reps" },
+                            { id: "w4_w3", name: "Walking Lunges", sets: "3 sets × 10 reps/leg" },
+                            { id: "w4_w4", name: "Leg Curl", sets: "3 sets × 12 reps" },
+                            { id: "w4_w5", name: "Calf Raises", sets: "3 sets × 15 reps" },
+                            { id: "w4_w6", name: "Hanging Leg Raises", sets: "3 sets × 12 reps" }
                         ]
                     },
                     {
                         day: "Thursday",
                         cardioTitle: "CARDIO: ZONE 2 BIKE — 3:30 PM SLOT",
-                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km (deload pace).",
-                        liftingTitle: "PUSH B — SIDE DELT OVERLOAD & UPPER CHEST SHELF (DELOAD)",
+                        cardioDesc: "Late-afternoon easy Zone 2 bike spin — 10–12 km.",
+                        liftingTitle: "PUSH B — BB BENCH & OH PRESS VOLUME",
                         exercises: [
-                            { id: "w4_th1", name: "Seated Dumbbell Lateral Raises", sets: "2 sets × 10 reps (4 kg)" },
-                            { id: "w4_th2", name: "Machine Lateral Raises", sets: "2 sets × 12 reps" },
-                            { id: "w4_th3", name: "Incline Dumbbell Flyes (30° Angle)", sets: "2 sets × 10 reps (4 kg)" },
-                            { id: "w4_th4", name: "Tricep Rope Pushdowns", sets: "2 sets × 10 reps" },
-                            { id: "w4_th5", name: "Bodyweight Planks", sets: "2 sets × 45 sec holds" }
+                            { id: "w4_th1", name: "Barbell Bench Press", sets: "3 sets × 8–10 reps" },
+                            { id: "w4_th2", name: "Standing Overhead Press", sets: "3 sets × 8 reps" },
+                            { id: "w4_th3", name: "Lateral Raises", sets: "3 sets × 12 reps" },
+                            { id: "w4_th4", name: "Dips", sets: "3 sets × 8–10 reps" },
+                            { id: "w4_th5", name: "Overhead Triceps Extension", sets: "3 sets × 10 reps" }
                         ]
                     },
                     {
                         day: "Friday",
                         cardioTitle: "NO CARDIO — NIGHT LIFTING: PULL B",
-                        cardioDesc: "No cardio today — Pull B night. Keeps legs fresh and clears fatigue before Saturday's long session.",
-                        liftingTitle: "PULL B — UPPER BACK WIDTH & REAR DELTS (DELOAD)",
+                        cardioDesc: "Pull — pull-ups and barbell rows.",
+                        liftingTitle: "PULL B — PULL-UPS & BARBELL ROWS VOLUME",
                         exercises: [
-                            { id: "w4_f1", name: "Wide-Grip Lat Pulldown", sets: "2 sets × 8 reps (20 kg)" },
-                            { id: "w4_f2", name: "Single-Arm Dumbbell Rows", sets: "2 sets × 10 reps (10 kg)" },
-                            { id: "w4_f3", name: "Reverse Pec Deck Flyes", sets: "2 sets × 12 reps" },
-                            { id: "w4_f4", name: "Hammer Curls", sets: "2 sets × 10 reps (8 kg)" },
-                            { id: "w4_f5", name: "Heavy Cable Crunches", sets: "2 sets × 12 reps (15 kg)" }
+                            { id: "w4_f1", name: "Pull-Ups (or Assisted)", sets: "3 sets × 8–10 reps" },
+                            { id: "w4_f2", name: "Barbell Rows", sets: "3 sets × 8 reps" },
+                            { id: "w4_f3", name: "Cable Rows", sets: "3 sets × 10 reps" },
+                            { id: "w4_f4", name: "Face Pulls", sets: "3 sets × 15 reps" },
+                            { id: "w4_f5", name: "Hammer Curls", sets: "3 sets × 10 reps" }
                         ]
                     },
                     {
                         day: "Saturday",
-                        cardioTitle: "LONG CARDIO: ZONE 2 RUN",
-                        cardioDesc: "Long Zone 2 Run — 3.0–3.5 km (~30–40 mins, deload pace). No weights; upper body rests completely.",
-                        liftingTitle: "NO LIFTING — CARDIO ENGINE DAY",
-                        exercises: []
+                        cardioTitle: "NO CARDIO — NIGHT LIFTING: LEGS B",
+                        cardioDesc: "Legs — second session.",
+                        liftingTitle: "LEGS B — BACK SQUAT & RDL VOLUME",
+                        exercises: [
+                            { id: "w4_s1", name: "Back Squat", sets: "4 sets × 6–8 reps" },
+                            { id: "w4_s2", name: "Romanian Deadlift", sets: "3 sets × 8 reps" },
+                            { id: "w4_s3", name: "Walking Lunges", sets: "3 sets × 10 reps/leg" },
+                            { id: "w4_s4", name: "Leg Curl", sets: "3 sets × 12 reps" },
+                            { id: "w4_s5", name: "Calf Raises", sets: "4 sets × 15 reps" },
+                            { id: "w4_s6", name: "Hanging Leg Raises", sets: "3 sets × 12 reps" }
+                        ]
                     },
                     {
                         day: "Sunday",
                         cardioTitle: "FULL REST DAY",
-                        cardioDesc: "Complete CNS & muscle tissue repair. Sleep, hydrate, meal prep.",
+                        cardioDesc: "Complete rest. Sleep, hydrate, meal prep.",
                         liftingTitle: "FULL REST",
                         exercises: []
                     }
