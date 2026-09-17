@@ -1,4 +1,4 @@
-const CACHE_NAME = 'growthapp-cache-v33';
+const CACHE_NAME = 'growthapp-cache-v34';
 const ASSETS = [
   '/',
   '/index.html',
