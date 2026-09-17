@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>GROWTH</title>
     
     <!-- PWA & Favicon Configurations -->
@@ -10,9 +10,16 @@
     <link rel="shortcut icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/logo.png">
-    <meta name="theme-color" content="#09090b">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GROWTH">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Splash screen / app feel meta -->
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="format-detection" content="telephone=no">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -88,6 +95,44 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Input fields should be selectable */
+        input, textarea, select, [contenteditable] {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        /* No tap delay on buttons */
+        button, a, [role="button"] {
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+
+        /* iOS safe area insets */
+        @supports (padding: env(safe-area-inset-top)) {
+            header { padding-top: env(safe-area-inset-top); }
+            .md\:hidden.fixed.bottom-0 { padding-bottom: env(safe-area-inset-bottom); }
+        }
+
+        /* Prevent pull-to-refresh */
+        html {
+            overscroll-behavior: none;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* App-like scrolling container */
+        .tab-content {
+            -webkit-overflow-scrolling: touch;
         }
 
         /* ---- CARDS ---- */
@@ -262,7 +307,7 @@
 </head>
 <body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-16 bg-black text-white overflow-x-hidden relative">
     <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/[0.06] px-4 lg:px-8 py-3">
+    <header class="sticky top-0 z-50 bg-black border-b border-white/[0.06] px-4 lg:px-8 py-3" style="padding-top: env(safe-area-inset-top, 0px);">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             
             <!-- Brand & Live Notifier Badge -->
@@ -306,7 +351,7 @@
     </header>
 
     <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-t border-white/[0.06] px-2 py-2 flex items-center justify-around">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/[0.06] px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex items-center justify-around">
         <button onclick="switchTab('notifier')" id="mob-nav-notifier" class="mob-nav-btn active flex flex-col items-center gap-0.5 text-[#64d2ff] font-bold p-1">
             <i data-lucide="calendar" class="w-5 h-5"></i>
             <span class="text-[10px] font-medium">Schedule</span>
