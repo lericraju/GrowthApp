@@ -48,11 +48,10 @@ const srcDirs = fs.readdirSync(__dirname).filter(f => {
 });
 
 for (const dir of srcDirs) {
+    // Skip api/ (serverless, runs on Vercel not in the app)
+    if (dir === 'api') continue;
     const destDir = path.join(wwwDir, dir);
-    if (!fs.existsSync(destDir)) {
-        fs.mkdirSync(destDir, { recursive: true });
-    }
-    execSync(`cp -r "${path.join(__dirname, dir)}"/* "${destDir}/" 2>/dev/null || true`, { stdio: 'ignore' });
+    fs.cpSync(path.join(__dirname, dir), destDir, { recursive: true });
     console.log(`  ✓ ${dir}/`);
 }
 
