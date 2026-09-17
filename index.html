@@ -4050,7 +4050,8 @@ Keep crushing the daily plan! 💪⚡`;
         }
 
         // SERVER-LEVEL REALTIME SYNC ENGINE (SERVER SINGLE SOURCE OF TRUTH)
-        const SERVER_SYNC_ENDPOINT = '/api/sync';
+        const IS_NATIVE_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform);
+        const SERVER_SYNC_ENDPOINT = IS_NATIVE_APP ? 'https://growth-app-neon.vercel.app/api/sync' : '/api/sync';
         const FALLBACK_CLOUD_URL = 'https://api.restful-api.dev/objects/ff8081819f7e10ae019fdf5ba5bd0ef3';
 
         let isPushingInFlight = false;

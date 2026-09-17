@@ -1,0 +1,29 @@
+{
+  "name": "gym",
+  "version": "1.0.0",
+  "description": "A single-page PWA (`index.html`) with a workout routine planner (4-week Pull/Push/Legs cycle), a daily schedule with an active-plan banner, macro/water/meal tracking, and analytics (volume, cardio, muscle balance, V-taper). A companion page (`Gym.html`) offers a simulated training-log sandbox. Sync between devices goes through the Vercel serverless function in `api/sync.js`, with the browser's `localStorage` acting as the per-device source of truth.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "android:build": "node build-android.js",
+    "android:sync": "npx cap sync android",
+    "android:open": "npx cap open android"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lericraju/GrowthApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lericraju/GrowthApp/issues"
+  },
+  "homepage": "https://github.com/lericraju/GrowthApp#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  }
+}

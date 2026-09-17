@@ -1,0 +1,22 @@
+{
+  "appId": "com.growthapp.app",
+  "appName": "GROWTH",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#000000",
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 1000,
+      "backgroundColor": "#000000",
+      "showSpinner": false
+    }
+  }
+}
