@@ -325,8 +325,9 @@
                     </div>
                 </div>
 
-                <!-- Sync LED Indicator -->
+                <!-- Sync LED Indicator — label shows which store served the last pull -->
                 <div class="flex items-center gap-2">
+                    <span id="sync-label" class="text-[9px] font-mono font-bold uppercase text-white/40 tracking-wide"></span>
                     <span id="sync-icon" class="w-2 h-2 rounded-full bg-[#30d158] animate-pulse" title="Server Sync Live"></span>
                 </div>
             </div>
@@ -4180,6 +4181,7 @@ Keep crushing the daily plan! 💪⚡`;
                 if (res.ok) {
                     const result = await res.json();
                     if (result && result.durable) cloudDurable = true;
+                    if (result && result.source) lastPullSource = result.source;
                     if (result && result.data) {
                         cloudData = result.data;
                     }
@@ -4199,17 +4201,23 @@ Keep crushing the daily plan! 💪⚡`;
                         if (result && result.data) {
                             cloudData = result.data;
                             cloudDurable = false;
+                            lastPullSource = 'rest_fallback';
                         }
                     }
                 } catch(e) {}
             }
 
-            // Reflect whether the server stores state durably (survives redeploys) on the sync LED
+            // Reflect which store served the last pull + durability on the sync LED tooltip
             const syncIcon = document.getElementById('sync-icon');
             if (syncIcon) {
+                const storeName = lastPullSource === 'vercel_kv' ? 'Upstash KV'
+                    : lastPullSource === 'supabase_backup' ? 'Supabase backup'
+                    : lastPullSource === 'server_api' ? 'server memory (non-durable)'
+                    : lastPullSource === 'rest_fallback' ? 'legacy REST fallback'
+                    : 'awaiting first pull';
                 syncIcon.title = cloudDurable
-                    ? 'Server sync live — durable Upstash KV storage (survives redeploys)'
-                    : 'Server sync live — memory only' + (kvDebugMsg ? ' — ' + kvDebugMsg : ' (add KV_REST_API_URL + KV_REST_API_TOKEN)');
+                    ? `Server sync live — last pull served by ${storeName} (survives redeploys)`
+                    : `Server sync live — last pull served by ${storeName}` + (kvDebugMsg ? ' — ' + kvDebugMsg : '');
             }
 
             // KV is connected but the key doesn't exist yet — push local state to seed it
@@ -4411,10 +4419,26 @@ Keep crushing the daily plan! 💪⚡`;
             }
         }
 
+        // Which store served the most recent cloud pull (KV primary vs Supabase backup)
+        let lastPullSource = null;
+        function syncSourceTag() {
+            switch (lastPullSource) {
+                case 'vercel_kv': return 'KV';
+                case 'supabase_backup': return 'SUPABASE';
+                case 'server_api': return 'MEMORY';
+                case 'rest_fallback': return 'FALLBACK';
+                default: return null;
+            }
+        }
+
         function updateSyncUIStatus(isLive, message) {
             const label = document.getElementById('sync-label');
             const icon = document.getElementById('sync-icon');
-            if (label) label.innerText = message;
+            // Live indicator: show WHICH store served the last pull (KV vs Supabase
+            // backup) — short enough for the mobile header; falls back to the message
+            // before the first pull and whenever sync isn't live.
+            const tag = isLive ? syncSourceTag() : null;
+            if (label) label.innerText = tag || message;
             if (icon) icon.className = isLive ? 'w-2 h-2 rounded-full bg-[#30d158] animate-pulse' : 'w-2 h-2 rounded-full bg-amber-400';
         }
 
