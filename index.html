@@ -2432,6 +2432,13 @@
                 APP_STATE.lastScheduleDateKey = todayKey;
                 APP_STATE.masterSchedule = getTodayScheduleTemplate();
                 currentActiveSlotId = null;
+                // Month boundary crossed while the app stayed open (was init-only before)
+                checkMonthRollover();
+                // Jump the Routine tab to the new day so yesterday's checked-off workout
+                // can't linger on screen looking like today's session
+                syncRoutineToToday();
+                renderWorkoutsTab();
+                renderAdminAnalytics();
                 renderScheduleTimeline();
                 updateScheduleDayLabel();
             }
@@ -3036,7 +3043,7 @@
             dayCard.innerHTML = `
                 <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
                     <div>
-                        <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">${dayObj.day}${APP_STATE.activeDayIndex === todayIdx ? ' • <span style="color:#34d399;">TODAY</span>' : ''} • ${dayObj.cardioTitle || 'CARDIO SESSION'}</span>
+                        <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">${dayObj.day}${APP_STATE.activeDayIndex === todayIdx && APP_STATE.activeWeek === currentProgramWeek() ? ' • <span style="color:#34d399;">TODAY</span>' : ''} • ${dayObj.cardioTitle || 'CARDIO SESSION'}</span>
                         <h3 class="font-bold text-base text-white uppercase">${dayObj.liftingTitle || 'WORKOUT'}</h3>
                     </div>
                     <span class="text-xs font-mono text-white/40">${dayObj.cardioDesc || ''}</span>
@@ -4106,6 +4113,9 @@ Keep crushing the daily plan! 💪⚡`;
 
         let isPushingInFlight = false;
         let lastPushTimestamp = 0;
+        // Throttle for the stale-day heal push in pullCloudState: a legacy server that
+        // can't store lastMealDateKey must not trigger a push on every 1.5s poll
+        let lastDailyHealPushAt = 0;
 
         async function pushCloudState() {
             isPushingInFlight = true;
@@ -4263,13 +4273,15 @@ Keep crushing the daily plan! 💪⚡`;
 
                 // ---- DAILY NUTRITION DAY GUARD -------------------------------------
                 // loggedMeals & waterLoggedMl belong to ONE calendar day. A cloud snapshot
-                // stamped with a different day (yesterday's log, or a stale pre-fix server
-                // copy with no key at all) must never be re-injected after the local day
-                // rollover reset the table — skip it and, if the cloud copy is genuinely
-                // older, push today's reset up so the stale data stops coming back.
+                // from a DIFFERENT day (yesterday's log, or a stale pre-fix copy) must
+                // never be re-injected after the local day rollover reset the table.
+                // Legacy servers don't store lastMealDateKey — fall back to the snapshot's
+                // updatedAt day so a same-day snapshot still syncs and a stale one doesn't.
                 const cloudDailyKey = cloudData.lastMealDateKey || null;
+                const cloudDailyDay = cloudDailyKey ||
+                    (cloudData.updatedAt && !isNaN(new Date(cloudData.updatedAt)) ? dateKey(new Date(cloudData.updatedAt)) : null);
                 const localDailyKey = APP_STATE.lastMealDateKey || dateKey(new Date());
-                const cloudDailyStale = cloudDailyKey !== localDailyKey;
+                const cloudDailyStale = cloudDailyDay !== null && cloudDailyDay !== localDailyKey;
                 const cloudHasDailyData = !!((cloudData.loggedMeals && cloudData.loggedMeals.length) || (cloudData.waterLoggedMl || 0) > 0);
                 if (cloudDailyStale && cloudHasDailyData) {
                     const parseDayTs = (k) => {
@@ -4278,11 +4290,16 @@ Keep crushing the daily plan! 💪⚡`;
                         if (p.length !== 3 || p.some(isNaN)) return null;
                         return new Date(p[0], p[1] - 1, p[2]).getTime();
                     };
-                    const cloudDayTs = parseDayTs(cloudDailyKey);
+                    const cloudDayTs = parseDayTs(cloudDailyDay);
                     const localDayTs = parseDayTs(localDailyKey);
-                    const cloudIsOlder = cloudDailyKey === null ||
-                        (cloudDayTs !== null && localDayTs !== null && cloudDayTs < localDayTs);
-                    if (cloudIsOlder) pushCloudState(); // heal the server with today's reset state
+                    // Heal the server with today's reset state — strictly-older only (a
+                    // NEWER remote day means clock skew; pushing back would ping-pong) and
+                    // throttled so a key-less legacy server can't trigger a push every 1.5s.
+                    const cloudIsOlder = cloudDayTs !== null && localDayTs !== null && cloudDayTs < localDayTs;
+                    if (cloudIsOlder && Date.now() - lastDailyHealPushAt > 60000) {
+                        lastDailyHealPushAt = Date.now();
+                        pushCloudState();
+                    }
                 }
 
                 // Apply a cloud field only when it differs AND it is non-empty (or the local
@@ -4294,6 +4311,7 @@ Keep crushing the daily plan! 💪⚡`;
                 };
 
                 let updated = false;
+                let programStartChanged = false;
 
                 if (cloudData.checklistState && shouldApply(cloudData.checklistState, APP_STATE.checklistState)) {
                     APP_STATE.checklistState = cloudData.checklistState;
@@ -4351,6 +4369,7 @@ Keep crushing the daily plan! 💪⚡`;
 
                 if (cloudData.programStartDate && cloudData.programStartDate !== APP_STATE.programStartDate) {
                     APP_STATE.programStartDate = cloudData.programStartDate;
+                    programStartChanged = true;
                     updated = true;
                 }
 
@@ -4374,6 +4393,10 @@ Keep crushing the daily plan! 💪⚡`;
 
                 if (updated) {
                     saveLocalState();
+                    // The displayed week/day are derived from programStartDate — if the
+                    // cloud moved it, re-derive first or the Routine tab keeps showing an
+                    // old week's already-checked exercises labeled as "TODAY"
+                    if (programStartChanged) syncRoutineToToday();
                     renderScheduleTimeline();
                     renderWorkoutsTab();
                     renderLoggedMeals();
@@ -4465,13 +4488,16 @@ Keep crushing the daily plan! 💪⚡`;
             const meals = APP_STATE.loggedMeals || [];
             const waterMl = APP_STATE.waterLoggedMl || 0;
 
-            // No stamp yet (first launch with this feature). If there's no daily data at
-            // all (fresh device) or the data was written TODAY per the last sync stamp,
-            // keep it and just stamp the key instead of wiping a real day's log.
+            // No stamp yet (first launch with this feature). Decide whether the unstamped
+            // data belongs to TODAY: use the newest meal's log-time id (Date.now() ms) —
+            // any push touches lastUpdatedAt, so that alone can't prove the MEALS are from
+            // today. Falls back to the last sync stamp when there are no meals (water-only).
             if (!APP_STATE.lastMealDateKey) {
-                const lastDay = APP_STATE.lastUpdatedAt ? dateKey(new Date(APP_STATE.lastUpdatedAt)) : null;
+                const newestMealTs = meals.reduce((mx, m) => Math.max(mx, Number(m.id) || 0), 0);
+                const lastSyncDay = APP_STATE.lastUpdatedAt ? dateKey(new Date(APP_STATE.lastUpdatedAt)) : null;
+                const dataDay = (newestMealTs > 1e12) ? dateKey(new Date(newestMealTs)) : lastSyncDay;
                 const freshDevice = meals.length === 0 && waterMl === 0;
-                if (freshDevice || lastDay === todayKey) {
+                if (freshDevice || dataDay === todayKey) {
                     APP_STATE.lastMealDateKey = todayKey;
                     saveLocalState();
                     return;
