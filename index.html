@@ -739,6 +739,14 @@
                         </div>
                     </div>
 
+                    <!-- Archived Daily Macro Totals (saved automatically at midnight) -->
+                    <div class="brutal-card p-4 space-y-3">
+                        <h4 class="font-semibold text-xs uppercase text-white/40">SAVED MACRO HISTORY</h4>
+                        <div id="macro-history-list" class="space-y-2 max-h-48 overflow-y-auto">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -1109,6 +1117,10 @@
             customExerciseDetails: {},
             masterSchedule: getTodayScheduleTemplate(),
             lastScheduleDateKey: null,
+            // Day-rollover stamp for DAILY nutrition data (meals + water) — YYYY-M-D
+            lastMealDateKey: null,
+            // Archived daily macro totals, saved automatically at the midnight rollover
+            macroHistory: {},
             // Exercise Checklist State across 4 Weeks
             checklistState: {},
             // Cardio tracking per day: { 'w1_sat_cardio': { done: bool, km: number|null } }
@@ -2351,6 +2363,9 @@
         // --- CORE APPLICATION INITIALIZATION ---
         window.addEventListener('DOMContentLoaded', () => {
             loadLocalState();
+            // Reset yesterday's meals/water BEFORE checkMonthRollover — its pushCloudState
+            // updates lastUpdatedAt, which the day-rollover "is this data from today?" check uses
+            checkDayRollover();
             checkMonthRollover();
             APP_STATE.lastScheduleDateKey = dateKey(new Date());
             // Only generate fresh template if no saved schedule for today
@@ -2365,6 +2380,7 @@
             renderLoggedMeals();
             updateProfileUI();
             updateMacroScales();
+            renderMacroHistory();
             renderAdminAnalytics();
             calculateVTaper();
             
@@ -2407,6 +2423,9 @@
             const mins = String(now.getMinutes()).padStart(2, '0');
             const secs = String(now.getSeconds()).padStart(2, '0');
             
+            // Reset DAILY nutrition data (logged meals + water) at the day boundary
+            checkDayRollover();
+
             // Roll over to the correct day's schedule template at midnight
             const todayKey = dateKey(now);
             if (APP_STATE.lastScheduleDateKey !== todayKey) {
@@ -3598,6 +3617,37 @@ Keep crushing the daily plan! 💪⚡`;
             });
         }
 
+        // Renders the archived per-day macro totals saved by checkDayRollover()
+        function renderMacroHistory() {
+            const el = document.getElementById('macro-history-list');
+            if (!el) return;
+            const hist = APP_STATE.macroHistory || {};
+            const keys = Object.keys(hist);
+            if (keys.length === 0) {
+                el.innerHTML = `<span class="text-xs font-mono text-white/30 block text-center py-4">No archived days yet — each day's macro totals get saved here automatically at midnight.</span>`;
+                return;
+            }
+            keys.sort((a, b) => (hist[b].ts || 0) - (hist[a].ts || 0));
+            el.innerHTML = '';
+            keys.slice(0, 30).forEach(k => {
+                const it = hist[k] || {};
+                let label = 'PREVIOUS LOG';
+                if (k !== 'pre-tracking') {
+                    const p = String(k).split('-').map(Number);
+                    if (p.length === 3 && !p.some(isNaN)) {
+                        label = new Date(p[0], p[1] - 1, p[2]).toLocaleDateString([], { day: 'numeric', month: 'short' }).toUpperCase();
+                    }
+                }
+                const div = document.createElement('div');
+                div.className = "p-2 bg-[#1c1c1e] border border-white/[0.06] flex items-center justify-between text-xs font-mono";
+                div.innerHTML = `
+                    <span class="text-white/60">${label}</span>
+                    <span class="text-[10px]"><span class="text-[#ffd60a] font-bold">${it.kcal || 0} kcal</span> <span class="text-[#bf5af2]">${it.prot || 0}P</span> <span class="text-[#64d2ff]">${it.carbs || 0}C</span> <span class="text-[#30d158]">${it.fats || 0}F</span> <span class="text-[#64d2ff]">${((it.waterMl || 0) / 1000).toFixed(1)}L</span></span>
+                `;
+                el.appendChild(div);
+            });
+        }
+
         function toggleExerciseCheck(id, isChecked) {
             APP_STATE.checklistState[id] = isChecked;
             saveLocalState();
@@ -4073,6 +4123,8 @@ Keep crushing the daily plan! 💪⚡`;
                 programStartDate: APP_STATE.programStartDate || '2026-08-03',
                 masterSchedule: APP_STATE.masterSchedule || null,
                 masterScheduleDateKey: APP_STATE.lastScheduleDateKey || null,
+                lastMealDateKey: APP_STATE.lastMealDateKey || null,
+                macroHistory: APP_STATE.macroHistory || {},
                 updatedAt: new Date().toISOString()
             };
 
@@ -4209,6 +4261,30 @@ Keep crushing the daily plan! 💪⚡`;
                     return;
                 }
 
+                // ---- DAILY NUTRITION DAY GUARD -------------------------------------
+                // loggedMeals & waterLoggedMl belong to ONE calendar day. A cloud snapshot
+                // stamped with a different day (yesterday's log, or a stale pre-fix server
+                // copy with no key at all) must never be re-injected after the local day
+                // rollover reset the table — skip it and, if the cloud copy is genuinely
+                // older, push today's reset up so the stale data stops coming back.
+                const cloudDailyKey = cloudData.lastMealDateKey || null;
+                const localDailyKey = APP_STATE.lastMealDateKey || dateKey(new Date());
+                const cloudDailyStale = cloudDailyKey !== localDailyKey;
+                const cloudHasDailyData = !!((cloudData.loggedMeals && cloudData.loggedMeals.length) || (cloudData.waterLoggedMl || 0) > 0);
+                if (cloudDailyStale && cloudHasDailyData) {
+                    const parseDayTs = (k) => {
+                        if (!k || k === 'pre-tracking') return null;
+                        const p = String(k).split('-').map(Number);
+                        if (p.length !== 3 || p.some(isNaN)) return null;
+                        return new Date(p[0], p[1] - 1, p[2]).getTime();
+                    };
+                    const cloudDayTs = parseDayTs(cloudDailyKey);
+                    const localDayTs = parseDayTs(localDailyKey);
+                    const cloudIsOlder = cloudDailyKey === null ||
+                        (cloudDayTs !== null && localDayTs !== null && cloudDayTs < localDayTs);
+                    if (cloudIsOlder) pushCloudState(); // heal the server with today's reset state
+                }
+
                 // Apply a cloud field only when it differs AND it is non-empty (or the local
                 // side is empty too) — an empty remote field can never wipe real local data.
                 const shouldApply = (cloudVal, localVal) => {
@@ -4234,7 +4310,7 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
-                if (cloudData.waterLoggedMl !== undefined && cloudData.waterLoggedMl !== APP_STATE.waterLoggedMl) {
+                if (!cloudDailyStale && cloudData.waterLoggedMl !== undefined && cloudData.waterLoggedMl !== APP_STATE.waterLoggedMl) {
                     if ((cloudData.waterLoggedMl > 0) || !(APP_STATE.waterLoggedMl > 0)) {
                         APP_STATE.waterLoggedMl = cloudData.waterLoggedMl;
                         updated = true;
@@ -4246,9 +4322,22 @@ Keep crushing the daily plan! 💪⚡`;
                     updated = true;
                 }
 
-                if (cloudData.loggedMeals && shouldApply(cloudData.loggedMeals, APP_STATE.loggedMeals)) {
+                if (!cloudDailyStale && cloudData.loggedMeals && shouldApply(cloudData.loggedMeals, APP_STATE.loggedMeals)) {
                     APP_STATE.loggedMeals = cloudData.loggedMeals;
                     updated = true;
+                }
+
+                // macroHistory: union of archived daily totals (per-day key, local wins)
+                if (cloudData.macroHistory && Object.keys(cloudData.macroHistory).length) {
+                    if (!APP_STATE.macroHistory) APP_STATE.macroHistory = {};
+                    let mergedHistory = false;
+                    Object.keys(cloudData.macroHistory).forEach(hk => {
+                        if (!APP_STATE.macroHistory[hk]) {
+                            APP_STATE.macroHistory[hk] = cloudData.macroHistory[hk];
+                            mergedHistory = true;
+                        }
+                    });
+                    if (mergedHistory) updated = true;
                 }
 
                 // NOTE: masterSchedule is deliberately excluded from cloud sync — the daily
@@ -4290,6 +4379,7 @@ Keep crushing the daily plan! 💪⚡`;
                     renderLoggedMeals();
                     updateProfileUI();
                     updateMacroScales();
+                    renderMacroHistory();
                     renderAdminAnalytics();
                     calculateVTaper();
                 }
@@ -4342,7 +4432,9 @@ Keep crushing the daily plan! 💪⚡`;
                     lastUpdatedAt: APP_STATE.lastUpdatedAt,
                     masterSchedule: APP_STATE.masterSchedule || null,
                     masterScheduleDateKey: APP_STATE.lastScheduleDateKey || null,
-                    lastChecklistMonth: APP_STATE.lastChecklistMonth || null
+                    lastChecklistMonth: APP_STATE.lastChecklistMonth || null,
+                    lastMealDateKey: APP_STATE.lastMealDateKey || null,
+                    macroHistory: APP_STATE.macroHistory || {}
                 };
                 localStorage.setItem('growth_app_state', JSON.stringify(payload));
                 // Redundant copy: if any stale/buggy code path (e.g. the pre-fix cached page
@@ -4359,6 +4451,64 @@ Keep crushing the daily plan! 💪⚡`;
                 profile.targetCal = 1750;
             }
             return profile;
+        }
+
+        // Detect calendar-day rollover for DAILY nutrition data: loggedMeals and
+        // waterLoggedMl are "today's" numbers (the UI says so), but nothing ever reset
+        // them — so yesterday's macros bled into the next day. Archive the day's totals
+        // into macroHistory (so the macros ARE saved), then start the day fresh.
+        function checkDayRollover() {
+            const now = new Date();
+            const todayKey = dateKey(now);
+            if (APP_STATE.lastMealDateKey === todayKey) return; // same day, nothing to do
+
+            const meals = APP_STATE.loggedMeals || [];
+            const waterMl = APP_STATE.waterLoggedMl || 0;
+
+            // No stamp yet (first launch with this feature). If there's no daily data at
+            // all (fresh device) or the data was written TODAY per the last sync stamp,
+            // keep it and just stamp the key instead of wiping a real day's log.
+            if (!APP_STATE.lastMealDateKey) {
+                const lastDay = APP_STATE.lastUpdatedAt ? dateKey(new Date(APP_STATE.lastUpdatedAt)) : null;
+                const freshDevice = meals.length === 0 && waterMl === 0;
+                if (freshDevice || lastDay === todayKey) {
+                    APP_STATE.lastMealDateKey = todayKey;
+                    saveLocalState();
+                    return;
+                }
+            }
+
+            // Save the previous day's macro totals before clearing, so history isn't lost
+            if (meals.length > 0 || waterMl > 0) {
+                if (!APP_STATE.macroHistory) APP_STATE.macroHistory = {};
+                let kcal = 0, prot = 0, carbs = 0, fats = 0;
+                meals.forEach(m => {
+                    kcal += m.cal || 0; prot += m.prot || 0; carbs += m.carbs || 0; fats += m.fats || 0;
+                });
+                const prevKey = APP_STATE.lastMealDateKey || 'pre-tracking';
+                APP_STATE.macroHistory[prevKey] = {
+                    ts: now.getTime(),
+                    kcal: Math.round(kcal), prot: Math.round(prot),
+                    carbs: Math.round(carbs), fats: Math.round(fats),
+                    waterMl: waterMl, meals: meals.length
+                };
+                // Keep localStorage bounded — retain the last 90 archived days
+                const histKeys = Object.keys(APP_STATE.macroHistory);
+                if (histKeys.length > 90) {
+                    histKeys.sort((a, b) => (APP_STATE.macroHistory[a].ts || 0) - (APP_STATE.macroHistory[b].ts || 0));
+                    histKeys.slice(0, histKeys.length - 90).forEach(k => delete APP_STATE.macroHistory[k]);
+                }
+            }
+
+            // Fresh day: clear the live macro table + water counter
+            APP_STATE.loggedMeals = [];
+            APP_STATE.waterLoggedMl = 0;
+            APP_STATE.lastMealDateKey = todayKey;
+            saveLocalState();
+            renderLoggedMeals();
+            updateMacroScales();
+            renderMacroHistory();
+            pushCloudState(); // overwrite the cloud's copy of yesterday's macros too
         }
 
         // Detect calendar month rollover: archive previous month's checklist/cardio
@@ -4481,6 +4631,8 @@ Keep crushing the daily plan! 💪⚡`;
                     if (parsed.programStartDate) APP_STATE.programStartDate = parsed.programStartDate;
                     if (parsed.lastUpdatedAt) APP_STATE.lastUpdatedAt = parsed.lastUpdatedAt;
                     if (parsed.lastChecklistMonth) APP_STATE.lastChecklistMonth = parsed.lastChecklistMonth;
+                    if (parsed.lastMealDateKey) APP_STATE.lastMealDateKey = parsed.lastMealDateKey;
+                    if (parsed.macroHistory) APP_STATE.macroHistory = parsed.macroHistory;
                     // Restore saved masterSchedule (custom events) if it matches today
                     if (parsed.masterSchedule && parsed.masterScheduleDateKey) {
                         const todayKey = dateKey(new Date());

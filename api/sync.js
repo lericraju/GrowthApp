@@ -62,6 +62,9 @@ export default async function handler(req, res) {
       if (data.masterSchedule) serverState.masterSchedule = data.masterSchedule;
       if (data.historicalArchive) serverState.historicalArchive = data.historicalArchive;
       if (data.programStartDate) serverState.programStartDate = data.programStartDate;
+      // Day-rollover stamp + archived daily macro totals for DAILY nutrition data
+      if (data.lastMealDateKey) serverState.lastMealDateKey = data.lastMealDateKey;
+      if (data.macroHistory) serverState.macroHistory = data.macroHistory;
       serverState.updatedAt = new Date().toISOString();
 
       if (kvUrl && kvToken) {
