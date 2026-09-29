@@ -1,12 +1,11 @@
-const CACHE_NAME = 'growthapp-cache-v38';
+const CACHE_NAME = 'growthapp-cache-v39';
 const ASSETS = [
   '/',
   '/index.html',
   '/Gym.html',
   '/manifest.json',
   '/icon.svg',
-  '/logo.png',
-  '/favicon.png'
+  '/logo.png'
 ];
 
 // Install Service Worker and cache resources
@@ -37,7 +36,8 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Intercept network requests - Network First for HTML/navigation requests so updates appear immediately
+// Intercept network requests - Network First for navigations (updates land immediately),
+// stale-while-revalidate for everything else
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
@@ -46,6 +46,11 @@ self.addEventListener('fetch', (event) => {
 
   // Keep the sync API network-only so polling always returns the freshest server state
   if (request.url && request.url.includes('/api/')) return;
+
+  // Never cache cross-origin requests that carry credentials (fonts from
+  // gstatic are fetched with CORS credentials; caching them without the
+  // crossorigin flag produces opaque responses that Chrome rejects)
+  if (request.mode === 'cors' && request.credentials === 'include') return;
 
   if (request.mode === 'navigate' || (request.url && request.url.includes('index.html'))) {
     event.respondWith(
