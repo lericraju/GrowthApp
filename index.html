@@ -21,15 +21,15 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="format-detection" content="telephone=no">
     
-    <!-- Google Fonts (connection setup first; stylesheet is render-blocking but small) -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-    <!-- Lucide Icons (pinned version + deferred: never blocks HTML parsing) -->
+    <!-- Lucide Icons -->
     <script defer src="https://cdn.jsdelivr.net/npm/lucide@1.48.0/dist/umd/lucide.min.js"></script>
 
-    <!-- Tailwind Play CDN (pinned so the CDN serves it immutable) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script>
         tailwind.config = {
@@ -1024,12 +1024,8 @@
 
     <!-- JAVASCRIPT APPLICATION ENGINE -->
     <script>
-        // Lucide Icons Render (lucide itself is defer-loaded; it executes
-        // before DOMContentLoaded, so icons render at the same moment as before
-        // but without blocking the parser for the whole body)
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) lucide.createIcons();
-        });
+        // Lucide Icons Render
+        document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
 
         // APP GLOBAL STATE
 
