@@ -32,9 +32,14 @@ export default async function handler(req, res) {
   const supabaseEnabled = !!(supabaseUrl && supabaseKey);
 
   // Best-effort upsert of the full snapshot — never throws: a missing table, RLS
-  // denial or network failure must not break the sync endpoint.
+  // denial or network failure must not break the sync endpoint. Returns a status
+  // string echoed to the client (POST response `backup`) so the write is verifiable:
+  //   'written'          — stored AND read back with this key (verified)
+  //   'written_no_rep'   — accepted, but RLS/select may block reads (add select policy)
+  //   'disabled'         — SUPABASE_URL / key env vars not configured
+  //   'failed:<code>' | 'error:<msg>' — write did not land
   async function writeSupabaseBackup(state) {
-    if (!supabaseEnabled) return false;
+    if (!supabaseEnabled) return 'disabled';
     try {
       const r = await fetch(`${supabaseUrl}/rest/v1/${SUPABASE_TABLE}?on_conflict=id`, {
         method: 'POST',
@@ -42,32 +47,39 @@ export default async function handler(req, res) {
           apikey: supabaseKey,
           Authorization: `Bearer ${supabaseKey}`,
           'Content-Type': 'application/json',
-          Prefer: 'resolution=merge-duplicates,return=minimal'
+          // representation = read the row back in the same call, proving write AND read
+          Prefer: 'resolution=merge-duplicates,return=representation'
         },
         body: JSON.stringify([{ id: 'master', state, updated_at: new Date().toISOString() }])
       });
-      if (!r.ok) console.warn('Supabase backup write failed:', r.status);
-      return r.ok;
+      if (!r.ok) {
+        console.warn('Supabase backup write failed:', r.status);
+        return 'failed:' + r.status;
+      }
+      const rows = await r.json().catch(() => null);
+      if (Array.isArray(rows) && rows.length && rows[0].state) return 'written';
+      return 'written_no_rep';
     } catch (e) {
       console.warn('Supabase backup write error:', e.message);
-      return false;
+      return 'error:' + e.message;
     }
   }
 
   // Read the backed-up snapshot — served when KV misses (empty key, cold KV,
-  // failed fetch, or no KV env at all).
+  // failed fetch, or no KV env at all). Returns { status, data } so the GET
+  // response can report whether/why the backup was consulted.
   async function readSupabaseBackup() {
-    if (!supabaseEnabled) return null;
+    if (!supabaseEnabled) return { status: 'disabled', data: null };
     try {
       const r = await fetch(`${supabaseUrl}/rest/v1/${SUPABASE_TABLE}?id=eq.master&select=state`, {
         headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` }
       });
-      if (!r.ok) return null;
+      if (!r.ok) return { status: 'error:' + r.status, data: null };
       const rows = await r.json();
-      if (Array.isArray(rows) && rows.length && rows[0].state) return rows[0].state;
-      return null;
+      if (Array.isArray(rows) && rows.length && rows[0].state) return { status: 'hit', data: rows[0].state };
+      return { status: 'empty', data: null };
     } catch (e) {
-      return null;
+      return { status: 'error:' + e.message, data: null };
     }
   }
 
@@ -102,16 +114,16 @@ export default async function handler(req, res) {
     // KV missed (empty key, cold KV, error or unconfigured) — serve the durable
     // Supabase backup so a KV/deploy failure can never wipe the user's data.
     const backup = await readSupabaseBackup();
-    if (backup) {
-      return res.status(200).json({ success: true, source: 'supabase_backup', durable: true, data: backup });
+    if (backup.data) {
+      return res.status(200).json({ success: true, source: 'supabase_backup', durable: true, data: backup.data });
     }
 
     if (kvReachable) {
       // KV reachable but key doesn't exist yet and no backup — still durable
-      return res.status(200).json({ success: true, source: 'vercel_kv', durable: true, data: null, kvStatus: 'empty_key' });
+      return res.status(200).json({ success: true, source: 'vercel_kv', durable: true, data: null, kvStatus: 'empty_key', supabaseBackup: backup.status });
     }
     // No durable store available — volatile in-memory state (may be empty after a redeploy)
-    return res.status(200).json({ success: true, source: 'server_api', durable: false, data: serverState, kvError: kvNote || 'no_backup_available' });
+    return res.status(200).json({ success: true, source: 'server_api', durable: false, data: serverState, kvError: kvNote || 'no_backup_available', supabaseBackup: backup.status });
   }
 
   // POST Update Server State
@@ -153,9 +165,10 @@ export default async function handler(req, res) {
 
       // Dual-write the same snapshot to Supabase — the durable fallback the GET
       // path serves from whenever KV misses. Best-effort: never fails the push.
-      await writeSupabaseBackup(serverState);
+      // The status is echoed in the response so the write can be verified.
+      const backupStatus = await writeSupabaseBackup(serverState);
 
-      return res.status(200).json({ success: true, data: serverState });
+      return res.status(200).json({ success: true, data: serverState, backup: backupStatus });
     } catch (err) {
       return res.status(400).json({ success: false, error: err.message });
     }
