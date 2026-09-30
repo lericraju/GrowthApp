@@ -1337,7 +1337,7 @@
                         cardioDesc: "Legs — introduce goblet squats and RDLs.",
                         liftingTitle: "LEGS A — GOBLET SQUATS & ROMANIAN DEADLIFT",
                         exercises: [
-                            { id: "w3_w1", name: "Bodyweight/Goblet Squats → Light Barbell Back Squat", sets: "3 sets × 8 reps" },
+                            { id: "w3_w1", name: "Barbell Back Squat", sets: "3 sets × 8 reps" },
                             { id: "w3_w2", name: "Romanian Deadlift (Light, Form Focus)", sets: "3 sets × 10 reps" },
                             { id: "w3_w3", name: "Walking Lunges", sets: "3 sets × 10 reps/leg" },
                             { id: "w3_w4", name: "Leg Curl", sets: "3 sets × 12 reps" },
@@ -1375,7 +1375,7 @@
                         cardioDesc: "Legs — second session of the week.",
                         liftingTitle: "LEGS B — GOBLET SQUATS & RDL",
                         exercises: [
-                            { id: "w3_s1", name: "Bodyweight/Goblet Squats → Light Barbell Back Squat", sets: "3 sets × 8 reps" },
+                            { id: "w3_s1", name: "Barbell Back Squat", sets: "3 sets × 8 reps" },
                             { id: "w3_s2", name: "Romanian Deadlift (Light)", sets: "3 sets × 10 reps" },
                             { id: "w3_s3", name: "Walking Lunges", sets: "3 sets × 10 reps/leg" },
                             { id: "w3_s4", name: "Leg Curl", sets: "3 sets × 12 reps" },
@@ -2898,6 +2898,11 @@
             APP_STATE.activeWeek = currentProgramWeek();
         }
 
+        // Display name: drop progression suffixes ("A → B") and qualifier notes like (Light) / (or Lat Pulldown)
+        function cleanExerciseName(name) {
+            return (name || '').split('→')[0].replace(/\s*\([^)]*(?:light|heavy|form focus|new|assisted|or)[^)]*\)/gi, '').trim();
+        }
+
         function renderWorkoutsTab() {
             if (!APP_STATE.activeWeek) APP_STATE.activeWeek = 1;
             if (APP_STATE.activeDayIndex === undefined) APP_STATE.activeDayIndex = 0;
@@ -2964,7 +2969,7 @@
                         <div class="group p-3 bg-[#1c1c1e]/90 hover:bg-[#1c1c1e] border border-white/[0.06] space-y-2 rounded-lg transition-all">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="space-y-0.5 flex-1">
-                                    <span class="font-semibold text-sm text-white block ${isChecked ? 'line-through text-white/30' : ''}">${ex.name}</span>
+                                    <span class="font-semibold text-sm text-white block ${isChecked ? 'line-through text-white/30' : ''}">${cleanExerciseName(ex.name)}</span>
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="text-xs font-mono font-bold text-purple-300">
                                             ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
@@ -2982,24 +2987,24 @@
                             </div>
 
                             <!-- Weight & Rep Inputs -->
-                            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[10px] font-mono text-white/40 pt-1.5 border-t border-white/[0.06]/60">
+                            <div class="flex flex-nowrap items-center gap-x-1.5 text-[10px] font-mono text-white/40 pt-1.5 border-t border-white/[0.06]/60 overflow-hidden">
                                 <label class="flex items-center gap-1" title="Enter weight in kg">
                                     <span class="font-bold text-purple-300">KG</span>
                                     <input type="number" min="0" step="0.5" value="${weightInputVal === null ? '' : weightInputVal}" placeholder="—"
                                         onchange="setExerciseWeight('${ex.id}', this.value)"
                                         onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
-                                        class="w-14 bg-[#1c1c1e] border border-white/[0.08] text-white px-1.5 py-0.5 rounded text-[11px] font-mono focus:border-purple-400 focus:outline-none">
+                                        class="w-11 min-w-0 bg-[#1c1c1e] border border-white/[0.08] text-white px-1 py-0.5 rounded text-[11px] font-mono focus:border-purple-400 focus:outline-none">
                                 </label>
                                 <label class="flex items-center gap-1" title="Enter target reps">
                                     <span class="font-bold text-[#64d2ff]">REPS</span>
                                     <input type="number" min="1" step="1" value="${repInputVal}"
                                         onchange="setExerciseReps('${ex.id}', this.value)"
                                         onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}"
-                                        class="w-14 bg-[#1c1c1e] border border-white/[0.08] text-white px-1.5 py-0.5 rounded text-[11px] font-mono focus:border-[#0a84ff]/30 focus:outline-none">
+                                        class="w-11 min-w-0 bg-[#1c1c1e] border border-white/[0.08] text-white px-1 py-0.5 rounded text-[11px] font-mono focus:border-[#0a84ff]/30 focus:outline-none">
                                 </label>
-                                <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-2 py-0.5 bg-[#2c2c2e] hover:bg-purple-900 hover:text-purple-300 text-white/70 border border-white/[0.08] rounded">+2.5kg</button>
-                                <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-2 py-0.5 bg-[#2c2c2e] hover:bg-purple-900 hover:text-purple-300 text-white/70 border border-white/[0.08] rounded">-2.5kg</button>
-                                <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-2 py-0.5 bg-[#2c2c2e] hover:bg-cyan-900 hover:text-[#64d2ff] text-white/70 border border-white/[0.08] rounded">+1 Rep</button>
+                                <button onclick="adjustExerciseWeight('${ex.id}', 2.5)" class="px-1.5 py-0.5 bg-[#2c2c2e] hover:bg-purple-900 hover:text-purple-300 text-white/70 border border-white/[0.08] rounded">+2.5</button>
+                                <button onclick="adjustExerciseWeight('${ex.id}', -2.5)" class="px-1.5 py-0.5 bg-[#2c2c2e] hover:bg-purple-900 hover:text-purple-300 text-white/70 border border-white/[0.08] rounded">-2.5</button>
+                                <button onclick="adjustExerciseReps('${ex.id}', 1)" class="px-1.5 py-0.5 bg-[#2c2c2e] hover:bg-cyan-900 hover:text-[#64d2ff] text-white/70 border border-white/[0.08] rounded">+1</button>
                                 ${details.hasCustom ? `<button onclick="resetExerciseDetail('${ex.id}')" title="Reset to preset" class="px-2 py-0.5 text-white/30 hover:text-[#ff453a] ml-auto">Reset</button>` : ''}
                             </div>
                         </div>
