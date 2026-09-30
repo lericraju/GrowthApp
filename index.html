@@ -305,7 +305,7 @@
         .glass-divider::after { display: none; }
     </style>
 </head>
-<body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-16 bg-black text-white overflow-x-hidden relative">
+<body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-6 bg-black text-white overflow-x-hidden relative">
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-50 bg-black border-b border-white/[0.06] px-4 lg:px-8 py-3" style="padding-top: env(safe-area-inset-top, 0px);">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -344,7 +344,7 @@
                     🥗 Macros
                 </button>
                 <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="tab-btn px-3 py-1.5 text-[13px] font-medium rounded-[10px] text-white/50 hover:text-white hover:bg-white/5 whitespace-nowrap transition-all">
-                    📊 Analytics & V-Taper
+                    📊 Analytics
                 </button>
             </nav>
 
@@ -397,7 +397,7 @@
     <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6 relative z-[1]">
 
         <!-- ================= TAB 1: SCHEDULE & LIFE NOTIFIER ================= -->
-        <div id="tab-notifier" class="tab-content tab-glow-panel space-y-6">
+        <div id="tab-notifier" class="tab-content tab-glow-panel space-y-3">
             <div class="tab-bg-tint"></div>
 
             <!-- Full Width Interactive Timeline Breakdown -->
@@ -421,7 +421,7 @@
                 </div>
 
                 <!-- Timeline List Container -->
-                <div id="master-schedule-timeline" class="space-y-2">
+                <div id="master-schedule-timeline" class="space-y-1.5">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -2616,7 +2616,7 @@
                         </div>
                     `;
                 } else {
-                    div.className = `p-2.5 border ${borderClass} flex items-center justify-between gap-2 transition-all rounded-sm`;
+                    div.className = `py-1.5 px-2.5 border ${borderClass} flex items-center justify-between gap-2 transition-all rounded-sm`;
                     div.innerHTML = `
                         <div class="flex items-center gap-2.5 flex-1 min-w-0">
                             <span class="font-mono text-xs font-bold px-2 py-0.5 ${badgeClass} shrink-0">
