@@ -305,7 +305,7 @@
         .glass-divider::after { display: none; }
     </style>
 </head>
-<body data-active-tab="notifier" class="min-h-screen pb-24 md:pb-6 bg-black text-white overflow-x-hidden relative">
+<body data-active-tab="notifier" class="min-h-screen pb-16 md:pb-2 bg-black text-white overflow-x-hidden relative">
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-50 bg-black border-b border-white/[0.06] px-4 lg:px-8 py-3" style="padding-top: env(safe-area-inset-top, 0px);">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -2631,7 +2631,35 @@
 
                 container.appendChild(div);
             });
+
+            // Stretch the timeline to fill the viewport down to the bottom nav —
+            // spreads surplus space between rows instead of leaving a blank gap.
+            requestAnimationFrame(() => {
+                container.style.display = '';
+                container.style.height = '';
+                const card = container.closest('.brutal-card');
+                if (!card) return;
+                const nav = document.querySelector('nav.fixed');
+                const navH = nav && nav.getBoundingClientRect().height > 0 ? nav.getBoundingClientRect().height : 0;
+                const reserve = navH > 0 ? navH + 12 : 8;
+                const slack = document.documentElement.clientHeight - reserve - card.getBoundingClientRect().bottom;
+                if (slack > 0) {
+                    container.style.display = 'flex';
+                    container.style.flexDirection = 'column';
+                    container.style.justifyContent = 'space-between';
+                    container.style.height = (container.getBoundingClientRect().height + slack) + 'px';
+                }
+            });
         }
+
+        // Re-stretch on viewport changes (rotation, window resize)
+        let __schedResizeT;
+        window.addEventListener('resize', () => {
+            clearTimeout(__schedResizeT);
+            __schedResizeT = setTimeout(() => {
+                if (document.body.getAttribute('data-active-tab') === 'notifier') renderScheduleTimeline();
+            }, 200);
+        });
 
         // TAB 1: DYNAMIC SCHEDULE REBALANCE ENGINE (Pick the day's focus → schedule adjusts around it)
         function insertCustomEvent(title, start, end, type) {
