@@ -677,16 +677,15 @@
 
                         <!-- Gemini Paste Auto-Fill -->
                         <div class="space-y-2 pt-2 border-t border-white/[0.06]">
-                            <span class="text-[10px] font-mono text-[#ffd60a] block uppercase font-bold">🤖 PASTE GEMINI BREAKDOWN (AUTO-FILL)</span>
-                            <p class="text-[10px] font-mono text-white/30 leading-relaxed">Copy the nutrition breakdown from your Gemini chat and hit Auto-Fill — the form below fills itself. Format: <span class="text-white/70">Calories: 450 kcal</span> / <span class="text-white/70">Protein: 32 g</span> / <span class="text-white/70">Total Carbohydrates: 40 g</span> / <span class="text-white/70">Total Sugar: 8 g</span> / <span class="text-white/70">Total Fat: 18 g</span> / <span class="text-white/70">Total Sodium: 600 mg</span></p>
-                            <textarea id="gemini-paste-input" rows="6" placeholder="Paste Gemini output here, e.g.&#10;Calories: 450 kcal&#10;Protein: 32 g&#10;Total Carbohydrates: 40 g&#10;Total Sugar: 8 g&#10;Total Fat: 18 g&#10;Total Sodium: 600 mg" class="w-full bg-[#1c1c1e] border border-amber-500/40 text-white text-xs p-2 font-mono focus:border-amber-400 focus:outline-none placeholder-zinc-600"></textarea>
+                            <span class="text-[10px] font-mono text-[#ffd60a] block uppercase font-bold">🤖 PASTE BREAKDOWN</span>
+                            <textarea id="gemini-paste-input" rows="4" placeholder="Calories: 450 kcal&#10;Protein: 32 g&#10;Total Carbohydrates: 40 g&#10;Total Sugar: 8 g&#10;Total Fat: 18 g&#10;Total Sodium: 600 mg" class="w-full bg-[#1c1c1e] border border-amber-500/40 text-white text-xs p-2 font-mono focus:border-amber-400 focus:outline-none placeholder-zinc-600"></textarea>
                             <div class="grid grid-cols-2 gap-2">
-                                <button onclick="pasteGeminiFromClipboard()" class="brutal-btn brutal-btn-amber text-xs py-1.5">📋 Paste from Clipboard</button>
-                                <button id="gemini-parse-btn" onclick="parseGeminiBreakdown()" class="brutal-btn brutal-btn-purple text-xs py-1.5">⚡ Auto-Fill Form</button>
+                                <button onclick="pasteGeminiFromClipboard()" class="brutal-btn brutal-btn-amber text-xs py-1.5">📋 Paste</button>
+                                <button id="gemini-parse-btn" onclick="parseGeminiBreakdown()" class="brutal-btn brutal-btn-purple text-xs py-1.5">⚡ Auto-Fill</button>
                             </div>
                             <label class="flex items-center gap-2 text-[10px] font-mono text-white/40 cursor-pointer select-none">
-                                <input type="checkbox" id="gemini-autolog" onchange="document.getElementById('gemini-parse-btn').innerText = this.checked ? '⚡ Parse & Log' : '⚡ Auto-Fill Form'" class="accent-amber-400 w-3.5 h-3.5">
-                                <span>Auto-log immediately when parsing — one click, no review</span>
+                                <input type="checkbox" id="gemini-autolog" onchange="document.getElementById('gemini-parse-btn').innerText = this.checked ? '⚡ Log' : '⚡ Auto-Fill'" class="accent-amber-400 w-3.5 h-3.5">
+                                <span>Auto-log immediately</span>
                             </label>
                             <span id="gemini-paste-status" class="text-[10px] font-mono text-white/30 block min-h-[14px]"></span>
                         </div>
