@@ -3042,10 +3042,9 @@
             dayCard.innerHTML = `
                 <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
                     <div>
-                        <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">${dayObj.day}${APP_STATE.activeDayIndex === todayIdx && APP_STATE.activeWeek === currentProgramWeek() ? ' • <span style="color:#34d399;">TODAY</span>' : ''} • ${dayObj.cardioTitle || 'CARDIO SESSION'}</span>
-                        <h3 class="font-bold text-base text-white uppercase">${dayObj.liftingTitle || 'WORKOUT'}</h3>
+                        <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">${dayObj.day}${APP_STATE.activeDayIndex === todayIdx && APP_STATE.activeWeek === currentProgramWeek() ? ' • <span style="color:#34d399;">TODAY</span>' : ''}${dayObj.cardioTitle && /RUN|BIKE|CYCL/i.test(dayObj.cardioTitle) ? ' • ' + dayObj.cardioTitle : ''}</span>
+                        <h3 class="font-bold text-base text-white uppercase">${(dayObj.liftingTitle || 'WORKOUT').split('—')[0].trim()}</h3>
                     </div>
-                    <span class="text-xs font-mono text-white/40">${dayObj.cardioDesc || ''}</span>
                 </div>
 
                 <div class="space-y-3">
