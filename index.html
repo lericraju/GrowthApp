@@ -295,6 +295,32 @@
         .mob-nav-btn { transition: color var(--transition-fast); }
         .mob-nav-btn.active { color: var(--accent-blue) !important; }
 
+        /* ---- ROUTINE DAY BRIEF: slides up from the bottom, above the nav ---- */
+        #routine-day-brief {
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s;
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+            bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+        }
+        @media (min-width: 768px) {
+            #routine-day-brief { bottom: 1rem; }
+        }
+        #routine-day-brief.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ---- LAST-RESORT FIT ("SARDINE"): every card is collapsed but the tab still
+           overflows, so tighten card paddings, stack gaps and headings to squeeze in ---- */
+        .sardine .brutal-card { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .sardine.space-y-4 > :not([hidden]) ~ :not([hidden]),
+        .sardine .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.25rem; }
+        .sardine .brutal-card h2,
+        .sardine .brutal-card h3,
+        .sardine .brutal-card h4 { font-size: 0.8rem; padding-top: 0.1rem; padding-bottom: 0.1rem; }
+
         /* ---- DIVIDER ---- */
         .glass-divider {
             height: 1px;
@@ -305,7 +331,7 @@
         .glass-divider::after { display: none; }
     </style>
 </head>
-<body data-active-tab="notifier" class="min-h-screen pb-16 md:pb-2 bg-black text-white overflow-x-hidden relative">
+<body data-active-tab="notifier" class="min-h-screen pb-14 md:pb-2 bg-black text-white overflow-x-hidden relative">
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-50 bg-black border-b border-white/[0.06] px-4 lg:px-8 py-3" style="padding-top: env(safe-area-inset-top, 0px);">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -371,6 +397,17 @@
         </button>
     </nav>
 
+    <!-- ROUTINE DAY BRIEF — slides up from the bottom, above the nav buttons -->
+    <div id="routine-day-brief" class="fixed left-3 right-3 md:left-4 md:right-4 mx-auto max-w-2xl z-50">
+        <div class="bg-[#1c1c1e] border border-white/[0.1] rounded-t-2xl px-4 pt-3 pb-4 shadow-2xl" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span id="routine-brief-title" class="text-[11px] font-mono font-bold uppercase text-white">LEGS A</span>
+                <button onclick="hideRoutineDayBrief()" class="text-white/40 hover:text-white text-sm leading-none px-1" aria-label="Dismiss">✕</button>
+            </div>
+            <p id="routine-brief-desc" class="text-[11px] font-mono text-white/50 leading-snug">Legs — goblet squats and RDLs.</p>
+        </div>
+    </div>
+
     <!-- HORIZONTAL ACTIVE PLAN BANNER (sits across the top of the schedule, below the header) -->
     <div id="active-slot-toast" class="fixed top-20 left-3 right-3 md:left-4 md:right-4 z-50 mx-auto max-w-2xl bg-[#1c1c1e] border border-white/[0.08] px-3 py-2 md:px-4 md:py-2.5 rounded-2xl shadow-lg flex items-center justify-between gap-2 md:gap-3 transition-all duration-500 transform -translate-y-3 opacity-0 pointer-events-none">
         <div class="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
@@ -394,7 +431,7 @@
     </div>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-6 relative z-[1]">
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 mt-4 relative z-[1]">
 
         <!-- ================= TAB 1: SCHEDULE & LIFE NOTIFIER ================= -->
         <div id="tab-notifier" class="tab-content tab-glow-panel space-y-3">
@@ -433,7 +470,7 @@
             <div class="tab-bg-tint"></div>
 
             <!-- Minimalist Horizontal Week & Day Selector Bar -->
-            <div class="brutal-card p-3 space-y-2.5">
+            <div class="brutal-card p-2 space-y-2">
                 <!-- Week Selector: W1 | W2 | W3 | W4 -->
                 <div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-white/[0.06]/80">
                     <button onclick="switchWeek(1)" id="week-tab-1" class="week-tab-btn active px-3 py-1 text-xs font-mono font-bold uppercase rounded-md border border-purple-400 bg-purple-400 text-black">W1</button>
@@ -466,7 +503,7 @@
         </div>
 
         <!-- ================= TAB 3: CALORIE & MACRO TRACKER ================= -->
-        <div id="tab-calories" class="tab-content tab-glow-panel hidden space-y-5">
+        <div id="tab-calories" class="tab-content tab-glow-panel hidden space-y-4">
             <div class="tab-bg-tint"></div>
 
             <!-- Profile & Deficit Strategy Header -->
@@ -517,10 +554,10 @@
             </div>
 
             <!-- Bento Layout: Macro Scales & Meal Logger -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
                 <!-- Left Column: Live Visual Macro Scales (1c) -->
-                <div class="lg:col-span-2 space-y-5">
+                <div class="lg:col-span-2 space-y-4">
                     <hr class="glass-divider">
 
                     <!-- Macro Scales Bento Card -->
@@ -642,7 +679,7 @@
                 </div>
 
                 <!-- Right Column: Meal Logger & Presets -->
-                <div class="space-y-6 lg:col-span-1">
+                <div class="space-y-4 lg:col-span-1">
                     <hr class="glass-divider">
 
                     <!-- Meal Logger Bento Card -->
@@ -754,30 +791,29 @@
         </div>
 
         <!-- ================= TAB 4: ANALYTICS & V-TAPER ================= -->
-        <div id="tab-analytics" class="tab-content tab-glow-panel hidden space-y-6">
+        <div id="tab-analytics" class="tab-content tab-glow-panel hidden space-y-4">
             <div class="tab-bg-tint"></div>
 
-            <!-- Stats Baseline Cards -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="brutal-card brutal-purple p-3.5">
-                    <span class="text-[9px] font-mono text-purple-300 uppercase block font-bold">MONTHLY VOLUME</span>
-                    <span id="stat-total-volume" class="font-bold text-xl text-white">0 kg</span>
-                    <span class="text-[9px] text-white/40 block mt-0.5">Progressive total</span>
-                </div>
-                <div class="brutal-card brutal-cyan p-3.5">
-                    <span class="text-[9px] font-mono text-[#64d2ff] uppercase block font-bold">CARDIO DISTANCE</span>
-                    <span id="stat-total-cardio" class="font-bold text-xl text-white">0.0 km</span>
-                    <span class="text-[9px] text-[#64d2ff] block mt-0.5">Run: 0.0km | Bike: 0.0km</span>
-                </div>
-                <div class="brutal-card brutal-green p-3.5">
-                    <span class="text-[9px] font-mono text-emerald-300 uppercase block font-bold">COMPLETION RATE</span>
-                    <span id="stat-completion-rate" class="font-bold text-xl text-white">0.0%</span>
-                    <span class="text-[9px] text-[#30d158] block mt-0.5">0 / 28 logged</span>
-                </div>
-                <div class="brutal-card brutal-amber p-3.5">
-                    <span class="text-[9px] font-mono text-amber-300 uppercase block font-bold">STREAK</span>
-                    <span id="stat-streak-days" class="font-bold text-xl text-white">0 DAYS</span>
-                    <span class="text-[9px] text-[#ffd60a] block mt-0.5">Consistency count</span>
+            <!-- Stats Baseline Strip -->
+            <div class="brutal-card p-3">
+                <h4 class="font-semibold text-xs uppercase text-white/40 mb-2">STATS</h4>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                    <div>
+                        <span class="text-[9px] font-mono text-purple-300 uppercase block font-bold">VOLUME</span>
+                        <span id="stat-total-volume" class="font-bold text-base text-white">0 kg</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-mono text-[#64d2ff] uppercase block font-bold">CARDIO</span>
+                        <span id="stat-total-cardio" class="font-bold text-base text-white">0.0 km</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-mono text-emerald-300 uppercase block font-bold">COMPLETION</span>
+                        <span id="stat-completion-rate" class="font-bold text-base text-white">0.0%</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-mono text-amber-300 uppercase block font-bold">STREAK</span>
+                        <span id="stat-streak-days" class="font-bold text-base text-white">0 DAYS</span>
+                    </div>
                 </div>
             </div>
 
@@ -2556,10 +2592,19 @@
                     // Always land on today's routine so the page matches the real day
                     syncRoutineToToday();
                     renderWorkoutsTab();
+                    // Day brief slides up once per visit, from the bottom above the nav
+                    if (!routineBriefShown) {
+                        routineBriefShown = true;
+                        showRoutineDayBrief();
+                    }
                 } else {
                     restTimerWidget.classList.add('hidden');
+                    hideRoutineDayBrief();
                 }
             }
+
+            // Macros & Analytics auto-collapse until they fit the screen
+            if (tabName === 'calories' || tabName === 'analytics') setTimeout(() => fitTabToScreen(tabName), 60);
 
             // Slide out 3-second active slot toast on tab switch
             showActiveSlotToast();
@@ -2634,6 +2679,8 @@
 
             // Stretch the timeline to fill the viewport down to the bottom nav —
             // spreads surplus space between rows instead of leaving a blank gap.
+            // Self-correcting: re-measures over a few frames so a stale mid-resize
+            // layout can't leave the card overflowing past the bottom nav.
             requestAnimationFrame(() => {
                 container.style.display = '';
                 container.style.height = '';
@@ -2642,13 +2689,27 @@
                 const nav = document.querySelector('nav.fixed');
                 const navH = nav && nav.getBoundingClientRect().height > 0 ? nav.getBoundingClientRect().height : 0;
                 const reserve = navH > 0 ? navH + 12 : 8;
-                const slack = document.documentElement.clientHeight - reserve - card.getBoundingClientRect().bottom;
-                if (slack > 0) {
-                    container.style.display = 'flex';
-                    container.style.flexDirection = 'column';
-                    container.style.justifyContent = 'space-between';
-                    container.style.height = (container.getBoundingClientRect().height + slack) + 'px';
-                }
+                let pass = 0;
+                const settle = () => {
+                    // Base = natural height from a clean measure (styles reset first)
+                    container.style.display = '';
+                    container.style.height = '';
+                    const baseH = container.getBoundingClientRect().height;
+                    const slack = document.documentElement.clientHeight - reserve - card.getBoundingClientRect().bottom;
+                    if (slack > 0) {
+                        container.style.display = 'flex';
+                        container.style.flexDirection = 'column';
+                        container.style.justifyContent = 'space-between';
+                        container.style.height = (baseH + slack) + 'px';
+                    }
+                    // Verify: if the card still overlaps the reserved nav zone, shrink
+                    const residual = card.getBoundingClientRect().bottom - (document.documentElement.clientHeight - reserve);
+                    if (residual > 2) {
+                        container.style.height = Math.max(baseH, baseH + slack - residual) + 'px';
+                    }
+                    if (++pass < 3) requestAnimationFrame(settle);
+                };
+                settle();
             });
         }
 
@@ -2969,7 +3030,7 @@
             if (!dayObj) return;
 
             const dayCard = document.createElement('div');
-            dayCard.className = "brutal-card p-5 space-y-4";
+            dayCard.className = "brutal-card p-4 space-y-3";
 
             let exercisesHtml = '';
             const isLongCardioDay = /long cardio/i.test(dayObj.cardioTitle || '');
@@ -2993,16 +3054,14 @@
                     const repInputVal = parseAvgReps(details.reps);
 
                     exercisesHtml += `
-                        <div class="group p-3 bg-[#1c1c1e]/90 hover:bg-[#1c1c1e] border border-white/[0.06] space-y-2 rounded-lg transition-all">
+                        <div class="group p-2 bg-[#1c1c1e]/90 hover:bg-[#1c1c1e] border border-white/[0.06] space-y-1 rounded-lg transition-all">
                             <div class="flex items-start justify-between gap-2">
-                                <div class="space-y-0.5 flex-1">
-                                    <span class="font-semibold text-sm text-white block ${isChecked ? 'line-through text-white/30' : ''}">${cleanExerciseName(ex.name)}</span>
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="text-xs font-mono font-bold text-purple-300">
-                                            ${details.setsCount} sets × ${details.reps} ${details.weight ? '(' + details.weight + ')' : ''}
-                                        </span>
-                                        ${details.hasCustom ? '<span class="text-[9px] font-mono text-[#ffd60a] bg-amber-950 border border-amber-800 px-1 font-bold">+CUSTOM</span>' : ''}
-                                    </div>
+                                <div class="flex items-baseline gap-2 flex-1 min-w-0">
+                                    <span class="font-semibold text-sm text-white block truncate ${isChecked ? 'line-through text-white/30' : ''}">${cleanExerciseName(ex.name)}</span>
+                                    <span class="text-[10px] font-mono font-bold text-purple-300 whitespace-nowrap shrink-0">
+                                        ${details.setsCount}×${details.reps}${details.weight ? ' ' + details.weight : ''}
+                                    </span>
+                                    ${details.hasCustom ? '<span class="text-[9px] font-mono text-[#ffd60a] bg-amber-950 border border-amber-800 px-1 font-bold shrink-0">+CUSTOM</span>' : ''}
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="flex flex-col bg-[#1c1c1e] border border-white/[0.08] overflow-hidden select-none rounded">
@@ -3072,21 +3131,14 @@
             }
 
             dayCard.innerHTML = `
-                <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                    <div>
-                        <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">${dayObj.day}${APP_STATE.activeDayIndex === todayIdx && APP_STATE.activeWeek === currentProgramWeek() ? ' • <span style="color:#34d399;">TODAY</span>' : ''}${dayObj.cardioTitle && /RUN|BIKE|CYCL/i.test(dayObj.cardioTitle) ? ' • ' + dayObj.cardioTitle : ''}</span>
-                        <h3 class="font-bold text-base text-white uppercase">${(dayObj.liftingTitle || 'WORKOUT').split('—')[0].trim()}</h3>
-                    </div>
-                </div>
-
-                <div class="space-y-3">
+                <div class="space-y-1.5">
                     ${exercisesHtml}
                 </div>
 
                 ${cardioHtml}
 
-                <div class="p-2.5 bg-blue-950/40 border border-cyan-500/40 flex items-center justify-between mt-2 rounded">
-                    <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">💧 3.5 – 4.0L DAILY WATER TARGET</span>
+                <div class="p-2 bg-blue-950/40 border border-cyan-500/40 flex items-center justify-between rounded">
+                    <span class="text-[10px] font-mono text-[#64d2ff] font-bold uppercase">💧 WATER TARGET</span>
                     <input type="checkbox" class="check-box-brutal" ${isWaterChecked ? 'checked' : ''} onchange="toggleExerciseCheck('${waterId}', this.checked)">
                 </div>
             `;
@@ -4750,6 +4802,83 @@ Keep crushing the daily plan! 💪⚡`;
                 toast.classList.add('-translate-y-3', 'opacity-0', 'pointer-events-none');
             }, 3000);
         }
+
+        // ROUTINE DAY BRIEF — bottom sheet, once per visit (companion to the top schedule toast)
+        let routineBriefShown = false;
+        let routineBriefTimeout = null;
+        function showRoutineDayBrief() {
+            const el = document.getElementById('routine-day-brief');
+            if (!el) return;
+            const data = MONTH_WORKOUTS[APP_STATE.activeWeek];
+            const d = data && data.days[APP_STATE.activeDayIndex];
+            if (!d) return;
+            const full = d.liftingTitle || 'WORKOUT';
+            const code = full.split('—')[0].trim();
+            const desc = full.includes('—') ? full.split('—').slice(1).join('—').trim() : '';
+            const isToday = APP_STATE.activeDayIndex === (new Date().getDay() + 6) % 7 && APP_STATE.activeWeek === currentProgramWeek();
+            const cardio = d.cardioTitle && /RUN|BIKE|CYCL/i.test(d.cardioTitle) ? ' • ' + d.cardioTitle.split('—')[0].trim() : '';
+            const t = document.getElementById('routine-brief-title');
+            const p = document.getElementById('routine-brief-desc');
+            if (t) t.textContent = code + (isToday ? ' • TODAY' : '') + cardio;
+            if (p) p.textContent = desc || d.cardioDesc || 'Rest and recover.';
+            el.classList.add('show');
+            if (routineBriefTimeout) clearTimeout(routineBriefTimeout);
+            routineBriefTimeout = setTimeout(hideRoutineDayBrief, 6000);
+        }
+        function hideRoutineDayBrief() {
+            const el = document.getElementById('routine-day-brief');
+            if (el) el.classList.remove('show');
+        }
+
+        // TAB AUTO-FIT: Macros & Analytics collapse their largest cards until the tab fits the screen
+        function initFitCards(tabId) {
+            const panel = document.getElementById(tabId);
+            if (!panel) return;
+            panel.querySelectorAll('.brutal-card').forEach(card => {
+                if (card.dataset.fitInit) return;
+                card.dataset.fitInit = '1';
+                const head = card.querySelector('h2, h3, h4');
+                if (!head) return;
+                head.style.cursor = 'pointer';
+                const chev = document.createElement('span');
+                chev.className = 'fit-chev text-[9px] font-mono text-white/30 ml-1';
+                chev.textContent = '▾';
+                head.appendChild(chev);
+                head.addEventListener('click', () => {
+                    let headRow = head;
+                    while (headRow.parentElement !== card && headRow.parentElement) headRow = headRow.parentElement;
+                    const collapsed = card.classList.toggle('fit-collapsed');
+                    [...card.children].filter(c => c !== headRow).forEach(c => c.style.display = collapsed ? 'none' : '');
+                    chev.textContent = collapsed ? '▸' : '▾';
+                    if (!collapsed && tabId === 'tab-analytics') renderAdminAnalytics();
+                });
+            });
+        }
+        function fitTabToScreen(tabName) {
+            const panel = document.getElementById('tab-' + tabName);
+            if (!panel) return;
+            const overflow = () => document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (overflow() <= 4) {
+                // Drop sardine only if the tab still fits without it (e.g. bigger screen)
+                if (panel.classList.contains('sardine')) {
+                    panel.classList.remove('sardine');
+                    if (overflow() > 4) panel.classList.add('sardine'); // still required
+                }
+                return;
+            }
+            const cards = [...panel.querySelectorAll('.brutal-card')]
+                .filter(c => c.dataset.fitInit && !c.classList.contains('fit-collapsed'))
+                .sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height);
+            for (const card of cards) {
+                if (overflow() <= 4) break;
+                card.querySelector('h2, h3, h4')?.click();
+            }
+            // Sardine: still overflowing with everything collapsed → shrink chrome, else un-shrink
+            if (overflow() > 4) panel.classList.add('sardine');
+            else panel.classList.remove('sardine');
+        }
+        initFitCards('tab-calories');
+        initFitCards('tab-analytics');
 
         // FLOATING REST INTERVAL STOPWATCH ENGINE
         let restTimerSeconds = 90;
